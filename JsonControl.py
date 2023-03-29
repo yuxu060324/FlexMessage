@@ -110,6 +110,7 @@ class JsonManager():
                 ]
             }
         ]
+
         return contents
 
     def make_one_schedule_contents(self, type, schedule):
