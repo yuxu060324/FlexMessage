@@ -1,0 +1,24 @@
+{
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "Brown Cafe",
+        "weight": "bold",
+        "size": "xl"
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "button",
+          "uri": "http://linecorp.com/"
+        },
+        "style": "primary"
+      }
+    ]
+  }
+}
