@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 def get_calendar_event():
@@ -25,15 +25,11 @@ def get_calendar_event():
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'Key\\credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'Key\\credentials.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+    else:
+        raise FileNotFoundError
 
     try:
         service = build('calendar', 'v3', credentials=creds)
@@ -55,10 +51,6 @@ def get_calendar_event():
             print('No upcoming events found.')
             return
 
-        # Prints the start and name of the next 10 events
-        # for event in events:
-            # start = event['start'].get('dateTime', event['start'].get('date'))
-            # print(start, event['summary'])
         formatted_events = [(event['start'].get('dateTime', event['start'].get('date')),  # start time or day
                              event['end'].get('dateTime', event['end'].get('date')),  # end time or day
                              event['summary']) for event in events]
