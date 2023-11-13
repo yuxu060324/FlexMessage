@@ -24,12 +24,12 @@ def main():
   events = get_calendar_event()
   print(events)
 
-  JM = JsonManager()
-  JM.edit_json(LOAD_FILE_PATH, events)
-
-  payload = JM.load_json_template_message(LOAD_FILE_PATH)
-  container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-  line_bot_api.push_message(USER_ID, messages=container_obj)
+  # JM = JsonManager()
+  # JM.edit_json(LOAD_FILE_PATH, events)
+  #
+  # payload = JM.load_json_template_message(LOAD_FILE_PATH)
+  # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+  # line_bot_api.push_message(USER_ID, messages=container_obj)
 
 
 if __name__ == "__main__":
