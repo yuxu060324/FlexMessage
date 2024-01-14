@@ -3,13 +3,14 @@ import json
 
 class JsonManager():
 
-    def __init__(self):
+    def __init__(self, logger):
 
-        self.path = os.path.abspath(".\\FlexMessageDictionary")
+        self.massage_json_path = os.path.abspath(".\\FlexMessageDictionary")
+        self.logger = logger
 
     def load_json_template_message(self, path):
 
-        load_path = os.path.join(self.path, path)
+        load_path = os.path.join(self.massage_json_path, path)
 
         with open(load_path) as f:
             payload = json.load(f)
@@ -26,15 +27,16 @@ class JsonManager():
         contents = self.test_contents()
         # self.make_body_contents(type="text", texts=calendar_events)
         # self.test_contents()
-        print(contents)
+        self.logger.debug(contents)
 
         edit_json_data['body']['contents'] = contents
 
-        edit_path = os.path.join(self.path, path)
+        edit_path = os.path.join(self.massage_json_path, path)
 
         with open(edit_path, 'w') as f:
             d = json.dumps(edit_json_data, indent=2)
             f.write(d)
+            self.logger.debug("finished write json")
 
     def make_body_contents(self, calendar_events):
 
@@ -154,7 +156,7 @@ class JsonManager():
         return contents
 
     def get_setting_filepath(self):
-        return self.path
+        return self.massage_json_path
 
 events = [
     {
