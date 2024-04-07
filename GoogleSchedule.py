@@ -8,12 +8,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from line_global import schedule_start, schedule_end
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
-def get_calendar_event():
+def get_calendar_event(start_status, end_status):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -36,12 +37,18 @@ def get_calendar_event():
 
         # Call the Calendar API
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)  # 'Z' indicates UTC time
-        tomorrow = (today + datetime.timedelta(days=1)).isoformat() + 'Z'
-        after_week = (today + datetime.timedelta(days=8)).isoformat() + 'Z'
+        if (start_status == schedule_start.TODAY):
+            start = (today + datetime.timedelta(days=0)).isoformat() + 'Z'
+        if (start_status == schedule_start.TOMORROW):
+            start = (today + datetime.timedelta(days=1)).isoformat() + 'Z'
+        if (end_status == schedule_end.ONE_DAY):
+            end = (today + datetime.timedelta(days=2)).isoformat() + 'Z'
+        if (end_status == schedule_end.WEEKLY):
+            end = (today + datetime.timedelta(days=8)).isoformat() + 'Z'
         events_result = service.events().list(
             calendarId='primary',
-            timeMin=tomorrow,
-            timeMax=after_week,
+            timeMin=start,
+            timeMax=end,
             singleEvents=True,
             orderBy='startTime'
         ).execute()
@@ -49,13 +56,13 @@ def get_calendar_event():
 
         if not events:
             print('No upcoming events found.')
-            return
+            return 0
 
         formatted_events = [(event['start'].get('dateTime', event['start'].get('date')),  # start time or day
                              event['end'].get('dateTime', event['end'].get('date')),  # end time or day
                              event['summary']) for event in events]
         len_event = len(formatted_events)
-        response = f'[1週間のイベント{len_event}件]\n'
+        response = f'[イベント{len_event}件]\n'
         # データの正規化をする
         for event in formatted_events:
             if re.match(r'^\d{4}-\d{2}-\d{2}$', event[0]):
