@@ -24,18 +24,20 @@ ICON_WEATHER_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, weather_
 
 # イベントアイコンのファイルパス
 ICON_EVENT_FILE = {
-    "task": "task.jpg",
-    "event": "event.jpg",
-    "game": "game.jpg",
-    "commu": "commu.jpg",
-    "other": "other.jpg",
+    "task": "task.png",
+    "event": "event.png",
+    "game": "game.png",
+    "commu": "commu.png",
+    "eating": "eating.png",
+    "hospital": "hospital.png",
+    "other": "other.png",
 }
 
 # 天気アイコンのファイルパス
 ICON_WEATHER_FILE = {
-    "sunny": "sunny.jpg",
-    "rain": "rain.jpg",
-    "cloudy": "cloudy.jpg",
-    "snow": "snow.jpg",
+    "sunny": "sunny.png",
+    "rain": "rain.png",
+    "cloudy": "cloudy.png",
+    "snow": "snow.png",
 }
 

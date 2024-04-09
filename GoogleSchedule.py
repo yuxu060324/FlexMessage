@@ -13,11 +13,28 @@ from line_global import schedule_start, schedule_end
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
+class GoogleAPIManager():
+
+    def __init__(self, logger):
+
+        self.logger = logger
+
 
 def get_calendar_event(start_status, end_status):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
+
+    events_list = []
+    schedule_dict = {
+        "date": "%Y-%m-%d",
+        "all_day": "True",
+        "start_time": "$start_time",
+        "end_time": "$end_time",
+        "summary": "$summary",
+        "kind_event": "$kind_event"
+    }
+
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -35,8 +52,10 @@ def get_calendar_event(start_status, end_status):
     try:
         service = build('calendar', 'v3', credentials=creds)
 
-        # Call the Calendar API
+        # 基準のdatetimeを取得(時間・分・秒・マイクロ秒を0にする)
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)  # 'Z' indicates UTC time
+
+        # 取得するスケジュールの開始と終了
         if (start_status == schedule_start.TODAY):
             start = (today + datetime.timedelta(days=0)).isoformat() + 'Z'
         if (start_status == schedule_start.TOMORROW):
@@ -45,6 +64,7 @@ def get_calendar_event(start_status, end_status):
             end = (today + datetime.timedelta(days=2)).isoformat() + 'Z'
         if (end_status == schedule_end.WEEKLY):
             end = (today + datetime.timedelta(days=8)).isoformat() + 'Z'
+
         events_result = service.events().list(
             calendarId='primary',
             timeMin=start,
@@ -63,23 +83,43 @@ def get_calendar_event(start_status, end_status):
                              event['summary']) for event in events]
         len_event = len(formatted_events)
         response = f'[イベント{len_event}件]\n'
+
         # データの正規化をする
         for event in formatted_events:
             if re.match(r'^\d{4}-\d{2}-\d{2}$', event[0]):
-                start_date = '{0:%Y-%m-%d}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%d'))
-                response += '{0} All Day\n{1}\n\n'.format(start_date, event[2])
-            # For all day events
-            else:
-                start_time = '{0:%Y-%m-%d %H:%M}'.format(
-                    datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
-                end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%dT%H:%M:%S+09:00'))
-                response += '{0} ~ {1}\n{2}\n\n'.format(start_time, end_time, event[2])
-        response = response.rstrip('\n')
-        print(response)
+                # all day
 
-        return formatted_events
+                schedule_dict["date"] = '{0:%m月%d日}'.format(datetime.datetime.strptime(event[1], '%m-%d'))
+                schedule_dict["all_day"] = "True"
+                schedule_dict["start_time"] = '-'
+                schedule_dict["end_time"] = '-'
+                schedule_dict["summary"] = event[2]
+                schedule_dict["kind_event"] = class_kind_event(event[2])
+
+            else:
+                # schedule
+
+                schedule_dict["date"] = '{0:%m月%d日}'.format(
+                    datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
+                schedule_dict["all_day"] = "False"
+                schedule_dict["start_time"] = '{0:%H:%M}'.format(
+                    datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
+                schedule_dict["end_time"] = '{0:%H:%M}'.format(
+                    datetime.datetime.strptime(event[1], '%Y-%m-%dT%H:%M:%S+09:00'))
+                schedule_dict["summary"] = event[2]
+                schedule_dict["kind_event"] = class_kind_event(event[2])
+
+            events_list.append(schedule_dict)
+
+        print(events_list)
+
+        return events_list
 
     except HttpError as error:
         print('An error occurred: %s' % error)
         return []
+
+def class_kind_event(event):
+    print(event)
+    return event
 
