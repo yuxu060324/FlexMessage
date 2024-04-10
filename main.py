@@ -12,6 +12,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 import dateutil.parser
 import logging
 from line_global import schedule_start, schedule_end
+import common_global
 
 # GoogleカレンダーのURL
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -22,18 +23,10 @@ LOAD_FILE_PATH = "edit_test.json"
 log_file_name = "project"
 log_file_path = os.path.join(os.path.abspath("."), "log", f'{log_file_name}.log')
 
-
-def getMyLogger(name):
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(log_file_path)
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(levelname)-9s %(asctime)s [%(name)s] %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
-
+# events
+def set_global():
+    logger = common_global.getMyLogger(__name__)
+    globals().update(logger=logger)
 
 # LINEBotのアクセストークンの初期設定
 key_path = os.path.abspath(".\\Key")
@@ -47,16 +40,19 @@ line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
 # main
 def main():
 
-    logger = getMyLogger(__name__)
+    # logger = getMyLogger(__name__)
+    set_global()
     logger.setLevel(logging.DEBUG)
+
+    logger.debug("warning")
 
     # jsonをコントロールするクラスのインスタンス
     jm = JsonManager(logger=logger)
 
     # Googleカレンダーから予定の取得
-    events = get_calendar_event(
-        start_status=schedule_start.TODAY,
-        end_status=schedule_end.ONE_DAY)
+    # events = get_calendar_event(
+    #     start_status=schedule_start.TODAY,
+    #     end_status=schedule_end.ONE_DAY)
     # events = {
     #     ('2024-04-07T09:00:00+09:00', '2024-04-07T10:00:00+09:00', 'test'),
     #     ('2024-04-07T12:00:00+09:00', '2024-04-07T13:00:00+09:00', 'on schedule'),

@@ -26,14 +26,6 @@ def get_calendar_event(start_status, end_status):
     """
 
     events_list = []
-    schedule_dict = {
-        "date": "%Y-%m-%d",
-        "all_day": "True",
-        "start_time": "$start_time",
-        "end_time": "$end_time",
-        "summary": "$summary",
-        "kind_event": "$kind_event"
-    }
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -74,40 +66,75 @@ def get_calendar_event(start_status, end_status):
         ).execute()
         events = events_result.get('items', [])
 
+        # events.keys()
+        # 'kind',       calendar#event
+        # 'etag',       "3425504655088000"
+        # 'id',         57tvj2vnkgqgk6odsgflgjaesc
+        # 'status',     confirmed
+        # 'htmlLink',   https://www.google.com/calendar/event?eid=NTd0dmoydm5rZ3FnazZvZHNnZmxnamFlc2MgYXlhbm91ZS4wMzI1LmFuZG9yYUBt
+        # 'created',    2024-04-07T06:40:06.000Z
+        # 'updated',    2024-04-10T12:32:07.544Z
+        # 'summary',    on schedule
+        # 'creator',    {'email': 'ayanoue.0325.andora@gmail.com', 'self': True}
+        # 'organizer',  {'email': 'ayanoue.0325.andora@gmail.com', 'self': True}
+        # 'start',      {'dateTime': '2024-04-10T08:30:00+09:00', 'timeZone': 'Asia/Tokyo'}
+        #  'end',       {'dateTime': '2024-04-10T09:30:00+09:00', 'timeZone': 'Asia/Tokyo'}
+        #  'iCalUID',   57tvj2vnkgqgk6odsgflgjaesc@google.com
+        #  'sequence',  2
+        #  'reminders', {'useDefault': True}
+        #  'eventType'  default
+
         if not events:
             print('No upcoming events found.')
             return 0
 
-        formatted_events = [(event['start'].get('dateTime', event['start'].get('date')),  # start time or day
-                             event['end'].get('dateTime', event['end'].get('date')),  # end time or day
-                             event['summary']) for event in events]
-        len_event = len(formatted_events)
-        response = f'[イベント{len_event}件]\n'
+        len_event = len(events)
+        print(f'[イベント{len_event}件]')
 
         # データの正規化をする
-        for event in formatted_events:
-            if re.match(r'^\d{4}-\d{2}-\d{2}$', event[0]):
+        for event in events:
+
+            dt = event['start']['dateTime']
+
+            schedule_dict = {
+                "date": "%Y-%m-%d",
+                "all_day": "True",
+                "start_time": "$start_time",
+                "end_time": "$end_time",
+                "summary": "$summary",
+                "description": "$description",
+                "colorId": "$colorId"
+            }
+
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
                 # all day
 
-                schedule_dict["date"] = '{0:%m月%d日}'.format(datetime.datetime.strptime(event[1], '%m-%d'))
+                schedule_dict["date"] = '{0:%m月%d日}'.format(
+                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%d'))
                 schedule_dict["all_day"] = "True"
-                schedule_dict["start_time"] = '-'
-                schedule_dict["end_time"] = '-'
-                schedule_dict["summary"] = event[2]
-                schedule_dict["kind_event"] = class_kind_event(event[2])
+                schedule_dict["start_time"] = '{0:%m月%d日}'.format(
+                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%d'))
+                schedule_dict["end_time"] = '{0:%m月%d日}'.format(
+                    datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%d'))
+                schedule_dict["summary"] = event['summary']
+
+                schedule_dict['description'] = event['description'] if 'description' in event else "-"
+                schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
 
             else:
                 # schedule
 
                 schedule_dict["date"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
+                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
                 schedule_dict["all_day"] = "False"
                 schedule_dict["start_time"] = '{0:%H:%M}'.format(
-                    datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
+                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
                 schedule_dict["end_time"] = '{0:%H:%M}'.format(
-                    datetime.datetime.strptime(event[1], '%Y-%m-%dT%H:%M:%S+09:00'))
-                schedule_dict["summary"] = event[2]
-                schedule_dict["kind_event"] = class_kind_event(event[2])
+                    datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+                schedule_dict["summary"] = event['summary']
+
+                schedule_dict['description'] = event['description'] if 'description' in event else "-"
+                schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
 
             events_list.append(schedule_dict)
 
@@ -118,8 +145,4 @@ def get_calendar_event(start_status, end_status):
     except HttpError as error:
         print('An error occurred: %s' % error)
         return []
-
-def class_kind_event(event):
-    print(event)
-    return event
 
