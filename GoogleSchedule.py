@@ -8,7 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from line_global import schedule_start, schedule_end
+from common_global import schedule_start, schedule_end
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -26,6 +26,8 @@ def get_calendar_event(start_status, end_status):
     """
 
     events_list = []
+    start_date = None
+    end_date = None
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -47,15 +49,23 @@ def get_calendar_event(start_status, end_status):
         # 基準のdatetimeを取得(時間・分・秒・マイクロ秒を0にする)
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)  # 'Z' indicates UTC time
 
-        # 取得するスケジュールの開始と終了
-        if (start_status == schedule_start.TODAY):
-            start = (today + datetime.timedelta(days=0)).isoformat() + 'Z'
-        if (start_status == schedule_start.TOMORROW):
-            start = (today + datetime.timedelta(days=1)).isoformat() + 'Z'
-        if (end_status == schedule_end.ONE_DAY):
-            end = (today + datetime.timedelta(days=2)).isoformat() + 'Z'
-        if (end_status == schedule_end.WEEKLY):
-            end = (today + datetime.timedelta(days=8)).isoformat() + 'Z'
+        # 取得するスケジュールの開始
+        if start_status == schedule_start.TODAY:
+            start_date = today + datetime.timedelta(days=0)
+        elif start_status == schedule_start.TOMORROW:
+            start_date = today + datetime.timedelta(days=1)
+        else:
+            start_date = today + datetime.timedelta(days=0)
+        # 取得するスケジュールの終了時間
+        if end_status == schedule_end.ONE_DAY:
+            end_date = start_date + datetime.timedelta(days=1)
+        elif end_status == schedule_end.WEEKLY:
+            end_date = start_date + datetime.timedelta(days=7)
+        else:
+            end_date = start_date + datetime.timedelta(days=1)
+
+        start = start_date.isoformat() + 'Z'
+        end = end_date.isoformat() + 'Z'
 
         events_result = service.events().list(
             calendarId='primary',
@@ -94,7 +104,11 @@ def get_calendar_event(start_status, end_status):
         # データの正規化をする
         for event in events:
 
-            dt = event['start']['dateTime']
+            dt = event['start'].get('dateTime', event['start'].get('date'))
+
+            if dt == None:
+                print("start_datetime is nothing")
+                return 0
 
             schedule_dict = {
                 "date": "%Y-%m-%d",
@@ -110,12 +124,12 @@ def get_calendar_event(start_status, end_status):
                 # all day
 
                 schedule_dict["date"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%d'))
+                    datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
                 schedule_dict["all_day"] = "True"
                 schedule_dict["start_time"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%d'))
+                    datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
                 schedule_dict["end_time"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%d'))
+                    datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d'))
                 schedule_dict["summary"] = event['summary']
 
                 schedule_dict['description'] = event['description'] if 'description' in event else "-"

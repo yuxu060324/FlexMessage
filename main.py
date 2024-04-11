@@ -11,37 +11,28 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 import dateutil.parser
 import logging
-from line_global import schedule_start, schedule_end
+from common_global import schedule_start, schedule_end
 import common_global
 
-# GoogleカレンダーのURL
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-# 使用するjsonファイル
-LOAD_FILE_PATH = "edit_test.json"
-
-# ログ出力
-log_file_name = "project"
-log_file_path = os.path.join(os.path.abspath("."), "log", f'{log_file_name}.log')
-
 # events
-def set_global():
+def set_global(name_space):
     logger = common_global.getMyLogger(__name__)
-    globals().update(logger=logger)
+    name_space["logger"] = logger
 
-# LINEBotのアクセストークンの初期設定
-key_path = os.path.abspath(".\\Key")
-with open(os.path.join(key_path, 'line_bot_info.json')) as f:
-    line_bot_info = json.load(f)
-LINEBOT_ACCESS_TOKEN = line_bot_info['CHANNEL_ACCESS_TOKEN']
-USER_ID = line_bot_info['USER_ID']
-line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
+# # LINEBotのアクセストークンの初期設定
+# key_path = os.path.abspath(".\\Key")
+# with open(os.path.join(key_path, 'line_bot_info.json')) as f:
+#     line_bot_info = json.load(f)
+# LINEBOT_ACCESS_TOKEN = line_bot_info['CHANNEL_ACCESS_TOKEN']
+# USER_ID = line_bot_info['USER_ID']
+# line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
 
 
 # main
 def main():
 
     # logger = getMyLogger(__name__)
-    set_global()
+    set_global(globals())
     logger.setLevel(logging.DEBUG)
 
     logger.debug("warning")
@@ -50,14 +41,18 @@ def main():
     jm = JsonManager(logger=logger)
 
     # Googleカレンダーから予定の取得
-    # events = get_calendar_event(
-    #     start_status=schedule_start.TODAY,
-    #     end_status=schedule_end.ONE_DAY)
-    # events = {
-    #     ('2024-04-07T09:00:00+09:00', '2024-04-07T10:00:00+09:00', 'test'),
-    #     ('2024-04-07T12:00:00+09:00', '2024-04-07T13:00:00+09:00', 'on schedule'),
-    #     ('2024-04-07T18:00:00+09:00', '2024-04-07T20:00:00+09:00', 'now on time'),
-    # }
+    events = get_calendar_event(
+        start_status=schedule_start.TODAY,
+        end_status=schedule_end.ONE_DAY)
+
+    if events == 0:
+        logger.warning("Stop get_calendar_event")
+
+    events = {
+        ('2024-04-07T09:00:00+09:00', '2024-04-07T10:00:00+09:00', 'test'),
+        ('2024-04-07T12:00:00+09:00', '2024-04-07T13:00:00+09:00', 'on schedule'),
+        ('2024-04-07T18:00:00+09:00', '2024-04-07T20:00:00+09:00', 'now on time'),
+    }
 
     # if events == 0:
     #     # サンプルのメッセージを出力

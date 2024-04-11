@@ -1,6 +1,7 @@
 import os, re, datetime
 import json
 from json_global import HOME_ABSPATH, HEADER_FILE_PATH, FOOTER_FILE_PATH, ICON_EVENT_FILE, ICON_WEATHER_FOLDER_PATH
+from json_global import BODY_EVENT_FILE_PATH, BODY_SCHEDULE_FILE_PATH
 from json_global import DAY_OF_WEEK_LIST, ICON_EVENT_FILE, ICON_WEATHER_FILE
 
 # boxで囲むだけの関数
@@ -81,9 +82,6 @@ class JsonManager():
 
         return contents
 
-    def get_setting_filepath(self):
-        return self.massage_json_path
-
     # Flex MessageのHeader部のパッケージ
     def package_header(self, weather="sunny"):
 
@@ -112,33 +110,41 @@ class JsonManager():
 
         self.logger.info("Finished set up header")
 
-    def package_event(self):
+    def package_event(self, event):
 
         self.logger.info("Finished set up body_event")
 
-    def package_schedule(self):
+    def package_schedule(self, event):
 
         self.logger.info("Finished set up body_event")
 
     # Flex MessageのBody部のパッケージ
     def package_body(self, schedule_list):
 
-        self.package_event()
-        self.package_schedule()
-
         for event in schedule_list:
-            print(event)
+            if event['all_day'] == "True":
+                self.package_event(event)
+            elif event['all_day'] == "False":
+                self.package_schedule(event)
+            else:
+                self.logger.warning("\"all_day\" is Unexpected parameters")
+                return -1
 
+        # 予定なし
         if not self._event and not self._schedule:
             self._body = pack_vertical([pack_text("予定なし")])
             return
+        # 終日イベントのみ
         elif not self._event:
-            self._body = pack_vertical(self._schedule)
+            self._body = pack_vertical([self._schedule])
             return
+        # 時間範囲のあるイベントのみ
         elif not self._schedule:
-            self._body = pack_vertical(self._event)
+            self._body = pack_vertical([self._event])
             return
+        # どちらも
         else:
+            self._body = pack_vertical([self._event, self._schedule])
             self.logger.warning("unexpected event")
             exit(-1)
 
