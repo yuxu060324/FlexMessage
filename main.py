@@ -41,12 +41,12 @@ def main():
     jm = JsonManager(logger=logger)
 
     # Googleカレンダーから予定の取得
-    events = get_calendar_event(
-        start_status=schedule_start.TODAY,
-        end_status=schedule_end.ONE_DAY)
-
-    if events == 0:
-        logger.warning("Stop get_calendar_event")
+    # events = get_calendar_event(
+    #     start_status=schedule_start.TODAY,
+    #     end_status=schedule_end.ONE_DAY)
+    #
+    # if events == 0:
+    #     logger.warning("Stop get_calendar_event")
 
     events = {
         ('2024-04-07T09:00:00+09:00', '2024-04-07T10:00:00+09:00', 'test'),
@@ -54,21 +54,19 @@ def main():
         ('2024-04-07T18:00:00+09:00', '2024-04-07T20:00:00+09:00', 'now on time'),
     }
 
-    # if events == 0:
-    #     # サンプルのメッセージを出力
-    #     payload = jm.package_message_none()
-    #     print(payload)
-    #     return
-    #
-    # else:
-    #
-    #     print(events)
-    #
-    #     jm.package_header()
-    #     jm.package_footer()
-    #     jm.package_body(schedule_list=events)
-    #     payload = jm.package_message()
-    #     print(payload)
+    if events is None:
+        # サンプルのメッセージを出力
+        payload = jm.package_message_none()
+        print(payload)
+        return
+
+    else:
+        # eventsのpackage
+        jm.package_header()
+        jm.package_footer()
+        jm.package_body(schedule_list=events)
+        payload = jm.package_message()
+        print(payload)
 
     # # FlexMessageを送信(まだlineは送らない)
     # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)

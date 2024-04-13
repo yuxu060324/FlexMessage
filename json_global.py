@@ -16,27 +16,8 @@ icon_folder_name = "icon_image"
 event_icon_folder_name = "event"
 weather_icon_folder_name = "weather"
 
-# JSONファイルで設定するパラメータのリスト
-JSON_PARAMETERS = {
-    "header": {
-        "date": "$date",
-        "weather": "$weather"
-    },
-    "body_event": {
-        "date": "$date",
-        "summary": "$summary"
-    },
-    "body_schedule": {
-        "date": "$date",
-        "summary": "$summary"
-    },
-    "footer": {
-        "url": "$url"
-    }
-}
-
 # -------------------------------
-# 他ファイルから参照する変数
+# jsonControl.py から参照する変数
 # -------------------------------
 
 HEADER_FILE_PATH = os.path.join(HOME_ABSPATH, message_template_folder_name, header_file_name)
@@ -45,6 +26,24 @@ BODY_SCHEDULE_FILE_PATH = os.path.join(HOME_ABSPATH, message_template_folder_nam
 FOOTER_FILE_PATH = os.path.join(HOME_ABSPATH, message_template_folder_name, footer_file_name)
 ICON_EVENT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, event_icon_folder_name)
 ICON_WEATHER_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, weather_icon_folder_name)
+
+
+# -------------------------------
+# Header
+# -------------------------------
+
+# 天気アイコンのファイルパス
+ICON_WEATHER_FILE = {
+    "sunny": "sunny.png",
+    "rain": "rain.png",
+    "cloudy": "cloudy.png",
+    "snow": "snow.png",
+}
+
+
+# -------------------------------
+# Body
+# -------------------------------
 
 # イベントアイコンのファイルパス
 ICON_EVENT_FILE = {
@@ -57,11 +56,9 @@ ICON_EVENT_FILE = {
     "other": "other.png",
 }
 
-# 天気アイコンのファイルパス
-ICON_WEATHER_FILE = {
-    "sunny": "sunny.png",
-    "rain": "rain.png",
-    "cloudy": "cloudy.png",
-    "snow": "snow.png",
-}
 
+# -------------------------------
+# Footer
+# -------------------------------
+
+FOOTER_URL = "https://google.com/"

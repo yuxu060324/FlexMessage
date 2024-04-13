@@ -1,22 +1,82 @@
 import os, re, datetime
 import json
+from typing import Dict, Union, Any
+
 from json_global import HOME_ABSPATH, HEADER_FILE_PATH, FOOTER_FILE_PATH, ICON_EVENT_FILE, ICON_WEATHER_FOLDER_PATH
 from json_global import BODY_EVENT_FILE_PATH, BODY_SCHEDULE_FILE_PATH
 from json_global import DAY_OF_WEEK_LIST, ICON_EVENT_FILE, ICON_WEATHER_FILE
 
+
 # boxで囲むだけの関数
-def pack_vertical(arr):
-    return {"type": "box", "layout": "vertical", "contents": arr}
-def pack_horizontal(arr):
-    return {"type": "box", "layout": "horizontal", "contents": arr}
+def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
+                  paddingAll=None, backgroundColor=None, offsetStart=None):
+    pattern = {"type": "box", "layout": "vertical", "contents": arr}
 
-def pack_text(str, url=None):
-    if url == None:
-        return {"type": "text", "text": str}
-    else:
-        return {"type": "text", "text": str, "action": {"type": "url", "label": "action", "url": url}}
+    if margin is not None:
+        pattern.update(margin=margin)
+    if paddingAll is not None:
+        pattern.update(paddingAll=paddingAll)
+    if backgroundColor is not None:
+        pattern.update(backgroundColor=backgroundColor)
+    if spacing is not None:
+        pattern.update(spacing=spacing)
+    if width is not None:
+        pattern.update(width=width)
+    if height is not None:
+        pattern.update(height=height)
+    if offsetStart is not None:
+        pattern.update(offsetStart=offsetStart)
 
-class JsonManager():
+    return pattern
+
+
+def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None,
+                    paddingAll=None, backgroundColor=None, offsetStart=None):
+    pattern = {"type": "box", "layout": "horizontal", "contents": arr}
+
+    if margin is not None:
+        pattern.update(margin=margin)
+    if paddingAll is not None:
+        pattern.update(paddingAll=paddingAll)
+    if backgroundColor is not None:
+        pattern.update(backgroundColor=backgroundColor)
+    if spacing is not None:
+        pattern.update(spacing=spacing)
+    if width is not None:
+        pattern.update(width=width)
+    if height is not None:
+        pattern.update(height=height)
+    if offsetStart is not None:
+        pattern.update(offsetStart=offsetStart)
+
+    return pattern
+
+
+def pack_text(str, color=None, size=None, flex=None, url=None, weight=None):
+    pattern = {"type": "text", "text": str}
+    if color is not None:
+        pattern.update(color=color)
+    if size is not None:
+        pattern.update(size=size)
+    if flex is not None:
+        pattern.update(flex=flex)
+    if url is not None:
+        pattern.update(action={"type": "url", "label": "action", "url": url})
+    if weight is not None:
+        pattern.update(weight=weight)
+
+    return pattern
+
+
+def pack_image(path):
+    pattern = {"type": "image", "url": path}
+    return pattern
+
+def pack_separator():
+    return {"type": "separator", "margin": "lg"}
+
+
+class JsonManager:
 
     def __init__(self, logger):
 
@@ -26,8 +86,8 @@ class JsonManager():
         # for message
         self._message = ""
         self._header = ""
-        self._event = []
-        self._schedule = []
+        self._event = {}
+        self._schedule = {}
         self._body = ""
         self._footer = ""
 
@@ -42,45 +102,45 @@ class JsonManager():
 
         return payload
 
-    def make_one_schedule_contents(self, type, schedule):
-
-        if re.match(r'^\d{4}-\d{2}-\d{2}$', schedule[0]):
-
-            start_date = '{0:%m月%d日}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%d'))
-
-            contents = [
-                {
-                    "type": type,
-                    "text": '{0} All Day'.format(start_date),
-                    "size": "sm"
-                },
-                {
-                    "type": type,
-                    "text": schedule[2],
-                    "size": "sm"
-                }
-            ]
-
-        else:
-
-            start_time = '{0:%m月%d日 %H:%M}'.format(
-                datetime.datetime.strptime(schedule[0], '%Y-%m-%dT%H:%M:%S+09:00'))
-            end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%dT%H:%M:%S+09:00'))
-
-            contents = [
-                {
-                    "type": type,
-                    "text": '{0} ~ {1}'.format(start_time, end_time),
-                    "size": "sm"
-                },
-                {
-                    "type": type,
-                    "text": schedule[2],
-                    "size": "sm"
-                }
-            ]
-
-        return contents
+    # def make_one_schedule_contents(self, type, schedule):
+    #
+    #     if re.match(r'^\d{4}-\d{2}-\d{2}$', schedule[0]):
+    #
+    #         start_date = '{0:%m月%d日}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%d'))
+    #
+    #         contents = [
+    #             {
+    #                 "type": type,
+    #                 "text": '{0} All Day'.format(start_date),
+    #                 "size": "sm"
+    #             },
+    #             {
+    #                 "type": type,
+    #                 "text": schedule[2],
+    #                 "size": "sm"
+    #             }
+    #         ]
+    #
+    #     else:
+    #
+    #         start_time = '{0:%m月%d日 %H:%M}'.format(
+    #             datetime.datetime.strptime(schedule[0], '%Y-%m-%dT%H:%M:%S+09:00'))
+    #         end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%dT%H:%M:%S+09:00'))
+    #
+    #         contents = [
+    #             {
+    #                 "type": type,
+    #                 "text": '{0} ~ {1}'.format(start_time, end_time),
+    #                 "size": "sm"
+    #             },
+    #             {
+    #                 "type": type,
+    #                 "text": schedule[2],
+    #                 "size": "sm"
+    #             }
+    #         ]
+    #
+    #     return contents
 
     # Flex MessageのHeader部のパッケージ
     def package_header(self, weather="sunny"):
@@ -95,7 +155,7 @@ class JsonManager():
         date_str = date_today.strftime("%m 月 %d 日 ( " + date_wod + " )")
 
         # 天気アイコンのファイルパス
-        weather_file_path = "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png" # os.path.join(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
+        weather_file_path = "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png"  # os.path.join(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
         # if not os.path.isfile(weather_file_path):
         #     self.logger.warning(f'{weather_file_path} does not exist')
         #     return
@@ -103,10 +163,28 @@ class JsonManager():
         self._header = self.load_json(HEADER_FILE_PATH)
         self.logger.info("Finished load header_file")
 
-        # 日付の設定
-        self._header['contents'][0]['contents'][1]['text'] = date_str
-        # 天気アイコンの設定
-        self._header['contents'][1]['contents'][0]['url'] = weather_file_path
+        # 日付のboxの追加
+        date_box = pack_vertical([
+            pack_text("DATE", color="#ffffff66", size="sm"),
+            pack_text(date_str, color="#ffffff", size="xl", flex=4, weight="bold")
+        ])
+
+        # 天気アイコンのboxの追加
+        weather_box = pack_vertical(
+            [pack_image(path=weather_file_path)],
+            margin="none",
+            spacing="none",
+            width="60px",
+            height="60px"
+        )
+
+        self._header = pack_horizontal(
+            [date_box, weather_box],
+            paddingAll="20px",
+            backgroundColor="#0367D3",
+            spacing='md',
+            height="90px"
+        )
 
         self.logger.info("Finished set up header")
 
@@ -131,22 +209,21 @@ class JsonManager():
                 return -1
 
         # 予定なし
-        if not self._event and not self._schedule:
+        if self._event.get("type", False) and self._schedule.get("type", False):
             self._body = pack_vertical([pack_text("予定なし")])
-            return
         # 終日イベントのみ
-        elif not self._event:
+        elif self._event.get("type", False):
             self._body = pack_vertical([self._schedule])
-            return
         # 時間範囲のあるイベントのみ
-        elif not self._schedule:
+        elif self._schedule.get("type", False):
             self._body = pack_vertical([self._event])
-            return
         # どちらも
         else:
-            self._body = pack_vertical([self._event, self._schedule])
-            self.logger.warning("unexpected event")
-            exit(-1)
+            self._body = pack_vertical(
+                [self._event, pack_separator(), self._schedule],
+                margin="none",
+                paddingAll="20px"
+            )
 
         return 0
 
