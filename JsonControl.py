@@ -75,6 +75,9 @@ def pack_image(path):
 def pack_separator():
     return {"type": "separator", "margin": "lg"}
 
+def pack_filter():
+    return {"type": "filter"}
+
 
 class JsonManager:
 
@@ -86,61 +89,21 @@ class JsonManager:
         # for message
         self._message = ""
         self._header = ""
-        self._event = {}
-        self._schedule = {}
+        self._event_all_day = {}
+        self._event_schedule = {}
         self._body = ""
         self._footer = ""
 
     def load_json(self, path):
 
         if not os.path.isfile(path):
-            print("This file_path does not exist")
+            self.logger.warning(f'{path} does not exist')
             return
 
         with open(path) as f:
             payload = json.load(f)
 
         return payload
-
-    # def make_one_schedule_contents(self, type, schedule):
-    #
-    #     if re.match(r'^\d{4}-\d{2}-\d{2}$', schedule[0]):
-    #
-    #         start_date = '{0:%m月%d日}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%d'))
-    #
-    #         contents = [
-    #             {
-    #                 "type": type,
-    #                 "text": '{0} All Day'.format(start_date),
-    #                 "size": "sm"
-    #             },
-    #             {
-    #                 "type": type,
-    #                 "text": schedule[2],
-    #                 "size": "sm"
-    #             }
-    #         ]
-    #
-    #     else:
-    #
-    #         start_time = '{0:%m月%d日 %H:%M}'.format(
-    #             datetime.datetime.strptime(schedule[0], '%Y-%m-%dT%H:%M:%S+09:00'))
-    #         end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(schedule[1], '%Y-%m-%dT%H:%M:%S+09:00'))
-    #
-    #         contents = [
-    #             {
-    #                 "type": type,
-    #                 "text": '{0} ~ {1}'.format(start_time, end_time),
-    #                 "size": "sm"
-    #             },
-    #             {
-    #                 "type": type,
-    #                 "text": schedule[2],
-    #                 "size": "sm"
-    #             }
-    #         ]
-    #
-    #     return contents
 
     # Flex MessageのHeader部のパッケージ
     def package_header(self, weather="sunny"):
@@ -152,7 +115,7 @@ class JsonManager:
         # 日付の文字列
         date_today = datetime.datetime.now()
         date_wod = DAY_OF_WEEK_LIST[date_today.weekday()]
-        date_str = date_today.strftime("%m 月 %d 日 ( " + date_wod + " )")
+        date_str = date_today.strftime("%m / %d ( " + date_wod + " )")
 
         # 天気アイコンのファイルパス
         weather_file_path = "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png"  # os.path.join(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
@@ -188,41 +151,90 @@ class JsonManager:
 
         self.logger.info("Finished set up header")
 
-    def package_event(self, event):
+    def package_event_all_body(self, events):
+
+        title_box = pack_horizontal(
+            [pack_text("終日", size="lg")],
+            spacing="lg",
+            margin="xl",
+        )
+        temp_event = []
+
+        for event in events:
+            temp_event.append(pack_horizontal(
+                [
+                    pack_text(event['start_time']),
+                #     icon_event
+                    pack_text(event['summary'])
+                ]
+            ))
+
+        event_detail = pack_vertical(temp_event)
+
+        self._event_all_day = pack_vertical([title_box, event_detail])
 
         self.logger.info("Finished set up body_event")
 
-    def package_schedule(self, event):
+    def package_event_schedule(self, events):
+
+        title_box = pack_horizontal(
+            [pack_text("スケジュール", size="lg")],
+            spacing="lg",
+            margin="xl",
+        )
+        temp_event = []
+
+        for event in events:
+            temp_event.append(pack_horizontal(
+                [
+                    pack_text(event['start_time']),
+                #     icon_event
+                    pack_text(event['summary'])
+                ]
+            ))
+
+        event_detail = pack_vertical(temp_event)
+
+        self._event_schedule = pack_vertical([title_box, event_detail])
+        self.logger.debug(self._event_schedule)
 
         self.logger.info("Finished set up body_event")
 
     # Flex MessageのBody部のパッケージ
     def package_body(self, schedule_list):
 
+        event_all_day_list = []
+        event_schedule_list = []
+
         for event in schedule_list:
             if event['all_day'] == "True":
-                self.package_event(event)
+                event_all_day_list.append(event)
             elif event['all_day'] == "False":
-                self.package_schedule(event)
+                event_schedule_list.append(event)
             else:
                 self.logger.warning("\"all_day\" is Unexpected parameters")
                 return -1
 
+        if event_all_day_list:
+            self.package_event_all_body(event_all_day_list)
+        if event_schedule_list:
+            self.package_event_schedule(event_schedule_list)
+
         # 予定なし
-        if self._event.get("type", False) and self._schedule.get("type", False):
+        if not 'type' in self._event_all_day.keys() or not 'type' in self._event_schedule:
             self._body = pack_vertical([pack_text("予定なし")])
         # 終日イベントのみ
-        elif self._event.get("type", False):
-            self._body = pack_vertical([self._schedule])
+        elif not 'type' in self._event_all_day.keys():
+            self._body = pack_vertical([self._event_schedule])
         # 時間範囲のあるイベントのみ
-        elif self._schedule.get("type", False):
-            self._body = pack_vertical([self._event])
+        elif not 'type' in self._event_schedule.keys():
+            self._body = pack_vertical([self._event_all_day])
         # どちらも
         else:
             self._body = pack_vertical(
-                [self._event, pack_separator(), self._schedule],
+                [self._event_all_day, pack_separator(), self._event_schedule],
                 margin="none",
-                paddingAll="20px"
+                paddingAll="15px"
             )
 
         return 0

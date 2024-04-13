@@ -67,6 +67,9 @@ def get_calendar_event(start_status, end_status):
         start = start_date.isoformat() + 'Z'
         end = end_date.isoformat() + 'Z'
 
+        print(start)
+        print(end)
+
         events_result = service.events().list(
             calendarId='primary',
             timeMin=start,

@@ -33,9 +33,6 @@ def main():
 
     # logger = getMyLogger(__name__)
     set_global(globals())
-    logger.setLevel(logging.DEBUG)
-
-    logger.debug("warning")
 
     # jsonをコントロールするクラスのインスタンス
     jm = JsonManager(logger=logger)
@@ -48,11 +45,12 @@ def main():
     # if events == 0:
     #     logger.warning("Stop get_calendar_event")
 
-    events = {
-        ('2024-04-07T09:00:00+09:00', '2024-04-07T10:00:00+09:00', 'test'),
-        ('2024-04-07T12:00:00+09:00', '2024-04-07T13:00:00+09:00', 'on schedule'),
-        ('2024-04-07T18:00:00+09:00', '2024-04-07T20:00:00+09:00', 'now on time'),
-    }
+    events = [
+        {'date': '04月13日', 'all_day': 'True', 'start_time': '04月13日', 'end_time': '04月14日', 'summary': 'マイナンバー発行', 'description': '-', 'colorId': '-'},
+        {'date': '04月13日', 'all_day': 'True', 'start_time': '04月13日', 'end_time': '04月14日', 'summary': '住民票発行', 'description': '-', 'colorId': '-'},
+        {'date': '04月13日', 'all_day': 'False', 'start_time': '10:00', 'end_time': '11:00', 'summary': 'on schedule', 'description': '僕の見てた', 'colorId': '11'},
+        {'date': '04月13日', 'all_day': 'False', 'start_time': '21:45', 'end_time': '23:45', 'summary': 'now on time', 'description': 'sdfdsg', 'colorId': '-'}
+    ]
 
     if events is None:
         # サンプルのメッセージを出力
@@ -66,7 +64,11 @@ def main():
         jm.package_footer()
         jm.package_body(schedule_list=events)
         payload = jm.package_message()
-        print(payload)
+
+        # jsonファイルに書き込む
+        path = ".//FlexMessageDictionary//body_event.json"
+        with open(path, "w") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 
     # # FlexMessageを送信(まだlineは送らない)
     # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
