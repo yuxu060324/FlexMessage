@@ -145,8 +145,9 @@ class JsonManager:
 
         icon_file_path = ""
 
-        if not icon_kind == "weather" or not icon_kind == "event":
+        if icon_kind != "weather" and icon_kind != "event":
             self.logger.warning(f'{icon_kind} is unexpected')
+            return
 
         if icon_kind == "weather":
             if icon_file_kind in ICON_WEATHER_FILE:
@@ -165,7 +166,7 @@ class JsonManager:
             return icon_file_path
         else:
             self.logger.warning(f'{icon_file_path} does not exist')
-            return -1
+            return
 
     # Flex MessageのHeader部のパッケージ
     def package_header(self, weather="sunny"):
