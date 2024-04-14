@@ -38,6 +38,7 @@ ICON_WEATHER_FILE = {
     "rain": "rain.png",
     "cloudy": "cloudy.png",
     "snow": "snow.png",
+    "other": "sunny.png"
 }
 
 
@@ -56,9 +57,25 @@ ICON_EVENT_FILE = {
     "other": "other.png",
 }
 
+EVENT_KIND = {
+    "1": "eating",
+    "2": "other",
+    "3": "commu",
+    "4": "other",
+    "5": "game",
+    "6": "event",
+    "7": "other",
+    "8": "other",
+    "9": "hospital",
+    "10": "other",
+    "11": "task",
+    "-": "other"
+}
+
 
 # -------------------------------
 # Footer
 # -------------------------------
 
 FOOTER_URL = "https://google.com/"
+GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/r'

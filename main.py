@@ -52,23 +52,16 @@ def main():
         {'date': '04月13日', 'all_day': 'False', 'start_time': '21:45', 'end_time': '23:45', 'summary': 'now on time', 'description': 'sdfdsg', 'colorId': '-'}
     ]
 
-    if events is None:
-        # サンプルのメッセージを出力
-        payload = jm.package_message_none()
-        print(payload)
-        return
+    # eventsのpackage
+    jm.package_header()
+    jm.package_footer()
+    jm.package_body(schedule_list=events)
+    payload = jm.package_message()
 
-    else:
-        # eventsのpackage
-        jm.package_header()
-        jm.package_footer()
-        jm.package_body(schedule_list=events)
-        payload = jm.package_message()
-
-        # jsonファイルに書き込む
-        path = ".//FlexMessageDictionary//body_event.json"
-        with open(path, "w") as f:
-            json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
+    # jsonファイルに書き込む(Debug用)
+    path = ".//FlexMessageDictionary//body_event.json"
+    with open(path, "w") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 
     # # FlexMessageを送信(まだlineは送らない)
     # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
