@@ -9,8 +9,7 @@ from JsonControl import JsonManager
 from GoogleSchedule import get_calendar_event
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
-import dateutil.parser
-import logging
+from flask import Flask, abort, request
 from common_global import schedule_start, schedule_end
 import common_global
 
@@ -19,14 +18,13 @@ def set_global(name_space):
     logger = common_global.getMyLogger(__name__)
     name_space["logger"] = logger
 
-# # LINEBotのアクセストークンの初期設定
-# key_path = os.path.abspath(".\\Key")
-# with open(os.path.join(key_path, 'line_bot_info.json')) as f:
-#     line_bot_info = json.load(f)
-# LINEBOT_ACCESS_TOKEN = line_bot_info['CHANNEL_ACCESS_TOKEN']
-# USER_ID = line_bot_info['USER_ID']
-# line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
-
+# LINEBotのアクセストークンの初期設定
+key_path = os.path.abspath(".\\Key")
+with open(os.path.join(key_path, 'line_bot_info.json')) as f:
+    line_bot_info = json.load(f)
+LINEBOT_ACCESS_TOKEN = line_bot_info['CHANNEL_ACCESS_TOKEN']
+USER_ID = line_bot_info['USER_ID']
+line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
 
 # main
 def main():
@@ -63,11 +61,22 @@ def main():
     with open(path, "w") as f:
         json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 
-    # # FlexMessageを送信(まだlineは送らない)
-    # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-    # # ここでlineに通知が行く
-    # line_bot_api.push_message(USER_ID, messages=container_obj)
+    # FlexMessageを送信(まだlineは送らない)
+    container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+    # ここでlineに通知が行く
+    line_bot_api.push_message(USER_ID, messages=container_obj)
 
 
 if __name__ == "__main__":
     main()
+
+'''
+
+flask用のsample code
+
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
+'''

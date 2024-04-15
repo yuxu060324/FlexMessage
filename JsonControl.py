@@ -5,12 +5,12 @@ from typing import Dict, Union, Any
 from json_global import HOME_ABSPATH, HEADER_FILE_PATH, FOOTER_FILE_PATH, ICON_EVENT_FOLDER_PATH, ICON_WEATHER_FOLDER_PATH
 from json_global import BODY_EVENT_FILE_PATH, BODY_SCHEDULE_FILE_PATH, EVENT_KIND
 from json_global import DAY_OF_WEEK_LIST, ICON_EVENT_FILE, ICON_WEATHER_FILE
-from json_global import GOOGLE_CALENDAR_URL
+from json_global import FOOTER_URL
 
 
 # boxで囲むだけの関数
 def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
-                  paddingAll=None, backgroundColor=None, offsetStart=None, justifyContent=None,
+                  paddingAll=None, paddingTop=None, backgroundColor=None, offsetStart=None, justifyContent=None,
                   cornerRadius=None, borderColor=None, borderWidth=None, alignItems=None, flex=None):
     pattern = {"type": "box", "layout": "vertical", "contents": arr}
 
@@ -18,6 +18,8 @@ def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
         pattern.update(margin=margin)
     if paddingAll is not None:
         pattern.update(paddingAll=paddingAll)
+    if paddingTop is not None:
+        pattern.update(paddingTop=paddingTop)
     if backgroundColor is not None:
         pattern.update(backgroundColor=backgroundColor)
     if spacing is not None:
@@ -47,7 +49,7 @@ def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
 
 
 def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None,
-                    paddingAll=None, paddingStart=None, backgroundColor=None, offsetStart=None):
+                    paddingAll=None, paddingStart=None, backgroundColor=None, offsetStart=None, alignItems=None):
     pattern = {"type": "box", "layout": "horizontal", "contents": arr}
 
     if margin is not None:
@@ -66,6 +68,8 @@ def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=Non
         pattern.update(height=height)
     if offsetStart is not None:
         pattern.update(offsetStart=offsetStart)
+    if alignItems is not None:
+        pattern.update(alignItems=alignItems)
 
     return pattern
 
@@ -220,7 +224,8 @@ class JsonManager:
                     pack_circle(width="8px", hegiht="8px"),
                     pack_text(event['summary'], size="sm", margin="md")
                 ],
-                paddingStart="lg"
+                paddingStart="lg",
+                alignItems="center"
             ))
 
         event_detail = pack_vertical(temp_event)
@@ -247,17 +252,20 @@ class JsonManager:
                 [
                     pack_text(event['start_time'], flex=0, size="sm"),
                     pack_vertical(
-                        [pack_image(self.get_icon(icon_kind="event", icon_file_kind="task"))],
-                        alignItems="center"
+                        [pack_image("https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png")],
+                        alignItems="center",
+                        width="35px",
+                        height="25px"
                     ),
                     pack_text(event['summary'], size="sm", margin="md")
                 ],
-                paddingStart="lg"
+                paddingStart="lg",
+                alignItems="center"
             ))
 
         event_detail = pack_vertical(temp_event)
 
-        self._event_schedule = pack_vertical([title_box, event_detail])
+        self._event_schedule = pack_vertical([title_box, event_detail], paddingTop="md")
 
         self.logger.debug("Finished set up body_event")
 
@@ -312,7 +320,7 @@ class JsonManager:
     def package_footer(self):
 
         self._footer = pack_vertical(
-            [pack_text("Google Calendar", url=GOOGLE_CALENDAR_URL)]
+            [pack_text("Google Calendar", url=FOOTER_URL)]
         )
 
         if self._footer is None:
