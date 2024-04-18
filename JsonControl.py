@@ -362,3 +362,7 @@ class JsonManager:
         self.logger.info("Set up sample_message")
 
         return self._message
+
+    # 一週間のスケジュールを出力する用(cursolで日にちごとにメッセージを作成して横並びに表示する)
+    def package_cursol_message(self):
+        self.logger.debug("call package_cursol_message")
