@@ -8,19 +8,9 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from common_global import schedule_start, schedule_end
-
+from common_global import *
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-
-class GoogleAPIManager():
-
-    def __init__(self, logger):
-
-
-
-        self.logger = logger
-
 
 def get_calendar_event(start_status, end_status):
     """Shows basic usage of the Google Calendar API.
@@ -69,8 +59,8 @@ def get_calendar_event(start_status, end_status):
         start = start_date.isoformat() + 'Z'
         end = end_date.isoformat() + 'Z'
 
-        print(start)
-        print(end)
+        logger.debug(f'Start_time of getting user schedule: {start}')
+        logger.debug(f'End_time of getting user schedule: {end}')
 
         events_result = service.events().list(
             calendarId='primary',
@@ -100,11 +90,11 @@ def get_calendar_event(start_status, end_status):
         #  'eventType'  default
 
         if not events:
-            print('No upcoming events found.')
+            logger.info('No upcoming events found.')
             return 0
 
         len_event = len(events)
-        print(f'[イベント{len_event}件]')
+        logger.info(f'Number getting event: {len_event}')
 
         # データの正規化をする
         for event in events:
@@ -112,7 +102,7 @@ def get_calendar_event(start_status, end_status):
             dt = event['start'].get('dateTime', event['start'].get('date'))
 
             if dt == None:
-                print("start_datetime is nothing")
+                logger.warning("Event does not include \"start_dateTime\"")
                 return 0
 
             schedule_dict = {
@@ -157,11 +147,11 @@ def get_calendar_event(start_status, end_status):
 
             events_list.append(schedule_dict)
 
-        print(events_list)
+        logger.info(events_list)
 
         return events_list
 
     except HttpError as error:
-        print('An error occurred: %s' % error)
+        logger.warning('An error occurred: %s' % error)
         return []
 

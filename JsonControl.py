@@ -1,11 +1,7 @@
 import os, re, datetime
 import json
 from typing import Dict, Union, Any
-
-from json_global import HOME_ABSPATH, HEADER_FILE_PATH, FOOTER_FILE_PATH, ICON_EVENT_FOLDER_PATH, ICON_WEATHER_FOLDER_PATH
-from json_global import BODY_EVENT_FILE_PATH, BODY_SCHEDULE_FILE_PATH, EVENT_KIND
-from json_global import DAY_OF_WEEK_LIST, ICON_EVENT_FILE, ICON_WEATHER_FILE
-from json_global import FOOTER_URL
+from json_global import *
 
 
 # boxで囲むだけの関数
@@ -74,7 +70,7 @@ def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=Non
     return pattern
 
 
-def pack_text(str, color=None, size=None, flex=None, url=None, weight=None, margin=None):
+def pack_text(str, color=None, size=None, flex=None, url=None, weight=None, margin=None, decoration=None):
     pattern = {"type": "text", "text": str}
     if color is not None:
         pattern.update(color=color)
@@ -88,6 +84,8 @@ def pack_text(str, color=None, size=None, flex=None, url=None, weight=None, marg
         pattern.update(weight=weight)
     if margin is not None:
         pattern.update(margin=margin)
+    if decoration is not None:
+        pattern.update(decoration=decoration)
 
     return pattern
 
@@ -170,10 +168,10 @@ class JsonManager:
             return icon_file_path
         else:
             self.logger.warning(f'{icon_file_path} does not exist')
-            return
+            return -1
 
     # Flex MessageのHeader部のパッケージ
-    def package_header(self, weather="sunny"):
+    def package_header(self, date, weather="sunny"):
 
         # 日付の文字列
         date_today = datetime.datetime.now()
@@ -247,6 +245,12 @@ class JsonManager:
                 event_kind = EVENT_KIND[event['colorId']]
             else:
                 self.logger.warning("events does not include \"colorId\"")
+                return -1
+
+            icon_path = self.get_icon(icon_kind="event", icon_file_kind=event_kind)
+            if icon_path == -1:
+                self.logger.warning(f'{event_kind} does not include in \"ICON_WEATHER_FILE\"')
+                return -1
 
             temp_event.append(pack_horizontal(
                 [
@@ -291,9 +295,16 @@ class JsonManager:
 
         # 予定なし
         if 'type' not in self._event_all_day.keys() or 'type' not in self._event_schedule:
-            body_event_list = [pack_text("予定なし")]
+            self._body = pack_vertical(
+                [pack_text("予定なし", weight="bold", size="xl", color="#0000a0")],
+                paddingAll="lg",
+                margin="lg",
+                alignItems="center"
+            )
+            return 0
+
         # 終日イベントのみ
-        elif 'type' not in self._event_all_day.keys():
+        if 'type' not in self._event_all_day.keys():
             body_event_list = [self._event_schedule]
         # 時間範囲のあるイベントのみ
         elif 'type' not in self._event_schedule.keys():
@@ -320,7 +331,7 @@ class JsonManager:
     def package_footer(self):
 
         self._footer = pack_vertical(
-            [pack_text("Google Calendar", url=FOOTER_URL)]
+            [pack_text("\"Google Calendar\" を開く", url=FOOTER_URL, decoration="underline", color="#0000ff")]
         )
 
         if self._footer is None:
@@ -329,18 +340,22 @@ class JsonManager:
         self.logger.debug("Finished set up footer")
 
     # Flex Messageのパッケージ
-    def package_message(self):
+    def package_message(self, events_list):
 
-        # Bodyがない場合はエラー
-        if "type" not in self._body:
-            self.logger.warning("Do call this module before \"package_body\"")
+        self.logger.debug(events_list)
+
+        if "start_date" not in events_list:
+            self.logger.warning("\"events_list\" is empty")
             return -1
 
-        # HeaderとFooterが無い場合はパッケージを行う
-        if "type" not in self._header:
-            self.package_header()
-        if "type" not in self._footer:
-            self.package_footer()
+        self.package_header(date=events_list['start_date'])
+        self.package_body(schedule_list=events_list['schedule_list'])
+        self.package_footer()
+
+        # Bodyがない場合はエラー
+        if "type" not in self._header or "type" not in self._body or "type" not in self._footer:
+            self.logger.warning("Failure getting package")
+            return -1
 
         self._message = {
             "type": "bubble",
@@ -356,13 +371,40 @@ class JsonManager:
 
     def package_message_none(self):
 
-        sample_path = os.path.join(HOME_ABSPATH, "FlexMessageDictionary", "body_event.json")
+        sample_path = os.path.join(HOME_ABSPATH, message_template_folder_name, "body_event.json")
 
         self._message = self.load_json(path=sample_path)
         self.logger.info("Set up sample_message")
 
         return self._message
 
-    # 一週間のスケジュールを出力する用(cursolで日にちごとにメッセージを作成して横並びに表示する)
-    def package_cursol_message(self):
-        self.logger.debug("call package_cursol_message")
+    # 一週間のスケジュールを出力する用(carouselで日にちごとにbubbleを作成してメッセージを作成)
+    def package_carousel_message(self, events_list: dict):
+
+        bubble_dict = []
+
+        if events_list is None:
+            self.logger.warning("\"events_list\" is empty")
+            return -1
+
+        for event in events_list:
+
+            if event is None:
+                self.logger.warning("\"events_list\" is empty")
+                return -1
+
+            self.package_header()
+            self.package_body(schedule_list=event)
+            self.package_footer()
+
+            bubble_dict.append(
+                {
+                    "type": "bubble",
+                    "size": "mega",
+                    "header": self._header,
+                    "body": self._body,
+                    "footer": self._footer
+                }
+            )
+        self.logger.debug("call package_carousel_message")
+        return self._message

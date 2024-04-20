@@ -3,13 +3,12 @@ import os
 import logging
 from enum import Enum
 
-# filepath
-base_path = os.path.abspath(".//")
 log_file_name = "project"
-log_file_path = os.path.join(os.path.abspath("."), "log", f'{log_file_name}.log')
 
 # logger
 def getMyLogger(name):
+    project_path = os.path.dirname(os.path.abspath(__file__))
+    log_file_path = os.path.join(project_path, "log", f'{log_file_name}.log')
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(log_file_path)
@@ -19,6 +18,7 @@ def getMyLogger(name):
     logger.addHandler(handler)
     return logger
 
+logger = getMyLogger(__name__)
 
 class schedule_start(Enum):
     TODAY = 1,
