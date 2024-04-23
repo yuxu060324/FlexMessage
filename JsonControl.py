@@ -1,8 +1,12 @@
 import os, re, datetime
 import json
+import urllib.request
 from typing import Dict, Union, Any
 from json_global import *
-
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 # boxで囲むだけの関数
 def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
@@ -94,11 +98,14 @@ def pack_image(path):
     pattern = {"type": "image", "url": path}
     return pattern
 
+
 def pack_separator(margin="none"):
     return {"type": "separator", "margin": margin}
 
+
 def pack_filter():
     return {"type": "filter"}
+
 
 def pack_circle(width, hegiht, cornerRadius="30px", borderColor="#ff0000", borderWidth="2px"):
     return pack_vertical(
@@ -156,17 +163,21 @@ class JsonManager:
                 icon_file_name = ICON_WEATHER_FILE[icon_file_kind]
             else:
                 icon_file_name = ICON_WEATHER_FILE['other']
-            icon_file_path = os.path.join(ICON_WEATHER_FOLDER_PATH, icon_file_name)
+            icon_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, icon_file_name)
         if icon_kind == "event":
             if icon_file_kind in ICON_EVENT_FILE:
                 icon_file_name = ICON_EVENT_FILE[icon_file_kind]
             else:
                 icon_file_name = ICON_EVENT_FILE['other']
-            icon_file_path = os.path.join(ICON_EVENT_FOLDER_PATH, icon_file_name)
+            icon_file_path = urlparse.urljoin(ICON_EVENT_FOLDER_PATH, icon_file_name)
 
-        if os.path.isfile(icon_file_path):
-            return icon_file_path
-        else:
+        # icon_file_pathがインターネット上に公開されている場合
+        try:
+            with urllib.request.urlopen(icon_file_path) as file:
+                self.logger.info(f'{icon_file_path} is exist')
+            return 0
+
+        except:
             self.logger.warning(f'{icon_file_path} does not exist')
             return -1
 

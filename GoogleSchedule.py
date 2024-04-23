@@ -17,7 +17,8 @@ def get_calendar_event(start_status, end_status):
     Prints the start and name of the next 10 events on the user's calendar.
     """
 
-    events_list = []
+    events_list = {}
+    schedule_list = []
     start_date = None
     end_date = None
 
@@ -55,6 +56,9 @@ def get_calendar_event(start_status, end_status):
             end_date = start_date + datetime.timedelta(days=7)
         else:
             end_date = start_date + datetime.timedelta(days=1)
+
+        events_list.update(start_date=start_date)
+        events_list.update(end_date=end_date)
 
         start = start_date.isoformat() + 'Z'
         end = end_date.isoformat() + 'Z'
@@ -95,6 +99,7 @@ def get_calendar_event(start_status, end_status):
 
         len_event = len(events)
         logger.info(f'Number getting event: {len_event}')
+        events_list.update(len_event=len_event)
 
         # データの正規化をする
         for event in events:
@@ -145,8 +150,9 @@ def get_calendar_event(start_status, end_status):
                 schedule_dict['description'] = event['description'] if 'description' in event else "-"
                 schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
 
-            events_list.append(schedule_dict)
+            schedule_list.append(schedule_dict)
 
+        events_list.update(schedule_list=schedule_list)
         logger.info(events_list)
 
         return events_list

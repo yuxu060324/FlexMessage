@@ -1,25 +1,26 @@
 import os
-import common_global
-
-HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
-GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage"
+from common_global import *
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 DAY_OF_WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
 message_template_folder_name = "FlexMessageDictionary"
 
-icon_folder_name = "icon_image"
-event_icon_folder_name = "event"
-weather_icon_folder_name = "weather"
+icon_folder_name = "icon_image/"
+event_icon_folder_name = icon_folder_name + "event/"
+weather_icon_folder_name = icon_folder_name + "weather/"
 
 # -------------------------------
 # jsonControl.py から参照する変数
 # -------------------------------
 
 # 予定のアイコンを格納しているフォルダ
-ICON_EVENT_FOLDER_PATH = os.path.join(GITHUB_PROJECT_PATH, icon_folder_name, event_icon_folder_name)
+ICON_EVENT_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, event_icon_folder_name)
 # 天気のアイコンを格納しているフォルダ
-ICON_WEATHER_FOLDER_PATH = os.path.join(GITHUB_PROJECT_PATH, icon_folder_name, weather_icon_folder_name)
+ICON_WEATHER_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, weather_icon_folder_name)
 
 # -------------------------------
 # Header

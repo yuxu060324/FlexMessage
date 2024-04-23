@@ -24,17 +24,12 @@ from flask import Flask, abort, request
 from common_global import *
 
 # LINEBotのアクセストークンの初期設定
-key_path = os.path.abspath(".\\Key")
-with open(os.path.join(key_path, 'line_bot_info.json')) as f:
-    line_bot_info = json.load(f)
-LINEBOT_ACCESS_TOKEN = line_bot_info['CHANNEL_ACCESS_TOKEN']
-USER_ID = line_bot_info['USER_ID']
-line_bot_api = LineBotApi(LINEBOT_ACCESS_TOKEN)
+line_bot_api = LineBotApi(os.environ['LINE_BOT_ACCESS_TOKEN'])
 
 app = Flask(__name__)
 
-handler = WebhookHandler(line_bot_info['USER_ID'])
-configuration = Configuration(access_token=line_bot_info['CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['USER_ID'])
+configuration = Configuration(access_token=os.environ['LINE_BOT_ACCESS_TOKEN'])
 
 # main
 def main():
@@ -78,7 +73,7 @@ def main():
     # # FlexMessageを送信(まだlineは送らない)
     # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
     # # ここでlineに通知が行く
-    # line_bot_api.push_message(USER_ID, messages=container_obj)
+    # line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
 
 
 @app.route("/callback", methods=['POST'])

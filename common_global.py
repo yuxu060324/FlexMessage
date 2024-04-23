@@ -1,8 +1,12 @@
 # 全ファイルで使用できるグローバル変数の定義
 import os
+import json
 import logging
 from enum import Enum
 
+HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
+GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
+GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
 log_file_name = "project"
 
 # logger
@@ -17,6 +21,13 @@ def getMyLogger(name):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+def set_env():
+    key_filepath = os.path.join(HOME_ABSPATH, "Key", "line_bot_info.json")
+    with open(key_filepath) as file:
+        line_bot_info = json.load(file)
+    os.environ['LINE_BOT_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
+    os.environ['USER_ID'] = line_bot_info['USER_ID']
 
 logger = getMyLogger(__name__)
 
