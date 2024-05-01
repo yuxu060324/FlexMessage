@@ -283,7 +283,7 @@ class JsonManager:
                 [
                     pack_text(event['start_time'], flex=0, size="sm"),
                     pack_vertical(
-                        [pack_image("https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png")],
+                        [pack_image("icon_path")],
                         alignItems="center",
                         width="35px",
                         height="25px"
