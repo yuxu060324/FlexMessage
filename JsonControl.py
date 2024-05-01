@@ -182,15 +182,29 @@ class JsonManager:
             return -1
 
     # Flex MessageのHeader部のパッケージ
-    def package_header(self, date, weather="sunny"):
+    def package_header(self, date, weather="other"):
+
+        if date is datetime.datetime:
+            self.logger.warning("Setting parameter(data) is not right")
+            return -1
+
+        if weather not in ICON_WEATHER_FILE:
+            self.logger.warning(f'{weather} does not include in ICON_WEATHER_FILE')
+            weather = 'other'
 
         # 日付の文字列
-        date_today = datetime.datetime.now()
-        date_wod = DAY_OF_WEEK_LIST[date_today.weekday()]
-        date_str = date_today.strftime("%m / %d ( " + date_wod + " )")
+        date_wod = DAY_OF_WEEK_LIST[date.weekday()]
+        date_str = date.strftime("%m / %d ( " + date_wod + " )")
 
         # 天気アイコンのファイルパス
-        weather_file_path = "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png"  # os.path.join(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
+        weather_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
+        try:
+            f = urllib.request.urlopen(weather_file_path)
+            logger.info(f'Finished set up url_path: {weather_file_path}')
+            f.close()
+        except:
+            logger.warning(f'This URL is not exist')
+            return -1
         # if not os.path.isfile(weather_file_path):
         #     self.logger.warning(f'{weather_file_path} does not exist')
         #     return
@@ -220,6 +234,7 @@ class JsonManager:
 
         self.logger.debug("Finished set up header")
 
+    # Flex Messageのbody部の終日イベントのパッケージ
     def package_event_all_body(self, events):
 
         title_box = pack_horizontal(
@@ -243,6 +258,7 @@ class JsonManager:
 
         self.logger.debug("Finished set up body_event")
 
+    # Flex Messageのbody部の終日以外のスケジュールのパッケージ
     def package_event_schedule(self, events):
 
         title_box = pack_horizontal(
@@ -351,16 +367,15 @@ class JsonManager:
         self.logger.debug("Finished set up footer")
 
     # Flex Messageのパッケージ
-    def package_message(self, events_list):
+    # @param[in]    date          setting schedule date in header of message
+    # @param[in]    events_list   setting schedule event in body of message
+    # @param[out]   payload       output message
+    def package_message(self, date, events_list):
 
         self.logger.debug(events_list)
 
-        if "start_date" not in events_list:
-            self.logger.warning("\"events_list\" is empty")
-            return -1
-
-        self.package_header(date=events_list['start_date'])
-        self.package_body(schedule_list=events_list['schedule_list'])
+        self.package_header(date=date)
+        self.package_body(schedule_list=events_list)
         self.package_footer()
 
         # Bodyがない場合はエラー
@@ -390,32 +405,33 @@ class JsonManager:
         return self._message
 
     # 一週間のスケジュールを出力する用(carouselで日にちごとにbubbleを作成してメッセージを作成)
-    def package_carousel_message(self, events_list: dict):
+    def package_carousel_message(self, schedule_dict: dict):
+
+        self.logger.debug("call package_carousel_message")
 
         bubble_dict = []
 
-        if events_list is None:
-            self.logger.warning("\"events_list\" is empty")
+        if 'start_date' not in schedule_dict or 'schedule_list' not in schedule_dict:
+            self.logger.warning("events_list dose not include \"start_date\" or \"schedule_list\"")
             return -1
 
-        for event in events_list:
+        schedule_start_date = schedule_dict['start_date']
+        len_date = len(schedule_dict['schedule_list'])
 
-            if event is None:
-                self.logger.warning("\"events_list\" is empty")
-                return -1
+        for schedule_list_index in range(len_date):
+            schedule_date = schedule_start_date + datetime.timedelta(days=schedule_list_index)
 
-            self.package_header()
-            self.package_body(schedule_list=event)
-            self.package_footer()
-
-            bubble_dict.append(
-                {
-                    "type": "bubble",
-                    "size": "mega",
-                    "header": self._header,
-                    "body": self._body,
-                    "footer": self._footer
-                }
+            payload = self.package_message(
+                date=schedule_date,
+                events_list=schedule_dict['schedule_list'][schedule_list_index]
             )
-        self.logger.debug("call package_carousel_message")
+
+            bubble_dict.append(payload)
+
+        self._message = {
+            "type": "carousel",
+            "contents": bubble_dict
+        }
+
+        self.logger.debug("Finished set up package_carousel_message")
         return self._message

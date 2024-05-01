@@ -19,6 +19,7 @@ def get_calendar_event(start_status, end_status):
 
     events_list = {}
     schedule_list = []
+    schedule_list_days = []
     start_date = None
     end_date = None
 
@@ -57,9 +58,14 @@ def get_calendar_event(start_status, end_status):
         else:
             end_date = start_date + datetime.timedelta(days=1)
 
+        if start_date > end_date:
+            logger.warning("Setting value of getting date is not right")
+            return -1
+
         events_list.update(start_date=start_date)
         events_list.update(end_date=end_date)
 
+        schedule_date = start_date
         start = start_date.isoformat() + 'Z'
         end = end_date.isoformat() + 'Z'
 
@@ -101,56 +107,71 @@ def get_calendar_event(start_status, end_status):
         logger.info(f'Number getting event: {len_event}')
         events_list.update(len_event=len_event)
 
-        # データの正規化をする
+        # スケジュールのステータスチェック
         for event in events:
-
             dt = event['start'].get('dateTime', event['start'].get('date'))
-
             if dt == None:
                 logger.warning("Event does not include \"start_dateTime\"")
                 return 0
 
-            schedule_dict = {
-                "date": "%Y-%m-%d",
-                "all_day": "True",
-                "start_time": "$start_time",
-                "end_time": "$end_time",
-                "summary": "$summary",
-                "description": "$description",
-                "colorId": "$colorId"
-            }
 
-            if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
-                # all day
+        # データの正規化をする
+        while (end_date != schedule_date):
 
-                schedule_dict["date"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
-                schedule_dict["all_day"] = "True"
-                schedule_dict["start_time"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
-                schedule_dict["end_time"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d'))
-                schedule_dict["summary"] = event['summary']
+            schedule_list_days = []
 
-                schedule_dict['description'] = event['description'] if 'description' in event else "-"
-                schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+            for event in events:
 
-            else:
-                # schedule
+                schedule_dict = {
+                    "date": "%Y-%m-%d",
+                    "all_day": "True",
+                    "start_time": "$start_time",
+                    "end_time": "$end_time",
+                    "summary": "$summary",
+                    "description": "$description",
+                    "colorId": "$colorId"
+                }
 
-                schedule_dict["date"] = '{0:%m月%d日}'.format(
-                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                schedule_dict["all_day"] = "False"
-                schedule_dict["start_time"] = '{0:%H:%M}'.format(
-                    datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                schedule_dict["end_time"] = '{0:%H:%M}'.format(
-                    datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                schedule_dict["summary"] = event['summary']
+                dt = event['start'].get('dateTime', event['start'].get('date'))
 
-                schedule_dict['description'] = event['description'] if 'description' in event else "-"
-                schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+                if schedule_date.strftime("%Y-%m-%d") == dt.split("T")[0]:
 
-            schedule_list.append(schedule_dict)
+                    if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
+                        # all day
+
+                        schedule_dict["date"] = '{0:%m月%d日}'.format(
+                            datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
+                        schedule_dict["all_day"] = "True"
+                        schedule_dict["start_time"] = '{0:%m月%d日}'.format(
+                            datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
+                        schedule_dict["end_time"] = '{0:%m月%d日}'.format(
+                            datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d'))
+                        schedule_dict["summary"] = event['summary']
+
+                        schedule_dict['description'] = event['description'] if 'description' in event else "-"
+                        schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+
+                    else:
+                        # schedule
+
+                        schedule_dict["date"] = '{0:%m月%d日}'.format(
+                            datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+                        schedule_dict["all_day"] = "False"
+                        schedule_dict["start_time"] = '{0:%H:%M}'.format(
+                            datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+                        schedule_dict["end_time"] = '{0:%H:%M}'.format(
+                            datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+                        schedule_dict["summary"] = event['summary']
+
+                        schedule_dict['description'] = event['description'] if 'description' in event else "-"
+                        schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+
+                    print(schedule_dict)
+                    schedule_list_days.append(schedule_dict)
+
+            schedule_date += datetime.timedelta(days=1)
+
+            schedule_list.append(schedule_list_days)
 
         events_list.update(schedule_list=schedule_list)
         logger.info(events_list)

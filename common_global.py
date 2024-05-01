@@ -42,5 +42,3 @@ class schedule_end(Enum):
     ONE_DAY = 1,
     WEEKLY = 2,
     MONTH = 3
-
-

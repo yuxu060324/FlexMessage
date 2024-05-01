@@ -23,6 +23,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from flask import Flask, abort, request
 from common_global import *
 
+set_env()
+
 # LINEBotのアクセストークンの初期設定
 line_bot_api = LineBotApi(os.environ['LINE_BOT_ACCESS_TOKEN'])
 
@@ -40,29 +42,33 @@ def main():
     # # Googleカレンダーから予定の取得
     # events = get_calendar_event(
     #     start_status=schedule_start.TODAY,
-    #     end_status=schedule_end.ONE_DAY)
+    #     end_status=schedule_end.WEEKLY)
     #
     # if events == 0:
     #     logger.warning("Stop get_calendar_event")
+    #
+    # print(events)
 
-    today = datetime.datetime.today()
-    today_date = today + datetime.timedelta(days=0)
+    # logger.info(f'schedule_dict: {events}')
 
     events = {
-        "start_date": today_date,
-        "schedule_list": [
-            {'date': '04月13日', 'all_day': 'True', 'start_time': '04月13日', 'end_time': '04月14日', 'summary': 'マイナンバー発行', 'description': '-', 'colorId': '-'},
-            {'date': '04月13日', 'all_day': 'True', 'start_time': '04月13日', 'end_time': '04月14日', 'summary': '住民票発行', 'description': '-', 'colorId': '-'},
-            {'date': '04月13日', 'all_day': 'False', 'start_time': '10:00', 'end_time': '11:00', 'summary': 'on schedule', 'description': '僕の見てた', 'colorId': '11'},
-            {'date': '04月13日', 'all_day': 'False', 'start_time': '21:45', 'end_time': '23:45', 'summary': 'now on time', 'description': 'sdfdsg', 'colorId': '-'}
+        'start_date': datetime.datetime(2024, 5, 2, 0, 0),
+        'end_date': datetime.datetime(2024, 5, 9, 0, 0),
+        'len_event': 3,
+        'schedule_list': [
+            [],
+            [{'date': '05月03日', 'all_day': 'False', 'start_time': '19:00', 'end_time': '20:00', 'summary': 'Google Calendar API テスト用', 'description': '-', 'colorId': '-'}],
+            [{'date': '05月04日', 'all_day': 'False', 'start_time': '21:45', 'end_time': '23:45', 'summary': 'now on time', 'description': 'sdfdsg', 'colorId': '-'}],
+            [],
+            [{'date': '05月06日', 'all_day': 'True', 'start_time': '05月06日', 'end_time': '05月07日', 'summary': 'GW最終日', 'description': '-', 'colorId': '-'}],
+            [],
+            []
         ]
     }
 
     # eventsのpackage
-    # jm.package_header()
-    # jm.package_footer()
-    # jm.package_body(schedule_list=events)
-    payload = jm.package_message(events_list=events)
+    # payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1])   # 一日のmessage
+    payload = jm.package_carousel_message(events)   # 一週間の予定
     print(payload)
 
     # # jsonファイルに書き込む(Debug用)
