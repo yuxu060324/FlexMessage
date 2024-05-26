@@ -4,6 +4,8 @@ import json
 import logging
 from enum import Enum
 
+# Get value for setting
+
 HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
 GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
@@ -22,6 +24,7 @@ def getMyLogger(name):
     logger.addHandler(handler)
     return logger
 
+# For line-bot
 def set_env():
     key_filepath = os.path.join(HOME_ABSPATH, "Key", "line_bot_info.json")
     with open(key_filepath) as file:

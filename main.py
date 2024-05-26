@@ -67,8 +67,8 @@ def main():
     }
 
     # eventsのpackage
-    # payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1])   # 一日のmessage
-    payload = jm.package_carousel_message(events)   # 一週間の予定
+    payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1], weather="sunny")   # 一日のmessage
+    # payload = jm.package_carousel_message(events)   # 一週間の予定
     print(payload)
 
     # jsonファイルに書き込む(Debug用)
@@ -76,10 +76,10 @@ def main():
     with open(path, "w") as f:
         json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 
-    # FlexMessageを送信(まだlineは送らない)
-    container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-    # ここでlineに通知が行く
-    line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
+    # # FlexMessageを送信(まだlineは送らない)
+    # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+    # # ここでlineに通知が行く
+    # line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
 
 
 @app.route("/callback", methods=['POST'])
@@ -122,6 +122,10 @@ def handle_message(event):
 
 if __name__ == "__main__":
     main()
+    # if __debug__:
+    #     print("Hello")
+    # else:
+    #     print("Debug off")
 
 '''
 

@@ -182,32 +182,16 @@ class JsonManager:
             return -1
 
     # Flex MessageのHeader部のパッケージ
-    def package_header(self, date, weather="other"):
+    def package_header(self, date, weather=None):
 
+        # パラメータチェック
         if date is datetime.datetime:
             self.logger.warning("Setting parameter(data) is not right")
             return -1
 
-        if weather not in ICON_WEATHER_FILE:
-            self.logger.warning(f'{weather} does not include in ICON_WEATHER_FILE')
-            weather = 'other'
-
         # 日付の文字列
         date_wod = DAY_OF_WEEK_LIST[date.weekday()]
         date_str = date.strftime("%m / %d ( " + date_wod + " )")
-
-        # 天気アイコンのファイルパス
-        weather_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
-        try:
-            f = urllib.request.urlopen(weather_file_path)
-            logger.info(f'Finished set up url_path: {weather_file_path}')
-            f.close()
-        except:
-            logger.warning(f'This URL is not exist')
-            return -1
-        # if not os.path.isfile(weather_file_path):
-        #     self.logger.warning(f'{weather_file_path} does not exist')
-        #     return
 
         # 日付のboxの追加
         date_box = pack_vertical([
@@ -215,24 +199,53 @@ class JsonManager:
             pack_text(date_str, color="#ffffff", size="xl", flex=4, weight="bold")
         ])
 
-        # 天気アイコンのboxの追加
-        weather_box = pack_vertical(
-            [pack_image(path=weather_file_path)],
-            margin="none",
-            spacing="none",
-            width="60px",
-            height="60px"
-        )
+        # weather が設定されていたらimage用のlayoutを作成する
+        if weather is not None:
+            if weather not in ICON_WEATHER_FILE:
+                self.logger.warning(f'{weather} does not include in ICON_WEATHER_FILE')
+                weather = 'other'
 
-        self._header = pack_horizontal(
-            [date_box, weather_box],
-            paddingAll="20px",
-            backgroundColor="#0367D3",
-            spacing='md',
-            height="90px"
-        )
+            # 天気アイコンのファイルパス
+            weather_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
+            try:
+                f = urllib.request.urlopen(weather_file_path)
+                logger.info(f'Finished set up url_path: {weather_file_path}')
+                f.close()
+            except:
+                logger.warning(f'This URL is not exist')
+                return -1
+
+            # 天気アイコンのlayoutの追加
+            weather_box = pack_vertical(
+                [pack_image(path=weather_file_path)],
+                margin="none",
+                spacing="none",
+                width="60px",
+                height="60px"
+            )
+
+            # header部の作成
+            self._header = pack_horizontal(
+                [date_box, weather_box],
+                paddingAll="20px",
+                backgroundColor="#0367D3",
+                spacing='md',
+                height="90px"
+            )
+
+        else:
+
+            # weatherのlayoutなしでheaderを作成
+            self._header = pack_horizontal(
+                [date_box],
+                paddingAll="20px",
+                backgroundColor="#0367D3",
+                spacing='md',
+                height="90px"
+            )
 
         self.logger.debug("Finished set up header")
+        return
 
     # Flex Messageのbody部の終日イベントのパッケージ
     def package_event_all_body(self, events):
@@ -257,6 +270,7 @@ class JsonManager:
         self._event_all_day = pack_vertical([title_box, event_detail])
 
         self.logger.debug("Finished set up body_event")
+        return
 
     # Flex Messageのbody部の終日以外のスケジュールのパッケージ
     def package_event_schedule(self, events):
@@ -299,6 +313,7 @@ class JsonManager:
         self._event_schedule = pack_vertical([title_box, event_detail], paddingTop="md")
 
         self.logger.debug("Finished set up body_event")
+        return
 
     # Flex MessageのBody部のパッケージ
     def package_body(self, schedule_list):
@@ -365,16 +380,17 @@ class JsonManager:
             print("None date")
 
         self.logger.debug("Finished set up footer")
+        return
 
     # Flex Messageのパッケージ
     # @param[in]    date          setting schedule date in header of message
     # @param[in]    events_list   setting schedule event in body of message
     # @param[out]   payload       output message
-    def package_message(self, date, events_list):
+    def package_message(self, date, weather=None, events_list=[]):
 
         self.logger.debug(events_list)
 
-        self.package_header(date=date)
+        self.package_header(date=date, weather=weather)
         self.package_body(schedule_list=events_list)
         self.package_footer()
 
@@ -423,6 +439,7 @@ class JsonManager:
 
             payload = self.package_message(
                 date=schedule_date,
+                weather=None,
                 events_list=schedule_dict['schedule_list'][schedule_list_index]
             )
 
