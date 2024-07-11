@@ -28,11 +28,12 @@ ICON_WEATHER_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, weather
 
 # 天気アイコンのファイルパス
 ICON_WEATHER_FILE = {
-    "sunny": "sunny.png",
-    "rain": "rain.png",
-    "cloudy": "cloudy.png",
-    "snow": "snow.png",
-    "other": "sunny.png"
+    "sunny": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "sunny.png"),
+    "cloudy": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "cloudy.png"),
+    "rain": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "rain.png"),
+    "snow": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "snow.png"),
+    "thunder": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "thunderstorm.json"),
+    "other": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "sunny.png")
 }
 
 
@@ -73,3 +74,15 @@ EVENT_KIND = {
 
 FOOTER_URL = "https://google.com/"
 GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/r'
+
+# -------------------------------
+# Weather Code
+# -------------------------------
+
+WEATHER_CODE = {
+    "0": "sunny",
+    "1": "cloudy",
+    "2": "rain",
+    "3": "snow",
+    "4": "thunder"
+}
