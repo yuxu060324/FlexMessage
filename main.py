@@ -36,6 +36,10 @@ configuration = Configuration(access_token=os.environ['LINE_BOT_ACCESS_TOKEN'])
 # main
 def main():
 
+    logger.debug('---------------------------')
+    logger.debug("Debug_mode is start")
+    logger.debug('---------------------------')
+
     # jsonをコントロールするクラスのインスタンス
     jm = JsonManager(logger=logger)
 
@@ -69,6 +73,7 @@ def main():
     # eventsのpackage
     payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1], weather="sunny")   # 一日のmessage
     # payload = jm.package_carousel_message(events)   # 一週間の予定
+    logger.debug(payload)
     print(payload)
 
     # jsonファイルに書き込む(Debug用)
@@ -81,9 +86,15 @@ def main():
     # # ここでlineに通知が行く
     # line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
 
+    logger.debug('---------------------------')
+    logger.debug("Debug_mode is finished")
+    logger.debug("---------------------------")
 
 @app.route("/callback", methods=['POST'])
 def callback():
+
+    logger.info("Called to callback()")
+
     signature = request.headers['X-Line-Signature']
 
     body = request.get_data(as_text=True)
@@ -96,9 +107,15 @@ def callback():
         abort(400)
     return 'OK'
 
+# lineからのメッセージがきたら処理される関数
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
+
+    logger.info("Called to handle_message()")
+
     with ApiClient(configuration) as api_client:
+
+        logger.info(f'Receive message: {event.message.text}')
 
         if event.message.text == "今日の予定":
             app.logger.debug("今日の予定")
@@ -119,6 +136,8 @@ def handle_message(event):
                 messages=[TextMessage(text=msg)]
             )
         )
+
+    logger.info("Finished handle_message()")
 
 if __name__ == "__main__":
     main()

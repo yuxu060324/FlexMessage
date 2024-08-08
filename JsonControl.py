@@ -3,6 +3,7 @@ import json
 import urllib.request
 from typing import Dict, Union, Any
 from json_global import *
+from GetWeather import get_weather
 try:
     import urlparse
 except ImportError:
@@ -132,11 +133,16 @@ class JsonManager:
         self.logger = logger
 
         # for message
+        # header
         self._message = {}
         self._header = {}
+        # hero
+        self.hero = {}
+        # body
         self._event_all_day = {}
         self._event_schedule = {}
         self._body = {}
+        # footer
         self._footer = {}
 
     def load_json(self, path):
@@ -163,23 +169,23 @@ class JsonManager:
                 icon_file_name = ICON_WEATHER_FILE[icon_file_kind]
             else:
                 icon_file_name = ICON_WEATHER_FILE['other']
-            icon_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, icon_file_name)
+            icon_file_path = icon_file_name
         if icon_kind == "event":
             if icon_file_kind in ICON_EVENT_FILE:
                 icon_file_name = ICON_EVENT_FILE[icon_file_kind]
             else:
                 icon_file_name = ICON_EVENT_FILE['other']
-            icon_file_path = urlparse.urljoin(ICON_EVENT_FOLDER_PATH, icon_file_name)
+            icon_file_path = icon_file_name
 
         # icon_file_pathがインターネット上に公開されている場合
         try:
             with urllib.request.urlopen(icon_file_path) as file:
                 self.logger.info(f'{icon_file_path} is exist')
-            return 0
+            return icon_file_path
 
         except:
             self.logger.warning(f'{icon_file_path} does not exist')
-            return -1
+            return None
 
     # Flex MessageのHeader部のパッケージ
     def package_header(self, date, weather=None):
@@ -247,6 +253,15 @@ class JsonManager:
         self.logger.debug("Finished set up header")
         return
 
+    def package_hero(self):
+
+        # place_codeは気象庁APIを参照(130000は東京地方の場所コード)
+        weather_picture_path = get_weather(place_code="130000")
+
+        self.hero = pack_image(path=weather_picture_path)
+
+        return
+
     # Flex Messageのbody部の終日イベントのパッケージ
     def package_event_all_body(self, events):
 
@@ -289,7 +304,7 @@ class JsonManager:
                 return -1
 
             icon_path = self.get_icon(icon_kind="event", icon_file_kind=event_kind)
-            if icon_path == -1:
+            if icon_path is None:
                 self.logger.warning(f'{event_kind} does not include in \"ICON_WEATHER_FILE\"')
                 return -1
 
@@ -390,21 +405,23 @@ class JsonManager:
 
         self.logger.debug(events_list)
 
-        self.package_header(date=date, weather=weather)
-        self.package_body(schedule_list=events_list)
-        self.package_footer()
+        # self.package_header(date=date, weather=weather)
+        self.package_hero()
+        # self.package_body(schedule_list=events_list)
+        # self.package_footer()
 
         # Bodyがない場合はエラー
-        if "type" not in self._header or "type" not in self._body or "type" not in self._footer:
-            self.logger.warning("Failure getting package")
-            return -1
+        # if "type" not in self._header or "type" not in self._body or "type" not in self._footer:
+        #     self.logger.warning("Failure getting package")
+        #     return -1
 
         self._message = {
             "type": "bubble",
             "size": "mega",
-            "header": self._header,
-            "body": self._body,
-            "footer": self._footer
+            # "header": self._header,
+            "hero": self.hero
+            # "body": self._body,
+            # "footer": self._footer
         }
 
         self.logger.info("Finished set up message")
