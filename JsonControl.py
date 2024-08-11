@@ -49,7 +49,7 @@ def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
     return pattern
 
 
-def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None,
+def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None, align=None,
                     paddingAll=None, paddingStart=None, backgroundColor=None, offsetStart=None, alignItems=None):
     pattern = {"type": "box", "layout": "horizontal", "contents": arr}
 
@@ -69,11 +69,39 @@ def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=Non
         pattern.update(height=height)
     if offsetStart is not None:
         pattern.update(offsetStart=offsetStart)
+    if align is not None:
+        pattern.update(align=align)
     if alignItems is not None:
         pattern.update(alignItems=alignItems)
 
     return pattern
 
+def pack_baseline(arr: list, margin=None, spacing=None, width=None, height=None, paddingAll=None,
+                  paddingStart=None, backgroundColor=None, offsetStart=None, offsetTop=None, alignItems=None):
+    pattern = {"type": "box", "layout": "baseline", "contents": arr}
+
+    if margin is not None:
+        pattern.update(margin=margin)
+    if paddingAll is not None:
+        pattern.update(paddingAll=paddingAll)
+    if paddingStart is not None:
+        pattern.update(paddingStart=paddingStart)
+    if backgroundColor is not None:
+        pattern.update(backgroundColor=backgroundColor)
+    if spacing is not None:
+        pattern.update(spacing=spacing)
+    if width is not None:
+        pattern.update(width=width)
+    if height is not None:
+        pattern.update(height=height)
+    if offsetStart is not None:
+        pattern.update(offsetStart=offsetStart)
+    if offsetTop is not None:
+        pattern.update(offsetTop=offsetTop)
+    if alignItems is not None:
+        pattern.update(alignItems=alignItems)
+
+    return pattern
 
 def pack_text(str, color=None, size=None, flex=None, url=None, weight=None, margin=None, decoration=None):
     pattern = {"type": "text", "text": str}
@@ -95,10 +123,21 @@ def pack_text(str, color=None, size=None, flex=None, url=None, weight=None, marg
     return pattern
 
 
-def pack_image(path):
+def pack_image(path, size=None, aspectRatio=None, aspectMode=None):
     pattern = {"type": "image", "url": path}
+    if size is not None:
+        pattern.update(size=size)
+    if aspectRatio is not None:
+        pattern.update(aspectRatio=aspectRatio)
+    if aspectMode is not None:
+        pattern.update(aspectMode=aspectMode)
     return pattern
 
+def pack_icon(path, size, scaling=None):
+    pattern = {"type": "icon", "size": size, "url": path}
+    if scaling is not None:
+        pattern.update(scaling=scaling)
+    return pattern
 
 def pack_separator(margin="none"):
     return {"type": "separator", "margin": margin}
@@ -188,7 +227,7 @@ class JsonManager:
             return None
 
     # Flex MessageのHeader部のパッケージ
-    def package_header(self, date, weather=None):
+    def package_header(self, date):
 
         # パラメータチェック
         if date is datetime.datetime:
@@ -205,50 +244,14 @@ class JsonManager:
             pack_text(date_str, color="#ffffff", size="xl", flex=4, weight="bold")
         ])
 
-        # weather が設定されていたらimage用のlayoutを作成する
-        if weather is not None:
-            if weather not in ICON_WEATHER_FILE:
-                self.logger.warning(f'{weather} does not include in ICON_WEATHER_FILE')
-                weather = 'other'
-
-            # 天気アイコンのファイルパス
-            weather_file_path = urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, ICON_WEATHER_FILE[weather])
-            try:
-                f = urllib.request.urlopen(weather_file_path)
-                logger.info(f'Finished set up url_path: {weather_file_path}')
-                f.close()
-            except:
-                logger.warning(f'This URL is not exist')
-                return -1
-
-            # 天気アイコンのlayoutの追加
-            weather_box = pack_vertical(
-                [pack_image(path=weather_file_path)],
-                margin="none",
-                spacing="none",
-                width="60px",
-                height="60px"
-            )
-
-            # header部の作成
-            self._header = pack_horizontal(
-                [date_box, weather_box],
-                paddingAll="20px",
-                backgroundColor="#0367D3",
-                spacing='md',
-                height="90px"
-            )
-
-        else:
-
-            # weatherのlayoutなしでheaderを作成
-            self._header = pack_horizontal(
-                [date_box],
-                paddingAll="20px",
-                backgroundColor="#0367D3",
-                spacing='md',
-                height="90px"
-            )
+        # weatherのlayoutなしでheaderを作成
+        self._header = pack_horizontal(
+            [date_box],
+            paddingAll="20px",
+            backgroundColor="#0367D3",
+            spacing='md',
+            height="90px"
+        )
 
         self.logger.debug("Finished set up header")
         return
@@ -261,7 +264,7 @@ class JsonManager:
         if checkURL(weather_picture_path) is not True:
             return -1
 
-        self.hero = pack_image(path=weather_picture_path)
+        self.hero = pack_image(path=weather_picture_path, size="full", aspectRatio="16:9")
 
         return
 
@@ -314,16 +317,21 @@ class JsonManager:
             temp_event.append(pack_horizontal(
                 [
                     pack_text(event['start_time'], flex=0, size="sm"),
-                    pack_vertical(
-                        [pack_image("icon_path")],
-                        alignItems="center",
-                        width="35px",
+                    pack_baseline(
+                        [pack_icon(
+                            path=icon_path, size="sm"
+                        )],
+                        offsetStart="5px",
+                        offsetTop="3px",
+                        width="25px",
                         height="25px"
                     ),
-                    pack_text(event['summary'], size="sm", margin="md")
+                    pack_text(event['summary'], size="sm")
                 ],
+                margin="md",
                 paddingStart="lg",
-                alignItems="center"
+                align="center"
+                # alignItems="flex-start"
             ))
 
         event_detail = pack_vertical(temp_event)
@@ -354,7 +362,7 @@ class JsonManager:
             self.package_event_schedule(event_schedule_list)
 
         # 予定なし
-        if 'type' not in self._event_all_day.keys() or 'type' not in self._event_schedule:
+        if 'type' not in self._event_all_day.keys() and 'type' not in self._event_schedule.keys():
             self._body = pack_vertical(
                 [pack_text("予定なし", weight="bold", size="xl", color="#0000a0")],
                 paddingAll="lg",
@@ -404,29 +412,33 @@ class JsonManager:
     # @param[in]    date          setting schedule date in header of message
     # @param[in]    events_list   setting schedule event in body of message
     # @param[out]   payload       output message
-    def package_message(self, date, weather=None, events_list=[]):
+    def package_message(self, date, events_list=[]):
 
         self.logger.debug(events_list)
 
-        # self.package_header(date=date, weather=weather)
+        if self.package_header(date=date) == -1:
+            logger.warning("package_header() is failed")
+            return -1
+
         if self.package_hero() == -1:
             logger.warning("package_hero() is failed")
             return -1
-        # self.package_body(schedule_list=events_list)
-        # self.package_footer()
 
-        # Bodyがない場合はエラー
-        # if "type" not in self._header or "type" not in self._body or "type" not in self._footer:
-        #     self.logger.warning("Failure getting package")
-        #     return -1
+        if self.package_body(schedule_list=events_list) == -1:
+            logger.warning("package_body() is failed")
+            return -1
+
+        if self.package_footer() == -1:
+            logger.warning("package_footer() is failed")
+            return -1
 
         self._message = {
             "type": "bubble",
             "size": "mega",
-            # "header": self._header,
-            "hero": self.hero
-            # "body": self._body,
-            # "footer": self._footer
+            "header": self._header,
+            "hero": self.hero,
+            "body": self._body,
+            "footer": self._footer
         }
 
         self.logger.info("Finished set up message")
@@ -461,7 +473,6 @@ class JsonManager:
 
             payload = self.package_message(
                 date=schedule_date,
-                weather=None,
                 events_list=schedule_dict['schedule_list'][schedule_list_index]
             )
 

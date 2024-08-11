@@ -56,7 +56,7 @@ def main():
     # logger.info(f'schedule_dict: {events}')
 
     events = {
-        'start_date': datetime.datetime(2024, 5, 2, 0, 0),
+        'start_date': datetime.datetime(2024, 5, 3, 0, 0),
         'end_date': datetime.datetime(2024, 5, 9, 0, 0),
         'len_event': 3,
         'schedule_list': [
@@ -71,7 +71,7 @@ def main():
     }
 
     # eventsのpackage
-    payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1], weather="sunny")   # 一日のmessage
+    payload = jm.package_message(date=events['start_date'], events_list=events['schedule_list'][1])   # 一日のmessage
     # payload = jm.package_carousel_message(events)   # 一週間の予定
     logger.debug(payload)
     print(payload)
