@@ -77,14 +77,15 @@ def main():
     print(payload)
 
     # jsonファイルに書き込む(Debug用)
-    path = ".//FlexMessageDictionary//body_event.json"
-    with open(path, "w") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
-
-    # # FlexMessageを送信(まだlineは送らない)
-    # container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-    # # ここでlineに通知が行く
-    # line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
+    if __debug__:
+        path = ".//FlexMessageDictionary//body_event.json"
+        with open(path, "w") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
+    else:
+        # FlexMessageを送信(まだlineは送らない)
+        container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+        # ここでlineに通知が行く
+        line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
 
     logger.debug('---------------------------')
     logger.debug("Debug_mode is finished")

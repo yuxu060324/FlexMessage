@@ -258,6 +258,9 @@ class JsonManager:
         # place_codeは気象庁APIを参照(130000は東京地方の場所コード)
         weather_picture_path = get_weather(place_code="130000")
 
+        if checkURL(weather_picture_path) is not True:
+            return -1
+
         self.hero = pack_image(path=weather_picture_path)
 
         return
@@ -406,7 +409,9 @@ class JsonManager:
         self.logger.debug(events_list)
 
         # self.package_header(date=date, weather=weather)
-        self.package_hero()
+        if self.package_hero() == -1:
+            logger.warning("package_hero() is failed")
+            return -1
         # self.package_body(schedule_list=events_list)
         # self.package_footer()
 

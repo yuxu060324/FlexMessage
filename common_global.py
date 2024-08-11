@@ -2,6 +2,7 @@
 import os
 import json
 import logging
+import urllib.request
 from enum import Enum
 
 # Get value for setting
@@ -31,6 +32,15 @@ def set_env():
         line_bot_info = json.load(file)
     os.environ['LINE_BOT_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
     os.environ['USER_ID'] = line_bot_info['USER_ID']
+
+def checkURL(url):
+    try:
+        f = urllib.request.urlopen(url=url)
+        f.close()
+        return True
+    except:
+        logger.warning(f'URL is not found: {url}')
+        return False
 
 logger = getMyLogger(__name__)
 

@@ -362,9 +362,8 @@ def create_temperature_icon(temperature_list: list):
 # - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
 
-    image_path = os.path.join(os.path.abspath("./icon_image//weather"), "sample.png")
-
-    return image_path
+    # デバッグ用の処理
+    return OUT_FILE_PATH_HERO
 
     # 気象庁のAPIから東京都のjsonデータを取得
     jma_url = 'https://www.jma.go.jp/bosai/forecast/data/forecast/{0}.json'.format(place_code)

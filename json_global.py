@@ -10,10 +10,10 @@ DAY_OF_WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
 message_template_folder_name = "FlexMessageDictionary"
 
-icon_folder_name = "icon_image"
-event_icon_folder_name = os.path.join(icon_folder_name, "event")
-weather_icon_folder_name = os.path.join(icon_folder_name, "weather")
-output_icon_folder_name = os.path.join(icon_folder_name, "out")
+icon_folder_name = "icon_image/"
+event_icon_folder_name = "event/"
+weather_icon_folder_name = "weather/"
+output_folder_name = "out/"
 
 # 天候コードをまとめているJSONファイル名
 weather_code_list_file_name = "weatherCodeList.json"
@@ -22,70 +22,53 @@ weather_code_list_file_name = "weatherCodeList.json"
 # jsonControl.py から参照する変数
 # -------------------------------
 
+# URL用のURL
+GITHUB_PROJECT_CONTENT_PATH_IMAGE = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, icon_folder_name)
+
 # 予定のアイコンを格納しているフォルダ
-ICON_EVENT_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, event_icon_folder_name)
-# 天気のアイコンを格納しているフォルダ
-ICON_WEATHER_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, weather_icon_folder_name)
+ICON_EVENT_FOLDER_URL = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH_IMAGE, event_icon_folder_name)
 # 作成したアイコンを格納しているフォルダ
-ICON_OUTPUT_FOLDER_PATH = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, output_icon_folder_name)
+ICON_OUTPUT_FOLDER_URL = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH_IMAGE, output_folder_name)
 
 # -------------------------------
 # Header
 # -------------------------------
 
-# # 天気アイコンのファイルパス(実際に使うよう)
-# ICON_WEATHER_FILE = {
-#     "sunny": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "sunny.png"),
-#         "bg_color": "#ff7f50"
-#     },
-#     "cloudy": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "cloudy.png"),
-#         "bg_color": "#c0c0c0"
-#     },
-#     "rain": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "rain.png"),
-#         "bg_color": "#4169e1"
-#     },
-#     "snow": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "snow.png"),
-#         "bg_color": "#afeeee"
-#     },
-#     "thunder": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "thunderstorm.json"),
-#         "bg_color": "#ffd700"
-#     },
-#     "other": {
-#         "url": urlparse.urljoin(ICON_WEATHER_FOLDER_PATH, "sunny.png"),
-#         "bg_color": "#777777"
-#     }
-# }
+WEATHER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, weather_icon_folder_name)
 
 ICON_WEATHER_FILE = {
     "sunny": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "sunny.png"),
+        "url": os.path.join(WEATHER_PATH, "sunny.png"),
         "bg_color": "#ff7f50"
     },
     "cloudy": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "cloudy.png"),
+        "url": os.path.join(WEATHER_PATH, "cloudy.png"),
         "bg_color": "#c0c0c0"
     },
     "rain": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "rain.png"),
+        "url": os.path.join(WEATHER_PATH, "rain.png"),
         "bg_color": "#4169e1"
     },
     "snow": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "snow.png"),
+        "url": os.path.join(WEATHER_PATH, "snow.png"),
         "bg_color": "#afeeee"
     },
     "thunder": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "thunderstorm.png"),
+        "url": os.path.join(WEATHER_PATH, "thunderstorm.png"),
         "bg_color": "#ffd700"
     },
     "other": {
-        "url": os.path.join(HOME_ABSPATH, weather_icon_folder_name, "sunny.png"),
+        "url": os.path.join(WEATHER_PATH, "sunny.png"),
         "bg_color": "#777777"
     }
+}
+
+WEATHER_CODE = {
+    "0": "sunny",
+    "1": "cloudy",
+    "2": "rain",
+    "3": "snow",
+    "4": "thunder"
 }
 
 # -------------------------------
@@ -94,7 +77,7 @@ ICON_WEATHER_FILE = {
 
 WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH,
                                            weather_icon_folder_name, weather_code_list_file_name)
-OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, output_icon_folder_name)
+OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
 
 HERO_SIZE = (480, 270)
 
@@ -124,7 +107,7 @@ OUT_FILE_PATH_WEATHER_MAP = os.path.join(OUT_FOLDER_PATH, out_file_name_weather_
 OUT_FILE_PATH_TEMPERATURE = os.path.join(OUT_FOLDER_PATH, out_file_name_temperature + ".png")
 
 # hero設定用URL
-OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_PATH, out_file_name_hero + ".png")
+OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
 
 # -------------------------------
 # Body
@@ -132,13 +115,13 @@ OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_PATH, out_file_name_her
 
 # イベントアイコンのファイルパス
 ICON_EVENT_FILE = {
-    "task": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "task.png"),
-    "event": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "event.png"),
-    "game": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "game.png"),
-    "commu": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "commu.png"),
-    "eating": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "eating.png"),
-    "hospital": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "hospital.png"),
-    "other": urlparse.urljoin(ICON_EVENT_FOLDER_PATH, "other.png"),
+    "task": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "task.png"),
+    "event": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "event.png"),
+    "game": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "game.png"),
+    "commu": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "commu.png"),
+    "eating": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "eating.png"),
+    "hospital": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "hospital.png"),
+    "other": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "other.png"),
 }
 
 EVENT_KIND = {
@@ -166,11 +149,3 @@ GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/r'
 # -------------------------------
 # Weather Code
 # -------------------------------
-
-WEATHER_CODE = {
-    "0": "sunny",
-    "1": "cloudy",
-    "2": "rain",
-    "3": "snow",
-    "4": "thunder"
-}
