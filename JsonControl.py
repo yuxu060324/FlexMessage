@@ -266,6 +266,7 @@ class JsonManager:
 
         self.hero = pack_image(path=weather_picture_path, size="full", aspectRatio="16:9")
 
+        self.logger.debug("Finished set up hero")
         return
 
     # Flex Messageのbody部の終日イベントのパッケージ

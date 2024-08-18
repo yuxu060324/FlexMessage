@@ -1,4 +1,6 @@
-# 全ファイルで使用できるグローバル変数の定義
+# 主にmain.pyまで使用するグローバル変数の定義
+# main.pyで使用しない定義はここに公開しない用に修正する
+
 import os
 import json
 import logging
@@ -33,6 +35,7 @@ def set_env():
     os.environ['LINE_BOT_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
     os.environ['USER_ID'] = line_bot_info['USER_ID']
 
+# URL check
 def checkURL(url):
     try:
         f = urllib.request.urlopen(url=url)
@@ -42,15 +45,17 @@ def checkURL(url):
         logger.warning(f'URL is not found: {url}')
         return False
 
+# loggerの定義
 logger = getMyLogger(__name__)
 
+# Google Calendarで取得する予定の開始日
 class schedule_start(Enum):
     TODAY = 1,
     TOMORROW = 2,
     MONDAY = 3,
     MONTH = 4
 
-
+# Google Calendarで取得する予定の終了日
 class schedule_end(Enum):
     ONE_DAY = 1,
     WEEKLY = 2,

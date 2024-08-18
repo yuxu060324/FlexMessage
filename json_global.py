@@ -64,18 +64,18 @@ ICON_WEATHER_FILE = {
 }
 
 WEATHER_CODE = {
-    "0": "sunny",
-    "1": "cloudy",
-    "2": "rain",
-    "3": "snow",
-    "4": "thunder"
+    "1": "sunny",
+    "2": "cloudy",
+    "3": "rain",
+    "4": "snow",
+    "5": "thunder"
 }
 
 # -------------------------------
 # Hero
 # -------------------------------
 
-WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH,
+WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, icon_folder_name,
                                            weather_icon_folder_name, weather_code_list_file_name)
 OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
 
