@@ -404,7 +404,7 @@ class JsonManager:
         )
 
         if self._footer is None:
-            print("None date")
+            self.logger.warning("footer is empty")
 
         self.logger.debug("Finished set up footer")
         return
@@ -413,7 +413,7 @@ class JsonManager:
     # @param[in]    date          setting schedule date in header of message
     # @param[in]    events_list   setting schedule event in body of message
     # @param[out]   payload       output message
-    def package_message(self, date, events_list=[]):
+    def package_message(self, date, events_list: dict):
 
         self.logger.debug(events_list)
 

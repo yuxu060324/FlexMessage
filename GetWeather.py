@@ -325,7 +325,7 @@ def create_detail_weather(weather_detail: str):
 
 
 def create_temperature_icon(temperature_list: list):
-    if len(temperature_list) != 2:
+    if len(temperature_list) < 2:
         return -1
 
     img = Image.new("RGB", TEMPERATURE_SIZE, color="white")
