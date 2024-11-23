@@ -38,6 +38,10 @@ def main():
     # Googleカレンダーから予定の取得
     events = get_calendar_event(schedule_kind=get_schedule_kind)
 
+    # 取得したスケジュールのエラー確認
+    if events is None:
+        exit(-1)
+
     # events = {
     #     'start_date': datetime.datetime(2024, 5, 3, 0, 0),
     #     'end_date': datetime.datetime(2024, 5, 9, 0, 0),

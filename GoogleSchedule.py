@@ -95,8 +95,7 @@ def get_credentials():
             not "GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS" in os.environ
         ):
             # 2種類の資格がどっちも環境変数に設定されていない場合はエラー
-            logger.error("Token is not registered in environment variable")
-            return -1
+            raise ValueError("Token is not registered in environment variable.")
 
         # 資格インストール用の環境変数がある場合
 
@@ -125,18 +124,16 @@ def get_credentials():
 
         for key in credentials_keys:
 
-            # # 環境変数に定義があるか確認する
-            # if os.environ.get(key) is None:
-            #     logger.warning(f'{key} does not include os.environ')
-            #     return -1
-
             key_name = key.removeprefix("GOOGLE_CALENDAR_CREDENTIALS_").lower()
             if key_name == "scopes":
                 credentials_info[key_name] = [os.environ[key]]
             else:
                 credentials_info[key_name] = os.environ[key]
 
-        authorized_credentials = Credentials.from_authorized_user_info(info=credentials_info, scopes=SCOPES)
+        try:
+            authorized_credentials = Credentials.from_authorized_user_info(info=credentials_info, scopes=SCOPES)
+        except ValueError:
+            raise ValueError("Could not approve credentials.")
 
         if not authorized_credentials.valid and authorized_credentials.expired and authorized_credentials.refresh_token:
             authorized_credentials.refresh(Request())
@@ -153,10 +150,9 @@ def get_credentials():
     return authorized_credentials
 
 # Google Calendar APIから予定を取得する関数
+# @return       None            異常終了
+# @param[in]    schedule_kind   取得するスケジュールの種類
 def get_calendar_event(schedule_kind: schedule_kind):
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
 
     events_list = {}
     schedule_list = []
@@ -164,8 +160,13 @@ def get_calendar_event(schedule_kind: schedule_kind):
     start_date, end_date = get_schedule_time(schedule_kind)
 
     # 資格情報の取得
-    creds = get_credentials()
-    if creds == -1:
+    try:
+        creds = get_credentials()
+    except ValueError:
+        logger.warning("Failed to getting credentials of google_api")
+        return None
+    except Exception as ex:
+        logger.warning(ex)
         return None
 
     start = start_date.isoformat() + 'Z'

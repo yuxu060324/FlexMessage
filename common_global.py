@@ -39,6 +39,7 @@ def set_env():
     os.environ['LINE_BOT_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
     os.environ['USER_ID'] = line_bot_info['USER_ID']
 
+    # すでに資格情報がインストールされている場合(token.jsonを参照)
     if google_calendar_credentials_installed:
 
         # GOOGLE CALENDAR API CREDENTIALS
@@ -51,6 +52,9 @@ def set_env():
             environ_key = "GOOGLE_CALENDAR_CREDENTIALS_" + key.upper()
             os.environ[environ_key] = google_calendar_token[key]
 
+        logger.info('##### テスト環境(API_Credentials)用変数を環境変数に登録しました #####')
+
+    # 資格情報がまだインストールされていない場合
     else:
 
         # GOOGLE CALENDAR API INSTALL CREDENTIALS
@@ -65,7 +69,7 @@ def set_env():
         os.environ["GOOGLE_CALENDAR_INSTALL_CLIENT_SECRET"] = google_calendar_install_info["client_secret"]
         os.environ["GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS"] = google_calendar_install_info["redirect_uris"][0]
 
-    logger.info("##### テスト環境用変数を環境変数に登録しました #####")
+        logger.info("##### テスト環境(Install_Credentials)用変数を環境変数に登録しました #####")
 
 # URL check
 def checkURL(url):
