@@ -143,7 +143,7 @@ EVENT_KIND = {
 # Footer
 # -------------------------------
 
-FOOTER_URL = "https://google.com/"
+FOOTER_URL = "https://www.google.com/"
 GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/r'
 
 # -------------------------------

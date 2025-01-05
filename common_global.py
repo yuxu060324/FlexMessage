@@ -1,11 +1,9 @@
-# 主にmain.pyまで使用するグローバル変数の定義
-# main.pyで使用しない定義はここに公開しない用に修正する
-
 import os
 import json
 import logging
 import urllib.request
 from enum import Enum
+from dotenv import load_dotenv
 
 # Get value for setting
 
@@ -13,6 +11,7 @@ HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
 GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
 log_file_name = "project"
+
 
 # logger
 def getMyLogger(name):
@@ -27,16 +26,17 @@ def getMyLogger(name):
     logger.addHandler(handler)
     return logger
 
+
 # 環境変数を設定するための関数( Debug用 = 本番ではデプロイ環境に直接設定する )
 def set_env():
-
     google_calendar_credentials_installed = False
 
     # LINE FLEX MESSAGE API
     key_filepath = os.path.join(HOME_ABSPATH, "Key", "line_bot_info.json")
     with open(key_filepath) as file:
         line_bot_info = json.load(file)
-    os.environ['LINE_BOT_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
+    os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
+    os.environ['LINE_BOT_CHANNEL_SECRET'] = line_bot_info['CHANNEL_SECRET']
     os.environ['USER_ID'] = line_bot_info['USER_ID']
 
     # すでに資格情報がインストールされている場合(token.jsonを参照)
@@ -48,7 +48,6 @@ def set_env():
             google_calendar_token = json.load(file)
 
         for key in google_calendar_token.keys():
-
             environ_key = "GOOGLE_CALENDAR_CREDENTIALS_" + key.upper()
             os.environ[environ_key] = google_calendar_token[key]
 
@@ -71,6 +70,7 @@ def set_env():
 
         logger.info("##### テスト環境(Install_Credentials)用変数を環境変数に登録しました #####")
 
+
 # URL check
 def checkURL(url):
     try:
@@ -82,8 +82,20 @@ def checkURL(url):
         logger.warning(f'Error: {e}')
         return False
 
+
+# 環境変数の設定
+def set_environ(build_env: str):
+    if build_env == "LOCAL":
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local.env"))
+    elif build_env == "FLASK_LOCAL":
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "flask_local.env"))
+    else:
+        raise ValueError
+
+
 # loggerの定義
 logger = getMyLogger(__name__)
+
 
 # Google Calendarで取得する予定の種類
 class schedule_kind(Enum):
@@ -91,4 +103,3 @@ class schedule_kind(Enum):
     TOMORROW = 1,
     WEEKLY = 2,
     NUM_KIND = 3
-

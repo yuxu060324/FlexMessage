@@ -77,12 +77,14 @@ def get_credentials():
     if (
         not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN" in os.environ or
         not "GOOGLE_CALENDAR_CREDENTIALS_REFRESH_TOKEN" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN_URL" in os.environ or
+        not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN_URI" in os.environ or
         not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_ID" in os.environ or
         not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_SECRET" in os.environ or
         not "GOOGLE_CALENDAR_CREDENTIALS_SCOPES" in os.environ or
         not "GOOGLE_CALENDAR_CREDENTIALS_EXPIRY" in os.environ
     ):
+
+        logger.info("電子情報が未登録、または不足しています。")
 
         # 環境変数の確認(credentials installed)
         if (
@@ -117,7 +119,11 @@ def get_credentials():
         )
         authorized_credentials = flow.run_local_server(port=0)
 
+        logger.info("トークン情報を登録しました。")
+
     else:
+
+        logger.info("電子情報が登録されています。")
 
         credentials_keys = {key for key in os.environ.keys() if key.startswith("GOOGLE_CALENDAR_CREDENTIALS_")}
         credentials_info = {}       # 初期化のみ
@@ -138,11 +144,14 @@ def get_credentials():
         if not authorized_credentials.valid and authorized_credentials.expired and authorized_credentials.refresh_token:
             authorized_credentials.refresh(Request())
 
+        logger.info("トークン情報を登録しました。")
+
     # 環境変数の更新
     # update_environ_credentials(credentials=authorized_credentials.to_json())
 
     # デバッグ用(HOME_ABSPATH/Key/token.jsonに保存)
     if __debug__:
+        logger.debug("電子情報をtoken.jsonに記載します。")
         debug_token_file_path = os.path.join(HOME_ABSPATH, "Key", "token.json")
         with open(debug_token_file_path, "w") as token_file:
             token_file.write(authorized_credentials.to_json())
@@ -166,16 +175,17 @@ def get_calendar_event(schedule_kind: schedule_kind):
         logger.warning("Failed to getting credentials of google_api")
         return None
     except Exception as ex:
-        logger.warning(ex)
+        logger.warning("Failed to getting credentials anything")
         return None
 
-    start = start_date.isoformat() + 'Z'
-    end = end_date.isoformat() + 'Z'
+    start = start_date.isoformat() + 'Z'    # Googleカレンダーのイベントを取得する開始日
+    end = end_date.isoformat() + 'Z'        # Googleカレンダーのイベントを取得する終了日
 
     # Google Calendar APIから予定を取得してくる
     try:
         service = build('calendar', 'v3', credentials=creds)
 
+        # Google APIでカレンダーのイベントを取得する
         events_result = service.events().list(
             calendarId='primary',
             timeMin=start,
@@ -203,13 +213,17 @@ def get_calendar_event(schedule_kind: schedule_kind):
         #  'reminders', {'useDefault': True}
         #  'eventType'  default
 
+    # エラー時の処理
     except HttpError as error:
         logger.warning('An error occurred: %s' % error)
         return None
 
-    if not events:
-        logger.warning('No upcoming events found.')
-        return None
+    # スケジュールのステータスチェック
+    for event in events:
+        dt = event['start'].get('dateTime', event['start'].get('date'))
+        if dt == None:
+            logger.warning("Event does not include \"start_dateTime\"")
+            return None
 
     # 返却用リストの更新
     logger.debug(f'Start_time of getting user schedule: {start_date}')
@@ -220,19 +234,17 @@ def get_calendar_event(schedule_kind: schedule_kind):
     logger.info(f'Number getting event: {len_event}')
     events_list.update(len_event=len_event)
 
-    # スケジュールのステータスチェック
-    for event in events:
-        dt = event['start'].get('dateTime', event['start'].get('date'))
-        if dt == None:
-            logger.warning("Event does not include \"start_dateTime\"")
-            return None
+    # イベントが何もない(予定なし)の場合は、初期値のまま返却
+    if not events:
+        logger.warning('No upcoming events found.')
+        return events_list
 
     schedule_date = start_date
 
     # データの正規化をする
     while (end_date != schedule_date):
 
-        schedule_list_days = []
+        schedule_list_days = []     # 1日分の予定の情報を格納するリスト
 
         for event in events:
 
