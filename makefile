@@ -26,7 +26,5 @@ NGROK_RUN:
 
 # ‰^—p—p
 FLASK_RENDER:
-	set SET_BUILD_ENV=FLASK_HEROKU
-	set FLASK_APP = app.py
-	flask run --reload --port 5000
+	gunicorn app:app --max-requests 10
 
