@@ -38,6 +38,15 @@ def hello_world():
 def home():
     return "HOME"
 
+@app.route("/log")
+def check_log():
+
+    # ログファイルの中身を取得
+    path = os.path.join(HOME_ABSPATH, "log", "project.log")
+    with open(path) as file:
+        message = json.load(file)
+
+    return message
 
 # LINEのユーザからの情報を受け取る。
 @app.route("/callback", methods=['POST'])
