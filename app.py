@@ -46,6 +46,9 @@ def check_log():
     with open(path) as file:
         message = json.load(file)
 
+    if message is None:
+        message = "Not log"
+
     return message
 
 # LINEのユーザからの情報を受け取る。
