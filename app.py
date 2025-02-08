@@ -41,10 +41,13 @@ def home():
 @app.route("/log")
 def check_log():
 
+    message = None
+
     # ログファイルの中身を取得
     path = os.path.join(HOME_ABSPATH, "log", "project.log")
-    with open(path) as file:
-        message = json.load(file)
+    if os.path.isdir(path) and os.path.isfile(path):
+        with open(path) as file:
+            message = json.load(file)
 
     if message is None:
         message = "Not log"
