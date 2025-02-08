@@ -1,6 +1,8 @@
 import os
+import sys
 import json
 import logging
+from logging import StreamHandler
 import urllib.request
 from enum import Enum
 from dotenv import load_dotenv
@@ -16,29 +18,43 @@ log_file_name = "project"
 # logger
 def getMyLogger(name):
 
-    print("Create Logger")
+    my_logger = logging.getLogger(name)
 
-    log_file_path = os.path.join(HOME_ABSPATH, "log", f'{log_file_name}.log')
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    # デプロイ環境
+    if os.getenv("SET_BUILD") == "FLASK_RENDER":
+        my_logger.setLevel(logging.INFO)
 
-    # ディレクトリの存在確認
-    if not os.path.isdir(os.path.join(HOME_ABSPATH, "log")):
-        # ディレクトリの作成
-        os.makedirs(os.path.join(HOME_ABSPATH, "log"))
-        # ファイルの存在確認
-        if not os.path.isfile(log_file_path):
-            # ファイルの作成
-            with open(log_file_path, "w"):
-                print(f'file created:{log_file_path}')
-                pass
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    handler = logging.FileHandler(log_file_path, encoding="utf-8")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(levelname)-9s %(asctime)s [%(filename)s:%(lineno)d %(funcName)s] %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
+        handler.setFormatter(formatter)
+        my_logger.addHandler(handler)
+
+    # デバッグ環境
+    else:
+
+        log_file_path = os.path.join(HOME_ABSPATH, "log", f'{log_file_name}.log')
+        my_logger.setLevel(logging.DEBUG)
+
+        # ディレクトリの存在確認
+        if not os.path.isdir(os.path.join(HOME_ABSPATH, "log")):
+            # ディレクトリの作成
+            os.makedirs(os.path.join(HOME_ABSPATH, "log"))
+            # ファイルの存在確認
+            if not os.path.isfile(log_file_path):
+                # ファイルの作成
+                with open(log_file_path, "w"):
+                    pass
+
+        handler = logging.FileHandler(log_file_path, encoding="utf-8")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(levelname)-9s %(asctime)s [%(filename)s:%(lineno)d %(funcName)s] %(message)s')
+
+        handler.setFormatter(formatter)
+        my_logger.addHandler(handler)
+
+    return my_logger
 
 
 # 環境変数を設定するための関数( Debug用 = 本番ではデプロイ環境に直接設定する )
