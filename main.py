@@ -40,7 +40,7 @@ def main():
     logger.debug(f'payload: {payload}')
 
     # jsonファイルに書き込む(Debug用)
-    path = ".//FlexMessageDictionary//body_event.json"
+    path = "TemplateMessage/error_message.json"
     with open(path, "w") as f:
         json.dump(payload, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 

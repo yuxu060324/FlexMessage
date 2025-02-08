@@ -1,0 +1,59 @@
+{
+  "type": "bubble",
+  "header": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "ERROR",
+        "weight": "bold",
+        "color": "#cc0000",
+        "size": "sm"
+      },
+      {
+        "type": "text",
+        "text": "エラーが発生しています🙇‍♀️",
+        "weight": "bold",
+        "size": "lg",
+        "margin": "md"
+      }
+    ]
+  },
+  "hero": {
+    "type": "image",
+    "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+    "size": "full",
+    "margin": "none",
+    "offsetTop": "none",
+    "offsetBottom": "none",
+    "offsetStart": "none",
+    "offsetEnd": "none",
+    "aspectMode": "fit",
+    "aspectRatio": "16:11"
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "現在、サービスを復旧しています。",
+        "size": "sm"
+      },
+      {
+        "type": "text",
+        "text": "今しばらくお待ちください。",
+        "size": "sm"
+      }
+    ]
+  },
+  "styles": {
+    "hero": {
+      "separator": false
+    },
+    "footer": {
+      "separator": true
+    }
+  }
+}

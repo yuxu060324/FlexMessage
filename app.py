@@ -13,7 +13,8 @@ from linebot.models import (
 from GoogleSchedule import get_calendar_event
 from JsonControl import (
     package_message_one_day,
-    package_carousel_message
+    package_carousel_message,
+    package_message_error
 )
 
 if os.getenv("SET_BUILD") != "FLASK_RENDER":
@@ -76,15 +77,21 @@ def handle_message(event):
     elif event.message.text == "1週間の予定":
         get_schedule_kind = schedule_kind.WEEKLY
 
-    # Googleカレンダーから予定の取得
-    events = get_calendar_event(schedule_kind=get_schedule_kind)
+    try:
+        # Googleカレンダーから予定の取得
+        events = get_calendar_event(schedule_kind=get_schedule_kind)
 
-    if get_schedule_kind == schedule_kind.WEEKLY:
-        payload = package_carousel_message(schedule_dict=events)
-    else:
-        payload = package_message_one_day(events_list=events)
+        if get_schedule_kind == schedule_kind.WEEKLY:
+            payload = package_carousel_message(schedule_dict=events)
+        else:
+            payload = package_message_one_day(events_list=events)
 
-    logger.debug(f'payload: {payload}')
+        # ログファイルに出力
+        logger.debug(f'payload: {payload}')
+
+    except Exception as e:
+        payload = package_message_error()
+        logger.warning(e)
 
     if payload is not None:
         # FlexMessage形式のメッセージ作成

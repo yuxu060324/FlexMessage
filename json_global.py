@@ -8,7 +8,7 @@ except ImportError:
 
 DAY_OF_WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
-message_template_folder_name = "FlexMessageDictionary"
+message_template_folder_name = "TemplateMessage"
 
 icon_folder_name = "icon_image/"
 event_icon_folder_name = "event/"

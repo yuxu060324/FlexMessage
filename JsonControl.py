@@ -11,6 +11,8 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 
+# エラー時にユーザーに送信するメッセージを記載しているファイルのPATH
+ERROR_MESSAGE_FILE_PATH = os.path.join(HOME_ABSPATH, "TemplateMessage", "error_message.json")
 
 # boxで囲むだけの関数
 def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
@@ -529,5 +531,12 @@ def package_carousel_message(schedule_dict: dict):
     }
 
     logger.debug("Finished set up package_carousel_message")
+
+    return _message
+
+def package_message_error():
+
+    with open(ERROR_MESSAGE_FILE_PATH, "r") as file:
+        _message = json.load(file)
 
     return _message
