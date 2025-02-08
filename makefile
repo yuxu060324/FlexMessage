@@ -22,10 +22,10 @@ NGROK_RUN:
 	ngrok http 8080
 
 # "make" オプション
-.PHONY: FLASK_HEROKU
+.PHONY: FLASK_RENDER
 
 # 運用用
-FLASK_HEROKU:
+FLASK_RENDER:
 	set SET_BUILD_ENV=FLASK_HEROKU
 	set FLASK_APP = app.py
 	flask run --reload --port 5000
