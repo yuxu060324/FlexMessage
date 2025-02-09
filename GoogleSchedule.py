@@ -10,12 +10,13 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from common_global import *
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
+
 # 予定表から取得する開始日時と終了日時を設定する関数
 def get_schedule_time(kind: schedule_kind):
-
     today_date = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
 
     if kind == schedule_kind.TODAY:
@@ -36,11 +37,12 @@ def get_schedule_time(kind: schedule_kind):
         end_date = start_date + datetime.timedelta(days=1)
 
     return start_date, end_date
+
+
 # WEEKLYを今週と来週、今からの3つ用意したいな
 
 # Google Calendar APIの資格情報の環境変数を更新する
 def update_environ_credentials(credentials: str):
-
     # return cls(
     #     token=info.get("token"),
     #     refresh_token=info.get("refresh_token"),
@@ -70,31 +72,31 @@ def update_environ_credentials(credentials: str):
 
     logger.info("###### Google Calendar APIの資格情報を更新しました。 ######")
 
+
 # Google Calendar APIの資格情報を取得する
 def get_credentials():
-
     # 環境変数の確認(credentials)
     if (
-        not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_REFRESH_TOKEN" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN_URI" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_ID" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_SECRET" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_SCOPES" in os.environ or
-        not "GOOGLE_CALENDAR_CREDENTIALS_EXPIRY" in os.environ
+            not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_REFRESH_TOKEN" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN_URI" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_ID" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_SECRET" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_SCOPES" in os.environ or
+            not "GOOGLE_CALENDAR_CREDENTIALS_EXPIRY" in os.environ
     ):
 
         logger.info("電子情報が未登録、または不足しています。")
 
         # 環境変数の確認(credentials installed)
         if (
-            not "GOOGLE_CALENDAR_INSTALL_CLIENT_ID" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_PROJECT_ID" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_AUTH_URI" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_TOKEN_URI" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_AUTH_PROVIDER" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_CLIENT_SECRET" in os.environ or
-            not "GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS" in os.environ
+                not "GOOGLE_CALENDAR_INSTALL_CLIENT_ID" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_PROJECT_ID" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_AUTH_URI" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_TOKEN_URI" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_AUTH_PROVIDER" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_CLIENT_SECRET" in os.environ or
+                not "GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS" in os.environ
         ):
             # 2種類の資格がどっちも環境変数に設定されていない場合はエラー
             raise ValueError("Token is not registered in environment variable.")
@@ -126,7 +128,7 @@ def get_credentials():
         logger.info("電子情報が登録されています。")
 
         credentials_keys = {key for key in os.environ.keys() if key.startswith("GOOGLE_CALENDAR_CREDENTIALS_")}
-        credentials_info = {}       # 初期化のみ
+        credentials_info = {}  # 初期化のみ
 
         for key in credentials_keys:
 
@@ -141,7 +143,13 @@ def get_credentials():
         except ValueError:
             raise ValueError("Could not approve credentials.")
 
-        if not authorized_credentials.valid and authorized_credentials.expired and authorized_credentials.refresh_token:
+        logger.debug(f'authorized_credentials.valid: {authorized_credentials.valid}')
+        logger.debug(f'authorized_credentials.expired: {authorized_credentials.expired}')
+        logger.debug(f'authorized_credentials.refresh_token: {authorized_credentials.refresh_token}')
+
+        if (not authorized_credentials.valid
+                and authorized_credentials.expired
+                and authorized_credentials.refresh_token):
             authorized_credentials.refresh(Request())
 
         logger.info("トークン情報を登録しました。")
@@ -158,11 +166,11 @@ def get_credentials():
 
     return authorized_credentials
 
+
 # Google Calendar APIから予定を取得する関数
 # @return       None            異常終了
 # @param[in]    schedule_kind   取得するスケジュールの種類
 def get_calendar_event(schedule_kind: schedule_kind):
-
     events_list = {}
     schedule_list = []
 
@@ -180,8 +188,8 @@ def get_calendar_event(schedule_kind: schedule_kind):
         logger.warning(ex)
         return None
 
-    start = start_date.isoformat() + 'Z'    # Googleカレンダーのイベントを取得する開始日
-    end = end_date.isoformat() + 'Z'        # Googleカレンダーのイベントを取得する終了日
+    start = start_date.isoformat() + 'Z'  # Googleカレンダーのイベントを取得する開始日
+    end = end_date.isoformat() + 'Z'  # Googleカレンダーのイベントを取得する終了日
 
     # Google Calendar APIから予定を取得してくる
     try:
@@ -246,7 +254,7 @@ def get_calendar_event(schedule_kind: schedule_kind):
     # データの正規化をする
     while (end_date != schedule_date):
 
-        schedule_list_days = []     # 1日分の予定の情報を格納するリスト
+        schedule_list_days = []  # 1日分の予定の情報を格納するリスト
 
         for event in events:
 
@@ -307,4 +315,3 @@ def get_calendar_event(schedule_kind: schedule_kind):
     logger.info(events_list)
 
     return events_list
-

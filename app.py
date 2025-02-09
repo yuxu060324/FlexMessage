@@ -95,7 +95,7 @@ def handle_message(event):
 
         if events is None:
             logger.warning("Events is Empty")
-            raise EnvironmentError
+            raise EnvironmentError("Could not retrieve event.")
 
         if get_schedule_kind == schedule_kind.WEEKLY:
             payload = package_carousel_message(schedule_dict=events)
