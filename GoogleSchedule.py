@@ -171,11 +171,13 @@ def get_calendar_event(schedule_kind: schedule_kind):
     # 資格情報の取得
     try:
         creds = get_credentials()
-    except ValueError:
+    except ValueError as ex:
         logger.warning("Failed to getting credentials of google_api")
+        logger.warning(ex)
         return None
     except Exception as ex:
         logger.warning("Failed to getting credentials anything")
+        logger.warning(ex)
         return None
 
     start = start_date.isoformat() + 'Z'    # Googleカレンダーのイベントを取得する開始日

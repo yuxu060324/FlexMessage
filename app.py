@@ -93,6 +93,10 @@ def handle_message(event):
         # Googleカレンダーから予定の取得
         events = get_calendar_event(schedule_kind=get_schedule_kind)
 
+        if events is None:
+            logger.warning("Events is Empty")
+            raise EnvironmentError
+
         if get_schedule_kind == schedule_kind.WEEKLY:
             payload = package_carousel_message(schedule_dict=events)
         else:
