@@ -59,9 +59,8 @@ def update_environ_credentials(credentials: str):
     # )
 
     credentials_info = json.loads(credentials)
-    credentials_keys = credentials_info.keys()
 
-    for key in credentials_keys:
+    for key in credentials_info.keys():
         environ_name = "GOOGLE_CALENDAR_CREDENTIALS_" + key.upper()
 
         if environ_name == "GOOGLE_CALENDAR_CREDENTIALS_SCOPES":
@@ -139,18 +138,21 @@ def get_credentials():
                 credentials_info[key_name] = os.environ[key]
 
         try:
+
+            # 電子情報の取得
             authorized_credentials = Credentials.from_authorized_user_info(info=credentials_info, scopes=SCOPES)
+
+            # 電子情報のリフレッシュ
+            if (not authorized_credentials.valid
+                    and authorized_credentials.expired
+                    and authorized_credentials.refresh_token):
+                authorized_credentials.refresh(Request())
+
         except ValueError:
             raise ValueError("Could not approve credentials.")
 
-        logger.debug(f'authorized_credentials.valid: {authorized_credentials.valid}')
-        logger.debug(f'authorized_credentials.expired: {authorized_credentials.expired}')
-        logger.debug(f'authorized_credentials.refresh_token: {authorized_credentials.refresh_token}')
-
-        if (not authorized_credentials.valid
-                and authorized_credentials.expired
-                and authorized_credentials.refresh_token):
-            authorized_credentials.refresh(Request())
+        except Exception as e:
+            logger.warning(f'{e.__class__.__name__}: {e}')
 
         logger.info("トークン情報を登録しました。")
 

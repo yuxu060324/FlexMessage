@@ -71,7 +71,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+
     get_schedule_kind = schedule_kind.NUM_KIND
+
+    logger.info(f'Event: {event}')
 
     if (event.message.text != "今日の予定" and
             event.message.text != "明日の予定" and
@@ -107,7 +110,7 @@ def handle_message(event):
 
     except Exception as e:
         payload = package_message_error()
-        logger.warning(e)
+        logger.warning(f'{e.__class__.__name__}: {e}')
 
     if payload is not None:
         # FlexMessage形式のメッセージ作成
