@@ -185,9 +185,9 @@ def get_calendar_event(schedule_kind: schedule_kind):
         logger.warning("Failed to getting credentials of google_api")
         logger.warning(ex)
         return None
-    except Exception as ex:
+    except Exception as e:
         logger.warning("Failed to getting credentials anything")
-        logger.warning(ex)
+        logger.warning(f'{e.__class__.__name__}: {e}')
         return None
 
     start = start_date.isoformat() + 'Z'  # Googleカレンダーのイベントを取得する開始日
