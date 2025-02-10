@@ -122,6 +122,7 @@ def get_credentials():
             authorized_credentials = flow.run_local_server(port=0)
 
         except Exception as e:
+            logger.debug(install_credentials_info)
             logger.warning(f'{e.__class__.__name__}: {e}')
             raise EnvironmentError("Could not install credentials.")
 
@@ -154,9 +155,11 @@ def get_credentials():
                 authorized_credentials.refresh(Request())
 
         except ValueError:
+            logger.debug(credentials_info)
             raise ValueError("Could not approve credentials.")
 
         except Exception as e:
+            logger.debug(credentials_info)
             logger.warning(f'{e.__class__.__name__}: {e}')
 
         logger.info("トークン情報を登録しました。")
