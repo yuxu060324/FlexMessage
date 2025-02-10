@@ -114,11 +114,16 @@ def get_credentials():
             }
         }
 
-        flow = InstalledAppFlow.from_client_config(
-            client_config=install_credentials_info,
-            scopes=SCOPES
-        )
-        authorized_credentials = flow.run_local_server(port=0)
+        try:
+            flow = InstalledAppFlow.from_client_config(
+                client_config=install_credentials_info,
+                scopes=SCOPES
+            )
+            authorized_credentials = flow.run_local_server(port=0)
+
+        except Exception as e:
+            logger.warning(f'{e.__class__.__name__}: {e}')
+            raise EnvironmentError("Could not install credentials.")
 
         logger.info("トークン情報を登録しました。")
 
