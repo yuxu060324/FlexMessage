@@ -1,7 +1,6 @@
 # "make"で実行
 default:
-	set SET_BUILD_ENV=LOCAL
-	python main.py
+	python -O main.py
 
 # "make" オプション
 .PHONY: FLASK_LOCAL
@@ -9,7 +8,6 @@ default:
 # "make FLASK_LOCAL"
 # local環境での接続確認用
 FLASK_LOCAL:
-	set SET_BUILD_ENV=FLASK_LOCAL
 	set FLASK_APP=app.py
 	set FLASK_DEBUG=1
 	flask run --reload --port 8080

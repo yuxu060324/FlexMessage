@@ -42,6 +42,7 @@ def get_schedule_time(kind: schedule_kind):
 # WEEKLYを今週と来週、今からの3つ用意したいな
 
 # Google Calendar APIの資格情報の環境変数を更新する
+# credentials.to_json()の返り値が"str"型
 def update_environ_credentials(credentials: str):
     # return cls(
     #     token=info.get("token"),
@@ -69,6 +70,13 @@ def update_environ_credentials(credentials: str):
         else:
             os.environ[environ_name] = credentials_info[key]
 
+    # デバッグ用(HOME_ABSPATH/Key/token.jsonに保存)
+    if os.getenv("SET_BUILD") == "LOCAL":
+        logger.debug("電子情報をtoken.jsonに記載します。")
+        debug_token_file_path = os.path.join(HOME_ABSPATH, "Key", "token.json")
+        with open(debug_token_file_path, "w", encoding="utf-8") as token_file:
+            json.dump(credentials_info, token_file, ensure_ascii=False, indent=4)
+
     logger.info("###### Google Calendar APIの資格情報を更新しました。 ######")
 
 
@@ -84,6 +92,8 @@ def get_credentials():
             not "GOOGLE_CALENDAR_CREDENTIALS_SCOPES" in os.environ or
             not "GOOGLE_CALENDAR_CREDENTIALS_EXPIRY" in os.environ
     ):
+
+        # 初期設定時(デバッグ)
 
         logger.info("電子情報が未登録、または不足しています。")
 
@@ -128,6 +138,7 @@ def get_credentials():
 
         logger.info("トークン情報を登録しました。")
 
+    # Google Auth インストール済み(運用)
     else:
 
         logger.info("電子情報が登録されています。")
@@ -165,14 +176,7 @@ def get_credentials():
         logger.info("トークン情報を登録しました。")
 
     # 環境変数の更新
-    # update_environ_credentials(credentials=authorized_credentials.to_json())
-
-    # デバッグ用(HOME_ABSPATH/Key/token.jsonに保存)
-    if __debug__:
-        logger.debug("電子情報をtoken.jsonに記載します。")
-        debug_token_file_path = os.path.join(HOME_ABSPATH, "Key", "token.json")
-        with open(debug_token_file_path, "w") as token_file:
-            token_file.write(authorized_credentials.to_json())
+    update_environ_credentials(credentials=authorized_credentials.to_json())
 
     return authorized_credentials
 

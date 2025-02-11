@@ -9,7 +9,7 @@ from JsonControl import (
 )
 
 # テスト環境で使用する変数を環境変数に登録
-set_environ(build_env="LOCAL")
+set_environ(build_env="LOCAL_INSTALLED")
 
 # LINEBotのアクセストークンの初期設定
 line_bot_api = LineBotApi(os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'])
@@ -50,5 +50,5 @@ def main():
 
 if __name__ == "__main__":
     logger.info("---------- Debug --------------")
-    # main()
+    main()
     logger.info("---------- Debug --------------")

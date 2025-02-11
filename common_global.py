@@ -117,6 +117,8 @@ def checkURL(url):
 def set_environ(build_env: str):
     if build_env == "LOCAL":
         load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local.env"))
+    if build_env == "LOCAL_INSTALLED":
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local_installed.env"))
     elif build_env == "FLASK_LOCAL":
         load_dotenv(os.path.join(HOME_ABSPATH, "Key", "flask_local.env"))
     else:
