@@ -77,8 +77,7 @@ WEATHER_CODE = {
 
 WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, icon_folder_name,
                                            weather_icon_folder_name, weather_code_list_file_name)
-OUT_FOLDER_PATH = "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
-# os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
+OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
 
 HERO_SIZE = (480, 270)
 
@@ -108,7 +107,8 @@ OUT_FILE_PATH_WEATHER_MAP = os.path.join(OUT_FOLDER_PATH, out_file_name_weather_
 OUT_FILE_PATH_TEMPERATURE = os.path.join(OUT_FOLDER_PATH, out_file_name_temperature + ".png")
 
 # hero設定用URL
-OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
+OUT_FILE_PATH_HERO = "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
+# urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
 
 # -------------------------------
 # Body

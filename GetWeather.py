@@ -3,7 +3,7 @@ import os
 from common_global import *
 from json_global import *
 from PIL import Image, ImageDraw, ImageFont
-import urllib.request, urllib.error
+from urllib import request, error
 
 try:
     import urlparse
@@ -363,8 +363,8 @@ def create_temperature_icon(temperature_list: list):
 # - このファイルに定義している関数は、この関数以外、直接呼び出さないようにする
 # - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
-    # デバッグ用の処理
-    return OUT_FILE_PATH_HERO
+    # # デバッグ用の処理
+    # return OUT_FILE_PATH_HERO
 
     # 気象庁のAPIから東京都のjsonデータを取得
     jma_url = 'https://www.jma.go.jp/bosai/forecast/data/forecast/{0}.json'.format(place_code)
@@ -379,22 +379,31 @@ def get_weather(place_code="130000"):
     jma_weather = jma_json[0]["timeSeries"][0]["areas"][0]["weathers"][-1]
     jma_weather = jma_weather.replace("\u3000", " ")    # 空白文字の置き換え
     logger.info(f"weather: {jma_weather}")
-    if create_detail_weather(jma_weather) == -1:
+    try:
+        create_detail_weather(jma_weather)
+    except Exception as e:
         logger.warning(f'ERROR: create_detail_weather(): jma_weather={jma_weather}')
+        logger.warning(f'{e.__class__.__name__}: {e}')
         return None
 
     # 天気コードの情報取得
     jma_weather_code = int(jma_json[0]["timeSeries"][0]["areas"][0]["weatherCodes"][-1])
     logger.info(f"weather_code: {jma_weather_code}")
-    if create_weather_icon(jma_weather_code) == -1:
+    try:
+        create_weather_icon(jma_weather_code)
+    except Exception as e:
         logger.warning(f'ERROR: create_weather_icon(): jma_weather_code={jma_weather_code}')
+        logger.warning(f'{e.__class__.__name__}: {e}')
         return None
 
     # 東京地方(area_code=130010)の最高/最低気温
     jma_temp = jma_json[0]["timeSeries"][2]["areas"][0]["temps"]
     logger.info(f"temps: {jma_temp}")
-    if create_temperature_icon(jma_temp) == -1:
+    try:
+        create_temperature_icon(jma_temp)
+    except Exception as e:
         logger.warning(f'ERROR: create_temperature_icon(): jma_temp={jma_temp}')
+        logger.warning(f'{e.__class__.__name__}: {e}')
         return None
 
     # 作成した画像から一つの画像を作成する

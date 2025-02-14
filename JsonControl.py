@@ -197,7 +197,7 @@ def get_icon(icon_kind, icon_file_kind):
     # icon_file_pathがインターネット上に公開されている場合
     try:
         with urllib.request.urlopen(icon_file_path) as file:
-            logger.info(f'{icon_file_path} is exist')
+            logger.debug(f'{icon_file_path} is exist')
         return icon_file_path
 
     except:
@@ -509,8 +509,6 @@ def _package_message_one_day_none_image(date: datetime.datetime, events_list: li
 # 一週間のスケジュールを出力する用(carouselで日にちごとにbubbleを作成してメッセージを作成)
 def package_carousel_message(schedule_dict: dict):
 
-    logger.debug("call package_carousel_message")
-
     bubble_dict = []
 
     if 'start_date' not in schedule_dict or 'schedule_list' not in schedule_dict:
@@ -535,7 +533,7 @@ def package_carousel_message(schedule_dict: dict):
         "contents": bubble_dict
     }
 
-    logger.debug("Finished set up package_carousel_message")
+    logger.info("Finished set up package_carousel_message")
 
     return _message
 
