@@ -77,7 +77,8 @@ WEATHER_CODE = {
 
 WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, icon_folder_name,
                                            weather_icon_folder_name, weather_code_list_file_name)
-OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
+OUT_FOLDER_PATH = "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
+# os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
 
 HERO_SIZE = (480, 270)
 
