@@ -53,6 +53,8 @@ def save_image(img, name):
 
     img.save(image_path, quality=95)
 
+    logger.debug(f'Finished to save a picture: {image_path}')
+
 
 def get_sample_weather_icon(weather_code=None):
     # 返却するアイコンを格納する変数
@@ -318,7 +320,9 @@ def create_detail_weather(weather_detail: str):
     # font = ImageFont.truetype("meiryo.ttc", 12)
     draw.text(xy=weather_detail_position,
               text=weather_detail,
-              fill="black", anchor="mm")
+              fill="black",
+              # font=font,
+              anchor="mm")
 
     # 画像の保存
     save_image(img, name="detail_weather")
