@@ -250,6 +250,7 @@ def create_weather_icon_temporary(weather_before=None, weather_after=None):
 
 
 def create_weather_icon(jma_weather_code=None):
+
     # パラメータチェック
     if jma_weather_code is None:
         logger.warning("weather_code is None")
@@ -302,19 +303,22 @@ def create_weather_icon(jma_weather_code=None):
 
 
 def create_detail_weather(weather_detail: str):
+
+    # パラメータチェック
     if weather_detail == "":
         logger.warning("weather_detail does not set info")
-        return -1
+        return None
 
+    # ベース画像の作成
     img = Image.new("RGB", WEATHER_NAME_SIZE, color="white")
     draw = ImageDraw.Draw(img)
 
     # 天気の詳細情報の記載
     weather_detail_position = (int(WEATHER_NAME_SIZE[0] / 2), int(WEATHER_NAME_SIZE[1] / 2))
-    font = ImageFont.truetype("meiryo.ttc", 12)
+    # font = ImageFont.truetype("meiryo.ttc", 12)
     draw.text(xy=weather_detail_position,
               text=weather_detail,
-              fill="black", font=font, anchor="mm")
+              fill="black", anchor="mm")
 
     # 画像の保存
     save_image(img, name="detail_weather")
@@ -325,9 +329,12 @@ def create_detail_weather(weather_detail: str):
 
 
 def create_temperature_icon(temperature_list: list):
+
+    # パラメータチェック
     if len(temperature_list) < 2:
         return -1
 
+    # ベース画像の作成
     img = Image.new("RGB", TEMPERATURE_SIZE, color="white")
     draw = ImageDraw.Draw(img)
 
