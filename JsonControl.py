@@ -395,6 +395,11 @@ def _package_hero():
     # place_codeは気象庁APIを参照(130000は東京地方の場所コード)
     weather_picture_path = get_weather(place_code="130000")
 
+    # URLが設定されているかを確認
+    if weather_picture_path is None:
+        return None
+
+    # 有効なURLかを確認
     if checkURL(weather_picture_path) is not True:
         return None
 

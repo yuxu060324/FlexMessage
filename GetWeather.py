@@ -363,16 +363,21 @@ def create_temperature_icon(temperature_list: list):
 # - このファイルに定義している関数は、この関数以外、直接呼び出さないようにする
 # - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
-    # # デバッグ用の処理
-    # return OUT_FILE_PATH_HERO
-    #
+    # デバッグ用の処理
+    return OUT_FILE_PATH_HERO
+
     # 気象庁のAPIから東京都のjsonデータを取得
     jma_url = 'https://www.jma.go.jp/bosai/forecast/data/forecast/{0}.json'.format(place_code)
-    jma_json = requests.get(jma_url).json()
+    try:
+        jma_json = requests.get(jma_url).json()
+    except Exception as e:
+        logger.warning("Could not get JSON data from JMA API.")
+        logger.warning(f'{e.__class__.__name__}: {e}')
+        return None
 
     # 気象情報(詳細な情報)
     jma_weather = jma_json[0]["timeSeries"][0]["areas"][0]["weathers"][-1]
-    jma_weather = jma_weather.replace("\u3000", " ")
+    jma_weather = jma_weather.replace("\u3000", " ")    # 空白文字の置き換え
     logger.info(f"weather: {jma_weather}")
     if create_detail_weather(jma_weather) == -1:
         logger.warning(f'ERROR: create_detail_weather(): jma_weather={jma_weather}')
