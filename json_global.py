@@ -107,8 +107,9 @@ OUT_FILE_PATH_WEATHER_MAP = os.path.join(OUT_FOLDER_PATH, out_file_name_weather_
 OUT_FILE_PATH_TEMPERATURE = os.path.join(OUT_FOLDER_PATH, out_file_name_temperature + ".png")
 
 # hero設定用URL
-OUT_FILE_PATH_HERO = "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
-# urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
+OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
+
+# "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
 
 # -------------------------------
 # Body

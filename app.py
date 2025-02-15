@@ -1,5 +1,5 @@
-from flask import Flask, request, abort
-from common_global import *
+from flask import Flask, request, abort, send_from_directory
+from json_global import *
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -28,30 +28,30 @@ line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
 
 
-@app.route("/hello")
-def hello_world():
-    return "hello world!"
-
 
 @app.route("/")
 def home():
     return "HOME"
 
-@app.route("/log")
-def check_log():
+@app.route("/image/<filename>")
+def view_image(filename):
 
-    message = None
-
-    # ログファイルの中身を取得
-    path = os.path.join(HOME_ABSPATH, "log", "project.log")
-    if os.path.isdir(path) and os.path.isfile(path):
-        with open(path) as file:
-            message = json.load(file)
-
-    if message is None:
-        message = "Not log"
-
-    return message
+    return send_from_directory(ICON_OUTPUT_FOLDER_URL, filename)
+    #
+    # message = f'<img src={OUT_FILE_PATH_HERO}>'
+    #
+    # # ログファイルの中身を取得
+    # path = os.path.join(HOME_ABSPATH, "log", "project.log")
+    # if os.path.isdir(path) and os.path.isfile(path):
+    #     with open(path) as file:
+    #         message = json.load(file)
+    #
+    # OUT_FILE_PATH_HERO
+    #
+    # if message is None:
+    #     message = "Not log"
+    #
+    # return message
 
 # LINEのユーザからの情報を受け取る。
 @app.route("/callback", methods=['POST'])
