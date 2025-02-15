@@ -24,5 +24,9 @@ NGROK_RUN:
 
 # ‰^—p—p
 FLASK_RENDER:
-	gunicorn app:app --max-requests 10
+	gunicorn app:app \
+	--workers 4 \
+	--threads 2 \
+	--max-requests 10 \
+	--max_requests_jitter 5
 
