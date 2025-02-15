@@ -397,10 +397,12 @@ def _package_hero():
 
     # URLが設定されているかを確認
     if weather_picture_path is None:
+        raise ValueError("Image URL is not set.")
         return None
 
     # 有効なURLかを確認
     if checkURL(weather_picture_path) is not True:
+        raise ValueError("Invalid URL.")
         return None
 
     _message_hero = pack_image(path=weather_picture_path, size="full", aspectRatio="16:9")

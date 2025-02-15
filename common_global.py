@@ -104,6 +104,7 @@ def set_env():
 
 # URL check
 def checkURL(url):
+    logger.debug(f'Valid URL: {url}')
     try:
         f = urllib.request.urlopen(url=url)
         f.close()
