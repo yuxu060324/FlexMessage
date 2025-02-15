@@ -36,10 +36,10 @@ def home():
 @app.route("/image/<filename>")
 def view_image(filename):
 
-    logger.info(f'dirname: {ICON_OUTPUT_FOLDER_URL}')
-    logger.info(f'filename: {filename}')
+    logger.debug(f'dirname: {OUT_FOLDER_PATH}')
+    logger.debug(f'filename: {filename}')
 
-    return send_from_directory(ICON_OUTPUT_FOLDER_URL, filename)
+    return send_from_directory(OUT_FOLDER_PATH, filename)
     #
     # message = f'<img src={OUT_FILE_PATH_HERO}>'
     #
