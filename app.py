@@ -33,7 +33,7 @@ handler = WebhookHandler(CHANNEL_SECRET)
 def home():
     return "HOME"
 
-@app.route("/image/<filename>")
+@app.route("/out/<filename>")
 def view_image(filename):
 
     logger.debug(f'dirname: {OUT_FOLDER_PATH}')

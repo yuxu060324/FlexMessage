@@ -107,11 +107,11 @@ def checkURL(url):
     logger.debug(f'Valid URL: {url}')
     try:
         f = urllib.request.urlopen(url=url)
+        logger.debug(f'URL OK: {url}')
         f.close()
         return True
-    except Exception as e:
+    except:
         logger.warning(f'URL is not found: {url}')
-        logger.warning(f'Error: {e}')
         return False
 
 
