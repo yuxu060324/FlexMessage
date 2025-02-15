@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
 GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
+RENDER_PROJECT_URL = "https://lineplanbotyamanaka.onrender.com/"
 log_file_name = "project"
 
 

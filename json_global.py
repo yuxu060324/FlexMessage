@@ -24,11 +24,15 @@ weather_code_list_file_name = "weatherCodeList.json"
 
 # URL用のURL
 GITHUB_PROJECT_CONTENT_PATH_IMAGE = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH, icon_folder_name)
+RENDER_PROJECT_PATH_IMAGE = urlparse.urljoin(RENDER_PROJECT_URL, icon_folder_name)
 
 # 予定のアイコンを格納しているフォルダ
 ICON_EVENT_FOLDER_URL = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH_IMAGE, event_icon_folder_name)
 # 作成したアイコンを格納しているフォルダ
 ICON_OUTPUT_FOLDER_URL = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH_IMAGE, output_folder_name)
+
+# 作成した画像の格納しているフォルダ
+OUTPUT_IMAGE_RENDER_FOLDER_URL = urlparse.urljoin(RENDER_PROJECT_PATH_IMAGE, output_folder_name)
 
 # -------------------------------
 # Header
@@ -107,9 +111,7 @@ OUT_FILE_PATH_WEATHER_MAP = os.path.join(OUT_FOLDER_PATH, out_file_name_weather_
 OUT_FILE_PATH_TEMPERATURE = os.path.join(OUT_FOLDER_PATH, out_file_name_temperature + ".png")
 
 # hero設定用URL
-OUT_FILE_PATH_HERO = urlparse.urljoin(ICON_OUTPUT_FOLDER_URL, out_file_name_hero + ".png")
-
-# "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png"
+OUT_FILE_PATH_HERO = urlparse.urljoin(OUTPUT_IMAGE_RENDER_FOLDER_URL, out_file_name_hero + ".png")
 
 # -------------------------------
 # Body

@@ -1,6 +1,5 @@
 import requests
 import os
-from common_global import *
 from json_global import *
 from PIL import Image, ImageDraw, ImageFont
 from urllib import request, error
@@ -377,6 +376,9 @@ def get_weather(place_code="130000"):
     # # デバッグ用の処理
     # return OUT_FILE_PATH_HERO
 
+    # 表示する画像のURL
+    output_file_path = OUT_FILE_PATH_HERO
+
     # 気象庁のAPIから東京都のjsonデータを取得
     jma_url = 'https://www.jma.go.jp/bosai/forecast/data/forecast/{0}.json'.format(place_code)
     try:
@@ -430,4 +432,4 @@ def get_weather(place_code="130000"):
 
     save_image(img=img, name=out_file_name_hero)
 
-    return OUT_FILE_PATH_HERO
+    return output_file_path
