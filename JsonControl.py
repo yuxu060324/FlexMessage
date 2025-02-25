@@ -1,4 +1,3 @@
-import logging
 import os, re, datetime
 import json
 import urllib.request
@@ -14,7 +13,11 @@ except ImportError:
 # エラー時にユーザーに送信するメッセージを記載しているファイルのPATH
 ERROR_MESSAGE_FILE_PATH = os.path.join(HOME_ABSPATH, "TemplateMessage", "error_message.json")
 
-# boxで囲むだけの関数
+# ---------------------------------------------------------------------
+#                           Flex Message作成用関数
+# ---------------------------------------------------------------------
+
+# box(vertical)を作成する関数
 def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
                   paddingAll=None, paddingTop=None, backgroundColor=None, offsetStart=None, justifyContent=None,
                   cornerRadius=None, borderColor=None, borderWidth=None, alignItems=None, flex=None):
@@ -54,7 +57,8 @@ def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
     return pattern
 
 
-def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None, align=None,
+# box(horizontal)を作成する関数
+def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None, align=None, flex: int=None,
                     paddingAll=None, paddingStart=None, backgroundColor=None, offsetStart=None, alignItems=None):
     pattern = {"type": "box", "layout": "horizontal", "contents": arr}
 
@@ -78,10 +82,13 @@ def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=Non
         pattern.update(align=align)
     if alignItems is not None:
         pattern.update(alignItems=alignItems)
+    if flex is not None:
+        pattern.update(flex=flex)
 
     return pattern
 
 
+# box(baseline)を作成する関数
 def pack_baseline(arr: list, margin=None, spacing=None, width=None, height=None, paddingAll=None,
                   paddingStart=None, backgroundColor=None, offsetStart=None, offsetTop=None, alignItems=None):
     pattern = {"type": "box", "layout": "baseline", "contents": arr}
@@ -110,8 +117,9 @@ def pack_baseline(arr: list, margin=None, spacing=None, width=None, height=None,
     return pattern
 
 
-def pack_text(str, color=None, size=None, flex=None, uri=None, weight=None, margin=None, decoration=None):
-    pattern = {"type": "text", "text": str}
+# textを作成する関数
+def pack_text(text: str, color=None, size=None, flex=None, uri=None, weight=None, margin=None, decoration=None):
+    pattern = {"type": "text", "text": text}
     if color is not None:
         pattern.update(color=color)
     if size is not None:
@@ -130,6 +138,7 @@ def pack_text(str, color=None, size=None, flex=None, uri=None, weight=None, marg
     return pattern
 
 
+# imageを作成する関数
 def pack_image(path, size=None, aspectRatio=None, aspectMode=None):
     pattern = {"type": "image", "url": path}
     if size is not None:
@@ -141,6 +150,7 @@ def pack_image(path, size=None, aspectRatio=None, aspectMode=None):
     return pattern
 
 
+# iconを作成する関数
 def pack_icon(path, size, scaling=None):
     pattern = {"type": "icon", "size": size, "url": path}
     if scaling is not None:
@@ -148,14 +158,17 @@ def pack_icon(path, size, scaling=None):
     return pattern
 
 
+# separetorを作成する関数
 def pack_separator(margin="none"):
     return {"type": "separator", "margin": margin}
 
 
-def pack_filter():
-    return {"type": "filter"}
+# fillerを作成する関数(非推奨)
+def pack_filler():
+    return {"type": "filler"}
 
 
+# 円形をつくる関数
 def pack_circle(width, hegiht, cornerRadius="30px", borderColor="#ff0000", borderWidth="2px"):
     return pack_vertical(
         [
@@ -171,6 +184,60 @@ def pack_circle(width, hegiht, cornerRadius="30px", borderColor="#ff0000", borde
         flex=0,
         justifyContent="center"
     )
+
+
+# ---------------------------------------------------------------------
+#                           スケジュール用関数
+# ---------------------------------------------------------------------
+
+# 時間制限付きの予定のメッセージを作成する。
+def create_message_schedule_plan(title: str, start_time: datetime.datetime, end_time: datetime.datetime, color=None):
+
+    message_arr = []
+
+    start_time_str = start_time.strftime("%H:%M")           # datetime to str
+    end_time_str = end_time.strftime("%H:%M")               # datetime to str
+
+    # 開始位置の調整
+    if start_time.hour > 7:
+        message_arr.append(
+            pack_vertical(
+                arr=[],
+                flex=7-start_time.hour
+            ),
+        )
+
+    # 予定の追加
+    message_arr.append(
+        pack_vertical(
+            arr=[
+                pack_text(text=title, size="xxs"),
+                pack_text(text="S: " + start_time_str, size="xxs"),
+                pack_text(text="E: " + end_time_str, size="xxs")
+            ],
+            flex=end_time.hour-start_time.hour
+        )
+    )
+
+    # 終了位置の調整
+    if end_time.hour < 22:
+        message_arr.append(
+            pack_vertical(
+                arr=[],
+                flex=end_time.hour - 22
+            )
+        )
+
+    message = pack_horizontal(
+        arr=message_arr
+    )
+
+    return message
+
+
+# ---------------------------------------------------------------------
+#                           Image作成関数
+# ---------------------------------------------------------------------
 
 
 def get_icon(icon_kind, icon_file_kind):
@@ -203,6 +270,11 @@ def get_icon(icon_kind, icon_file_kind):
     except:
         logger.warning(f'{icon_file_path} does not exist')
         return None
+
+
+# ---------------------------------------------------------------------
+#                           外部呼び出し関数
+# ---------------------------------------------------------------------
 
 
 # Flex Messageのヘッダ部をパッケージする関数

@@ -373,8 +373,10 @@ def create_temperature_icon(temperature_list: list):
 # - このファイルに定義している関数は、この関数以外、直接呼び出さないようにする
 # - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
-    # # デバッグ用の処理
-    # return OUT_FILE_PATH_HERO
+
+    if os.environ["SET_BUILD"] == "LOCAL" or os.environ["SET_BUILD"] == "LOCAL_INSTALLED":
+        # デバッグ用の処理
+        return DEBUG_OUTPUT_IMAGE_URL
 
     # 表示する画像のURL
     output_file_path = OUT_FILE_PATH_HERO

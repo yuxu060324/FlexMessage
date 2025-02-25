@@ -1,19 +1,10 @@
-import os
 import sys
 import json
 import logging
 from logging import StreamHandler
 import urllib.request
-from enum import Enum
 from dotenv import load_dotenv
-
-# Get value for setting
-
-HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
-GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
-GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
-RENDER_PROJECT_URL = "https://lineplanbotyamanaka.onrender.com/"
-log_file_name = "project"
+from common_variable import *
 
 
 # logger
@@ -110,7 +101,7 @@ def checkURL(url):
         logger.debug(f'URL OK: {url}')
         f.close()
         return True
-    except:
+    except Exception:
         logger.warning(f'URL is not found: {url}')
         return False
 
@@ -119,7 +110,7 @@ def checkURL(url):
 def set_environ(build_env: str):
     if build_env == "LOCAL":
         load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local.env"))
-    if build_env == "LOCAL_INSTALLED":
+    elif build_env == "LOCAL_INSTALLED":
         load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local_installed.env"))
     elif build_env == "FLASK_LOCAL":
         load_dotenv(os.path.join(HOME_ABSPATH, "Key", "flask_local.env"))
@@ -130,10 +121,3 @@ def set_environ(build_env: str):
 # loggerの定義
 logger = getMyLogger(__name__)
 
-
-# Google Calendarで取得する予定の種類
-class schedule_kind(Enum):
-    TODAY = 0,
-    TOMORROW = 1,
-    WEEKLY = 2,
-    NUM_KIND = 3

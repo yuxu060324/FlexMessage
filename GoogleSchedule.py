@@ -185,9 +185,11 @@ def get_credentials():
 # @return       None            異常終了
 # @param[in]    schedule_kind   取得するスケジュールの種類
 def get_calendar_event(schedule_kind: schedule_kind):
-    events_list = {}
-    schedule_list = []
 
+    events_list = {}                # returnするdict
+    schedule_list = []              # events_listに格納する一日分の予定を格納するlist
+
+    # スケジュールを取得する開始時間と終了時間を取得する。
     start_date, end_date = get_schedule_time(schedule_kind)
 
     # 資格情報の取得
@@ -242,6 +244,9 @@ def get_calendar_event(schedule_kind: schedule_kind):
         logger.warning('An error occurred: %s' % error)
         return None
 
+    # イベントのログ出力
+    logger.debug(events)
+
     # スケジュールのステータスチェック
     for event in events:
         dt = event['start'].get('dateTime', event['start'].get('date'))
@@ -249,7 +254,7 @@ def get_calendar_event(schedule_kind: schedule_kind):
             logger.warning("Event does not include \"start_dateTime\"")
             return None
 
-    # 返却用リストの更新
+    # 返却用リストに開始、終了、イベント数を追加
     logger.debug(f'Start_time of getting user schedule: {start_date}')
     logger.debug(f'End_time of getting user schedule: {end_date}')
     events_list.update(start_date=start_date)
@@ -272,7 +277,7 @@ def get_calendar_event(schedule_kind: schedule_kind):
 
         for event in events:
 
-            # keyが無い方が都合が悪いため、先に定義しておく
+            # 予定1つ分の情報
             schedule_dict = {
                 "date": "%Y-%m-%d",
                 "all_day": "True",
@@ -290,9 +295,13 @@ def get_calendar_event(schedule_kind: schedule_kind):
                 # 終日の予定
                 if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
 
+                    # 開始時間の取得
                     schedule_dict["date"] = '{0:%m月%d日}'.format(
                         datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
+
+                    # 終日イベントフラグを立てる
                     schedule_dict["all_day"] = "True"
+
                     schedule_dict["start_time"] = '{0:%m月%d日}'.format(
                         datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
                     schedule_dict["end_time"] = '{0:%m月%d日}'.format(
@@ -317,7 +326,7 @@ def get_calendar_event(schedule_kind: schedule_kind):
                     schedule_dict['description'] = event['description'] if 'description' in event else "-"
                     schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
 
-                logger.info(schedule_dict)
+                logger.debug(schedule_dict)
                 schedule_list_days.append(schedule_dict)
 
         schedule_date += datetime.timedelta(days=1)

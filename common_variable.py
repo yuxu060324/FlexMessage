@@ -1,0 +1,51 @@
+import os
+from enum import Enum
+
+# --------------------------------
+# PATH
+# --------------------------------
+
+# ABSPATH(__file__)
+HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
+GITHUB_PROJECT_PATH = "https://github.com/yuxu060324/FlexMessage/"
+GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
+RENDER_PROJECT_URL = "https://lineplanbotyamanaka.onrender.com/"
+log_file_name = "project"
+
+# path for debug
+DEBUG_OUTPUT_IMAGE_URL = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/icon_image/out/out_hero.png"
+
+# --------------------------------
+# environ variable
+# --------------------------------
+
+# GoogleAPI用(初期インストール)が設定されているかを確認する環境変数のリスト
+ENV_NAME_GOOGLE = [
+    "GOOGLE_CALENDAR_CREDENTIALS_TOKEN",
+    "GOOGLE_CALENDAR_CREDENTIALS_REFRESH_TOKEN",
+    "GOOGLE_CALENDAR_CREDENTIALS_TOKEN_URI",
+    "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_ID",
+    "GOOGLE_CALENDAR_CREDENTIALS_CLIENT_SECRET",
+    "GOOGLE_CALENDAR_CREDENTIALS_SCOPES",
+    "GOOGLE_CALENDAR_CREDENTIALS_EXPIRY",
+]
+
+# GoogleAPI用(インストール済み)が設定されているかを確認する環境変数のリスト
+ENV_NAME_GOOGLE_INSTALLED = [
+    "GOOGLE_CALENDAR_INSTALL_CLIENT_ID",
+    "GOOGLE_CALENDAR_INSTALL_PROJECT_ID",
+    "GOOGLE_CALENDAR_INSTALL_AUTH_URI",
+    "GOOGLE_CALENDAR_INSTALL_TOKEN_URI",
+    "GOOGLE_CALENDAR_INSTALL_AUTH_PROVIDER",
+    "GOOGLE_CALENDAR_INSTALL_CLIENT_SECRET",
+    "GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS",
+]
+
+# Google Calendarで取得する予定の種類
+class schedule_kind(Enum):
+    TODAY = 0,
+    TOMORROW = 1,
+    WEEKLY = 2,
+    NUM_KIND = 3
+
+

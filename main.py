@@ -9,7 +9,7 @@ from JsonControl import (
 )
 
 # テスト環境で使用する変数を環境変数に登録
-set_environ(build_env="LOCAL_INSTALLED")
+set_environ(build_env="LOCAL")
 
 # LINEBotのアクセストークンの初期設定
 line_bot_api = LineBotApi(os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'])
@@ -25,8 +25,8 @@ def main():
     logger.info(events)
 
     # eventsのpackage(画像有の1日の予定)
-    payload = package_message_one_day(events_list=events)  # 一日のmessage
-    logger.debug(f'payload: {payload}')
+    # payload = package_message_one_day(events_list=events)  # 一日のmessage
+    # logger.debug(f'payload: {payload}')
 
     # # eventsのpackage(画像無しの1日の予定)
     # payload = _package_message_one_day_none_image(
@@ -35,9 +35,9 @@ def main():
     # )
     # logger.debug(f'payload: {payload}')
 
-    # # eventsのpackage(1週間の予定)
-    # payload = package_carousel_message(schedule_dict=events)
-    # logger.debug(f'payload: {payload}')
+    # eventsのpackage(1週間の予定)
+    payload = package_carousel_message(schedule_dict=events)
+    logger.debug(f'payload: {payload}')
 
     if payload is not None:
         # FlexMessageを作成(まだlineは送らない)
@@ -49,6 +49,6 @@ def main():
 
 
 if __name__ == "__main__":
-    logger.info("---------- Debug --------------")
+    logger.info("---------- Start(Mode: Debug) --------------")
     main()
-    logger.info("---------- Debug --------------")
+    logger.info("---------- End(Mode: Debug) --------------")

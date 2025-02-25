@@ -146,7 +146,3 @@ EVENT_KIND = {
 
 FOOTER_URL = "https://www.google.com/"
 GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/r'
-
-# -------------------------------
-# Weather Code
-# -------------------------------
