@@ -16,8 +16,8 @@ from JsonControl import (
     package_message_error
 )
 
-if os.getenv("SET_BUILD") != "FLASK_RENDER":
-    set_environ(build_env="FLASK_LOCAL")
+# if os.getenv("SET_BUILD") != "FLASK_RENDER":
+#     set_environ(build_env="FLASK_LOCAL")
 
 CHANNEL_ACCESS_TOKEN = os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"]
 CHANNEL_SECRET = os.environ["LINE_BOT_CHANNEL_SECRET"]

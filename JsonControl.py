@@ -399,7 +399,7 @@ def _package_body(events: list):
     if (not "all_day_events" in events) and (not "schedule_events" in events):
         return None
 
-    if (len(events["all_day_events"]) == 0) or (len(events["schedule_events"]) == 0):
+    if (len(events["all_day_events"]) == 0) and (len(events["schedule_events"]) == 0):
         _body = pack_vertical(
             [pack_text("予定なし", color="#0000a0", size="xl", weight="bold")],
             paddingAll="lg",

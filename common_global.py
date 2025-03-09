@@ -106,16 +106,22 @@ def checkURL(url):
         return False
 
 
-# 環境変数の設定
-def set_environ(build_env: str):
-    if build_env == "LOCAL":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local.env"))
-    elif build_env == "LOCAL_INSTALLED":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local_installed.env"))
-    elif build_env == "FLASK_LOCAL":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "flask_local.env"))
+# 疑似環境変数の設定(デバッグ用)
+def set_environ(build_env: str = ""):
+
+    # LINE Messeging APIを使用するためのトークン情報を取得
+    load_dotenv(os.path.join(HOME_ABSPATH, "Key", "line_token.env"))
+
+    # Google Calendar APIで使用する電子情報
+    if build_env == "CRED_INSTALL":
+        # 初回インストール時
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "google_cred_install.env"))
     else:
-        raise ValueError
+        # 2回目以降
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "google_cred.env"))
+
+    # ビルド環境の設定
+    os.environ["SET_BUILD"] = "LOCAL"
 
 
 # loggerの定義

@@ -9,7 +9,7 @@ from JsonControl import (
 )
 
 # テスト環境で使用する変数を環境変数に登録
-set_environ(build_env="LOCAL")
+set_environ()
 
 # LINEBotのアクセストークンの初期設定
 line_bot_api = LineBotApi(os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'])
@@ -17,7 +17,7 @@ line_bot_api = LineBotApi(os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'])
 
 # main( for debug )
 def main():
-    get_schedule_kind = schedule_kind.WEEKLY
+    get_schedule_kind = schedule_kind.TODAY
 
     # Googleカレンダーから予定の取得
     events = get_calendar_event(schedule_kind=get_schedule_kind)
@@ -39,6 +39,7 @@ def main():
     # payload = package_carousel_message(schedule_dict=events)
     # logger.debug(f'payload: {payload}')
 
+    # メッセージをjsonファイルに書き込む
     debug_file_path = os.path.join(HOME_ABSPATH, "TemplateMessage", "debug_message.json")
     with open(debug_file_path, mode="w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=4)

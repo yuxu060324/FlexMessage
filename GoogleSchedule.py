@@ -248,14 +248,20 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
             )
 
             # イベントを格納するリストのインデックスを取得
-            event_list_index = (event_start - start_date).days
-
-            # 開始と終了の日数を算出
-            bet_date = (event_end - event_start).days
+            if event_start < start_date:
+                event_list_index = 0
+            else:
+                event_list_index = (event_start - start_date).days
 
             # 同じイベント予定を別日に追加
-            for i in range(bet_date):
-                sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
+            while True:
+                sort_event_list[event_list_index]["all_day_events"].append(event_all_day_dict)
+
+                event_list_index += 1
+                temp_date = start_date + datetime.timedelta(days=event_list_index)
+
+                if event_end <= temp_date:
+                    break
 
         # 時間制限付きの予定
         else:
@@ -275,14 +281,20 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
             )
 
             # イベントを格納するリストのインデックスを取得
-            event_list_index = (event_start - start_date).days
-
-            # 開始と終了の日数を算出
-            bet_date = (event_end - event_start).days
+            if event_start < start_date:
+                event_list_index = 0
+            else:
+                event_list_index = (event_start - start_date).days
 
             # 同じイベント予定を別日に追加
-            for i in range(bet_date):
-                sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
+            while True:
+                sort_event_list[event_list_index]["schedule_events"].append(event_all_day_dict)
+
+                event_list_index += 1
+                temp_date = start_date + datetime.timedelta(days=event_list_index)
+
+                if event_end <= temp_date:
+                    break
 
     return dict(
         start_date=start_date,
