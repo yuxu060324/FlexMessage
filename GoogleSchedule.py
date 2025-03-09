@@ -181,13 +181,120 @@ def get_credentials():
     return authorized_credentials
 
 
+# 作成したイベント情報を格納するリストを作成する。
+def init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
+
+    # 終了時間が開始時間より早くないかを判定
+    if start > end:
+        return None
+
+    temp_date = start       # 内部変数
+    events_list = []        # 返却するリスト
+
+    # 日にち分のリストを作成する。
+    while(temp_date != end):
+
+        events_list.append(
+            dict(
+                date=temp_date,
+                all_day_events=[],
+                schedule_events=[]
+            )
+        )
+
+        temp_date += datetime.timedelta(days=1)
+
+    return events_list
+
+
+# 取得したイベントを終日イベントと期限付きイベントに分ける
+def create_events_list(start_date: datetime.datetime, end_date: datetime.datetime, events: list):
+
+    sort_event_list = init_sort_event_list(start=start_date, end=end_date)
+
+    # イベントが何もない(予定なし)の場合は、初期値のまま返却
+    if not events:
+        logger.warning('No upcoming events found.')
+        return dict(
+            start_date=start_date,
+            end_date=end_date,
+            sort_event_list=sort_event_list
+        )
+
+    # イベントを返却関数に設定
+    for event in events:
+
+        # イベント内容を表示(デバッグ用)
+        logger.debug(f'event: {event}')
+
+        event_start_date = event['start'].get('dateTime', event['start'].get('date'))
+
+        # 終日の予定
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', event_start_date):
+
+            # イベント情報の取得
+            event_start         = datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d')
+            event_end           = datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d')
+            event_title         = event['summary']
+            event_description   = event['description'] if 'description' in event else "-"
+            event_colorId       = event['colorId'] if 'colorId' in event else "-"
+
+            event_all_day_dict = dict(
+                start_date=event_start,
+                end_date=event_end,
+                title=event_title,
+                description=event_description,
+                colorId=event_colorId
+            )
+
+            # イベントを格納するリストのインデックスを取得
+            event_list_index = (event_start - start_date).days
+
+            # 開始と終了の日数を算出
+            bet_date = (event_end - event_start).days
+
+            # 同じイベント予定を別日に追加
+            for i in range(bet_date):
+                sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
+
+        # 時間制限付きの予定
+        else:
+
+            event_start         = datetime.datetime.strptime(event_start_date, '%Y-%m-%dT%H:%M:%S+09:00')
+            event_end           = datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00')
+            event_title         = event['summary']
+            event_description   = event['description'] if 'description' in event else "-"
+            event_colorId       = event['colorId'] if 'colorId' in event else "-"
+
+            event_all_day_dict = dict(
+                start_date=event_start,
+                end_date=event_end,
+                title=event_title,
+                description=event_description,
+                colorId=event_colorId
+            )
+
+            # イベントを格納するリストのインデックスを取得
+            event_list_index = (event_start - start_date).days
+
+            # 開始と終了の日数を算出
+            bet_date = (event_end - event_start).days
+
+            # 同じイベント予定を別日に追加
+            for i in range(bet_date):
+                sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
+
+    return dict(
+        start_date=start_date,
+        end_date=end_date,
+        sort_event_list=sort_event_list
+    )
+
+
 # Google Calendar APIから予定を取得する関数
 # @return       None            異常終了
 # @param[in]    schedule_kind   取得するスケジュールの種類
 def get_calendar_event(schedule_kind: schedule_kind):
-
-    events_list = {}                # returnするdict
-    schedule_list = []              # events_listに格納する一日分の予定を格納するlist
 
     # スケジュールを取得する開始時間と終了時間を取得する。
     start_date, end_date = get_schedule_time(schedule_kind)
@@ -247,7 +354,7 @@ def get_calendar_event(schedule_kind: schedule_kind):
     # イベントのログ出力
     logger.debug(events)
 
-    # スケジュールのステータスチェック
+    # 取得したすべてのイベントに開始時間が設定されているかを確認
     for event in events:
         dt = event['start'].get('dateTime', event['start'].get('date'))
         if dt == None:
@@ -257,84 +364,107 @@ def get_calendar_event(schedule_kind: schedule_kind):
     # 返却用リストに開始、終了、イベント数を追加
     logger.debug(f'Start_time of getting user schedule: {start_date}')
     logger.debug(f'End_time of getting user schedule: {end_date}')
-    events_list.update(start_date=start_date)
-    events_list.update(end_date=end_date)
     len_event = len(events)
     logger.info(f'Number getting event: {len_event}')
-    events_list.update(len_event=len_event)
 
-    # イベントが何もない(予定なし)の場合は、初期値のまま返却
-    if not events:
-        logger.warning('No upcoming events found.')
-        return events_list
+    return create_events_list(start_date=start_date, end_date=end_date, events=events)
 
-    schedule_date = start_date
-
-    # データの正規化をする
-    while (end_date != schedule_date):
-
-        schedule_list_days = []  # 1日分の予定の情報を格納するリスト
-
-        for event in events:
-
-            # 予定1つ分の情報
-            schedule_dict = {
-                "date": "%Y-%m-%d",
-                "all_day": "True",
-                "start_time": "$start_time",
-                "end_time": "$end_time",
-                "summary": "$summary",
-                "description": "$description",
-                "colorId": "$colorId"
-            }
-
-            dt = event['start'].get('dateTime', event['start'].get('date'))
-
-            if schedule_date.strftime("%Y-%m-%d") == dt.split("T")[0]:
-
-                # 終日の予定
-                if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
-
-                    # 開始時間の取得
-                    schedule_dict["date"] = '{0:%m月%d日}'.format(
-                        datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
-
-                    # 終日イベントフラグを立てる
-                    schedule_dict["all_day"] = "True"
-
-                    schedule_dict["start_time"] = '{0:%m月%d日}'.format(
-                        datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
-                    schedule_dict["end_time"] = '{0:%m月%d日}'.format(
-                        datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d'))
-                    schedule_dict["summary"] = event['summary']
-
-                    schedule_dict['description'] = event['description'] if 'description' in event else "-"
-                    schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
-
-                # 時間指定のある予定
-                else:
-
-                    schedule_dict["date"] = '{0:%m月%d日}'.format(
-                        datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                    schedule_dict["all_day"] = "False"
-                    schedule_dict["start_time"] = '{0:%H:%M}'.format(
-                        datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                    schedule_dict["end_time"] = '{0:%H:%M}'.format(
-                        datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
-                    schedule_dict["summary"] = event['summary']
-
-                    schedule_dict['description'] = event['description'] if 'description' in event else "-"
-                    schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
-
-                logger.debug(schedule_dict)
-                schedule_list_days.append(schedule_dict)
-
-        schedule_date += datetime.timedelta(days=1)
-
-        schedule_list.append(schedule_list_days)
-
-    events_list.update(schedule_list=schedule_list)
-    logger.debug("Finished to get_calendar_event()")
-    logger.info(events_list)
-
-    return events_list
+    # # イベントが何もない(予定なし)の場合は、初期値のまま返却
+    # if not events:
+    #     logger.warning('No upcoming events found.')
+    #     return dict(
+    #         start_date=start_date,
+    #         end_date=end_date,
+    #         sort_event_list=sort_event_list
+    #     )
+    #
+    # else:
+    #
+    #     add_events_list(events)
+    #
+    #     return None
+    #
+    # for event in events:
+    #
+    #     add_events_list(event)
+    #
+    #     return None
+    #
+    # schedule_date = start_date
+    #
+    # # データの正規化をする
+    # while (end_date != schedule_date):
+    #
+    #     schedule_list_days = []  # 1日分の予定の情報を格納するリスト
+    #
+    #     all_day_events = []         # 1日分の終日イベントのリスト
+    #     schedule_events = []        # 1日分の時間指定イベントのリスト
+    #
+    #     for event in events:
+    #
+    #         # 予定1つ分の情報
+    #         schedule_dict = {
+    #             "date": "%Y-%m-%d",
+    #             "all_day": "True",
+    #             "start_time": "$start_time",
+    #             "end_time": "$end_time",
+    #             "summary": "$summary",
+    #             "description": "$description",
+    #             "colorId": "$colorId"
+    #         }
+    #
+    #         dt = event['start'].get('dateTime', event['start'].get('date'))
+    #
+    #         if schedule_date.strftime("%Y-%m-%d") == dt.split("T")[0]:
+    #
+    #             # 終日の予定
+    #             if re.match(r'^\d{4}-\d{2}-\d{2}$', dt):
+    #
+    #                 # 開始時間の取得
+    #                 schedule_dict["date"] = '{0:%m月%d日}'.format(
+    #                     datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
+    #
+    #                 # 終日イベントフラグを立てる
+    #                 schedule_dict["all_day"] = "True"
+    #
+    #                 # 開始時間の取得
+    #                 schedule_dict["start_time"] = '{0:%m月%d日}'.format(
+    #                     datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d'))
+    #
+    #                 # 終了時間の取得
+    #                 schedule_dict["end_time"] = '{0:%m月%d日}'.format(
+    #                     datetime.datetime.strptime(event['end'].get('date'), '%Y-%m-%d'))
+    #
+    #                 # 予定のタイトル
+    #                 schedule_dict["summary"] = event['summary']
+    #
+    #                 schedule_dict['description'] = event['description'] if 'description' in event else "-"
+    #                 schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+    #
+    #             # 時間指定のある予定
+    #             else:
+    #
+    #                 schedule_dict["date"] = '{0:%m月%d日}'.format(
+    #                     datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+    #                 schedule_dict["all_day"] = "False"
+    #                 schedule_dict["start_time"] = '{0:%H:%M}'.format(
+    #                     datetime.datetime.strptime(event['start'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+    #                 schedule_dict["end_time"] = '{0:%H:%M}'.format(
+    #                     datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00'))
+    #                 schedule_dict["summary"] = event['summary']
+    #
+    #                 schedule_dict['description'] = event['description'] if 'description' in event else "-"
+    #                 schedule_dict['colorId'] = event['colorId'] if 'colorId' in event else "-"
+    #
+    #             logger.debug(schedule_dict)
+    #             schedule_list_days.append(schedule_dict)
+    #
+    #     schedule_date += datetime.timedelta(days=1)
+    #
+    #     events_list.append(schedule_list_days)
+    #
+    # sort_events_list.update(schedule_list=events_list)
+    # logger.debug("Finished to get_calendar_event()")
+    # logger.info(sort_events_list)
+    #
+    # return sort_events_list

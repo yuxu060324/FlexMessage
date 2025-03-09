@@ -35,17 +35,17 @@ def main():
     # )
     # logger.debug(f'payload: {payload}')
 
-    # eventsのpackage(1週間の予定)
-    payload = package_carousel_message(schedule_dict=events)
-    logger.debug(f'payload: {payload}')
+    # # eventsのpackage(1週間の予定)
+    # payload = package_carousel_message(schedule_dict=events)
+    # logger.debug(f'payload: {payload}')
 
-    if payload is not None:
-        # FlexMessageを作成(まだlineは送らない)
-        container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-        # ここでlineに通知が行く
-        line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
-    else:
-        logger.info("This transaction is failed")
+    # if payload is not None:
+    #     # FlexMessageを作成(まだlineは送らない)
+    #     container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+    #     # ここでlineに通知が行く
+    #     line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
+    # else:
+    #     logger.info("This transaction is failed")
 
 
 if __name__ == "__main__":
