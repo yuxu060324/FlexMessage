@@ -1,5 +1,7 @@
 import os
+import datetime
 from enum import Enum
+from dataclasses import dataclass
 
 # --------------------------------
 # PATH
@@ -49,3 +51,27 @@ class schedule_kind(Enum):
     NUM_KIND = 3
 
 
+# 各イベントの詳細情報
+@dataclass
+class EventDetail:
+    start_date: datetime.datetime
+    end_date: datetime.datetime
+    title: str
+    description: str
+    colorId: str
+
+
+# 日付のイベント情報
+@dataclass
+class SortEventList:
+    data: datetime.datetime
+    all_day_event: list
+    schedule_event: list
+
+
+# すべてのイベント情報
+@dataclass
+class EventsList:
+    start_date: datetime.datetime
+    end_date: datetime.datetime
+    sort_event_list: list

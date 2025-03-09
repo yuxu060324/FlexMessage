@@ -25,8 +25,8 @@ def main():
     logger.info(events)
 
     # eventsのpackage(画像有の1日の予定)
-    # payload = package_message_one_day(events_list=events)  # 一日のmessage
-    # logger.debug(f'payload: {payload}')
+    payload = package_message_one_day(events_list=events)  # 一日のmessage
+    logger.debug(f'payload: {payload}')
 
     # # eventsのpackage(画像無しの1日の予定)
     # payload = _package_message_one_day_none_image(
@@ -39,13 +39,17 @@ def main():
     # payload = package_carousel_message(schedule_dict=events)
     # logger.debug(f'payload: {payload}')
 
-    # if payload is not None:
-    #     # FlexMessageを作成(まだlineは送らない)
-    #     container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
-    #     # ここでlineに通知が行く
-    #     line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
-    # else:
-    #     logger.info("This transaction is failed")
+    debug_file_path = os.path.join(HOME_ABSPATH, "TemplateMessage", "debug_message.json")
+    with open(debug_file_path, mode="w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=4)
+
+    if payload is not None:
+        # FlexMessageを作成(まだlineは送らない)
+        container_obj = FlexSendMessage(alt_text='Test Message', contents=payload)
+        # ここでlineに通知が行く
+        line_bot_api.push_message(os.environ['USER_ID'], messages=container_obj)
+    else:
+        logger.info("This transaction is failed")
 
 
 if __name__ == "__main__":

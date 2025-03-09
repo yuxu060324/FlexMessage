@@ -35,6 +35,21 @@ ICON_OUTPUT_FOLDER_URL = urlparse.urljoin(GITHUB_PROJECT_CONTENT_PATH_IMAGE, out
 # Header
 # -------------------------------
 
+# "DATE"
+HEADER_TEXT_DATE = "DATE"
+HEADER_TEXT_DATE_COLOR = "#ffffffB0"
+HEADER_TEXT_DATE_SIZE = "sm"
+
+# text of date
+HEADER_TEXT_COLOR = "#c00000"
+HEADER_TEXT_SIZE = "xl"
+
+HEADER_BACK_COLOR = "#0367D3"
+
+# -------------------------------
+# Hero
+# -------------------------------
+
 WEATHER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, weather_icon_folder_name)
 
 ICON_WEATHER_FILE = {
@@ -71,10 +86,6 @@ WEATHER_CODE = {
     "4": "snow",
     "5": "thunder"
 }
-
-# -------------------------------
-# Hero
-# -------------------------------
 
 WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, icon_folder_name,
                                            weather_icon_folder_name, weather_code_list_file_name)

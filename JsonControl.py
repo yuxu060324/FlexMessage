@@ -13,6 +13,7 @@ except ImportError:
 # エラー時にユーザーに送信するメッセージを記載しているファイルのPATH
 ERROR_MESSAGE_FILE_PATH = os.path.join(HOME_ABSPATH, "TemplateMessage", "error_message.json")
 
+
 # ---------------------------------------------------------------------
 #                           Flex Message作成用関数
 # ---------------------------------------------------------------------
@@ -58,7 +59,7 @@ def pack_vertical(arr: list, margin=None, spacing=None, width=None, height=None,
 
 
 # box(horizontal)を作成する関数
-def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None, align=None, flex: int=None,
+def pack_horizontal(arr: list, margin=None, spacing=None, width=None, height=None, align=None, flex: int = None,
                     paddingAll=None, paddingStart=None, backgroundColor=None, offsetStart=None, alignItems=None):
     pattern = {"type": "box", "layout": "horizontal", "contents": arr}
 
@@ -192,18 +193,17 @@ def pack_circle(width, hegiht, cornerRadius="30px", borderColor="#ff0000", borde
 
 # 時間制限付きの予定のメッセージを作成する。
 def create_message_schedule_plan(title: str, start_time: datetime.datetime, end_time: datetime.datetime, color=None):
-
     message_arr = []
 
-    start_time_str = start_time.strftime("%H:%M")           # datetime to str
-    end_time_str = end_time.strftime("%H:%M")               # datetime to str
+    start_time_str = start_time.strftime("%H:%M")  # datetime to str
+    end_time_str = end_time.strftime("%H:%M")  # datetime to str
 
     # 開始位置の調整
     if start_time.hour > 7:
         message_arr.append(
             pack_vertical(
                 arr=[],
-                flex=7-start_time.hour
+                flex=7 - start_time.hour
             ),
         )
 
@@ -215,7 +215,7 @@ def create_message_schedule_plan(title: str, start_time: datetime.datetime, end_
                 pack_text(text="S: " + start_time_str, size="xxs"),
                 pack_text(text="E: " + end_time_str, size="xxs")
             ],
-            flex=end_time.hour-start_time.hour
+            flex=end_time.hour - start_time.hour
         )
     )
 
@@ -241,7 +241,6 @@ def create_message_schedule_plan(title: str, start_time: datetime.datetime, end_
 
 
 def get_icon(icon_kind, icon_file_kind):
-
     icon_file_path = ""
 
     if icon_kind != "weather" and icon_kind != "event":
@@ -279,7 +278,6 @@ def get_icon(icon_kind, icon_file_kind):
 
 # Flex Messageのヘッダ部をパッケージする関数
 def _package_header(date: datetime.datetime):
-
     # パラメータチェック
     if type(date) is not datetime.datetime:
         logger.warning("Setting parameter(data) is not right")
@@ -310,7 +308,6 @@ def _package_header(date: datetime.datetime):
 
 # Flex Messageのボディ部(終日イベントの予定のみ)をパッケージする関数
 def _package_event_all_body(events: list):
-
     if len(events) == 0:
         logger.warning("events(all_day) is empty")
         return None
@@ -324,7 +321,7 @@ def _package_event_all_body(events: list):
         temp_event.append(pack_horizontal(
             [
                 pack_circle(width="8px", hegiht="8px"),
-                pack_text(event['summary'], size="sm", margin="md")
+                pack_text(event['title'], size="sm", margin="md")
             ],
             paddingStart="lg",
             alignItems="center"
@@ -341,7 +338,6 @@ def _package_event_all_body(events: list):
 
 # Flex Messageのボディ部(時間指定イベントの予定のみ)をパッケージする関数
 def _package_event_schedule(events: list):
-
     if len(events) == 0:
         logger.warning("events(all_day) is empty")
         return None
@@ -366,7 +362,7 @@ def _package_event_schedule(events: list):
 
         temp_event.append(pack_horizontal(
             [
-                pack_text(event['start_time'], size="sm", flex=0),
+                pack_text(event['start_date'].strftime("%H:%M"), size="sm", flex=0),
                 pack_baseline(
                     [pack_icon(
                         path=icon_path, size="sm"
@@ -376,7 +372,7 @@ def _package_event_schedule(events: list):
                     width="25px",
                     height="25px"
                 ),
-                pack_text(event['summary'], size="sm")
+                pack_text(event['title'], size="sm")
             ],
             margin="md",
             paddingStart="lg",
@@ -396,14 +392,14 @@ def _package_event_schedule(events: list):
 # Flex Messageのボディ部(全体)をパッケージする関数
 def _package_body(events: list):
 
-    event_all_day_list = []
-    event_schedule_list = []
-
     _message_body_all_day = {}
     _message_body_schedule = {}
 
-    # 取得するイベントがない場合
-    if len(events) == 0:
+    # パラメータチェック
+    if (not "all_day_events" in events) and (not "schedule_events" in events):
+        return None
+
+    if (len(events["all_day_events"]) == 0) or (len(events["schedule_events"]) == 0):
         _body = pack_vertical(
             [pack_text("予定なし", color="#0000a0", size="xl", weight="bold")],
             paddingAll="lg",
@@ -412,20 +408,10 @@ def _package_body(events: list):
         )
         return _body
 
-    # イベントを終日(時間指定なし)とスケジュール(時間指定あり)
-    for event in events:
-        if event['all_day'] == "True":
-            event_all_day_list.append(event)
-        elif event['all_day'] == "False":
-            event_schedule_list.append(event)
-        else:
-            logger.warning("\"all_day\" is Unexpected parameters")
-            return -1
-
-    if event_all_day_list:
-        _message_body_all_day = _package_event_all_body(event_all_day_list)
-    if event_schedule_list:
-        _message_body_schedule = _package_event_schedule(event_schedule_list)
+    if (len(events["all_day_events"]) != 0):
+        _message_body_all_day = _package_event_all_body(events["all_day_events"])
+    if (len(events["schedule_events"]) != 0):
+        _message_body_schedule = _package_event_schedule(events["schedule_events"])
 
     # 時間範囲のあるイベントのみ
     if 'type' not in _message_body_all_day.keys():
@@ -451,7 +437,6 @@ def _package_body(events: list):
 
 # Flex Messageのフッダ部(全体)をパッケージする関数
 def _package_footer():
-
     _message_footer = pack_vertical(
         [pack_text("\"Google Calendar\" を開く", uri=FOOTER_URL, color="#0000ff", decoration="underline")]
     )
@@ -463,7 +448,6 @@ def _package_footer():
 
 # Flex Messageのヒーロ部(画像)をパッケージ
 def _package_hero():
-
     # place_codeは気象庁APIを参照(130000は東京地方の場所コード)
     weather_picture_path = get_weather(place_code="130000")
 
@@ -488,7 +472,6 @@ def _package_hero():
 # @param    [in]    events_list   setting schedule event in body of message
 # @param    [out]   payload       output message
 def package_message_one_day(events_list: dict):
-
     # 開始日、終了日、イベント数が用意されているかを確認する。
     if events_list.get("start_date") is None:
         logger.warning("\"start_date\" is not set in the list of arguments.")
@@ -496,16 +479,14 @@ def package_message_one_day(events_list: dict):
     if events_list.get("end_date") is None:
         logger.warning("\"end_date\" is not set in the list of arguments.")
         return None
-    if events_list.get("len_event") is None:
+    if events_list.get("sort_event_list") is None:
         logging.warning("\"len_event\" is not set in the list of arguments.")
         return None
 
-    date = events_list.get("start_date")                    # 予定の開始日を取得
-    schedule_list = []
+    date = events_list.get("start_date")  # 予定の開始日を取得
 
     # スケジュールのリストを取得
-    if "schedule_list" in events_list.keys():
-        schedule_list = events_list.get("schedule_list")[0]     # 1日分のため、リストの最初のみ取得
+    schedule_list = events_list.get("sort_event_list")[0]  # 1日分のため、リストの最初のみ取得
 
     _message_header = _package_header(date=date)
     _message_hero = _package_hero()
@@ -549,7 +530,6 @@ def package_message_one_day(events_list: dict):
 # @param    [in]    events_list   setting schedule event in body of message
 # @param    [out]   payload       output message
 def _package_message_one_day_none_image(date: datetime.datetime, events_list: list):
-
     _message_header = _package_header(date=date)
     _message_body = _package_body(events=events_list)
     _message_footer = _package_footer()
@@ -582,7 +562,6 @@ def _package_message_one_day_none_image(date: datetime.datetime, events_list: li
 
 # 一週間のスケジュールを出力する用(carouselで日にちごとにbubbleを作成してメッセージを作成)
 def package_carousel_message(schedule_dict: dict):
-
     bubble_dict = []
 
     if 'start_date' not in schedule_dict or 'schedule_list' not in schedule_dict:
@@ -611,8 +590,8 @@ def package_carousel_message(schedule_dict: dict):
 
     return _message
 
-def package_message_error():
 
+def package_message_error():
     with open(ERROR_MESSAGE_FILE_PATH, "r") as file:
         _message = json.load(file)
 
