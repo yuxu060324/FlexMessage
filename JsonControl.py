@@ -562,21 +562,22 @@ def _package_message_one_day_none_image(date: datetime.datetime, events_list: li
 
 # 一週間のスケジュールを出力する用(carouselで日にちごとにbubbleを作成してメッセージを作成)
 def package_carousel_message(schedule_dict: dict):
+
     bubble_dict = []
 
-    if 'start_date' not in schedule_dict or 'schedule_list' not in schedule_dict:
-        logger.warning("events_list dose not include \"start_date\" or \"schedule_list\"")
+    if (not "start_date" in schedule_dict.keys()) or (not "end_date" in schedule_dict) or (not "sort_event_list" in schedule_dict):
+        logger.warning("events_list dose not include \"start_date\" or \"end_date\" or \"sort_event_list\"")
         return None
 
     schedule_start_date = schedule_dict['start_date']
-    len_date = len(schedule_dict['schedule_list'])
+    len_date = len(schedule_dict['sort_event_list'])
 
     for schedule_list_index in range(len_date):
         schedule_date = schedule_start_date + datetime.timedelta(days=schedule_list_index)
 
         payload = _package_message_one_day_none_image(
             date=schedule_date,
-            events_list=schedule_dict['schedule_list'][schedule_list_index]
+            events_list=schedule_dict['sort_event_list'][schedule_list_index]
         )
 
         bubble_dict.append(payload)
