@@ -26,3 +26,11 @@ NGROK_RUN:
 FLASK_RENDER:
 	gunicorn app:app --workers 4 --threads 2 --max-requests 500
 
+
+# リッチメニュー画像作成
+.PHONY: rich_image
+
+# リッチメニューの作成ファイル実行
+rich_image:
+	python create_rich_menu_image.py
+
