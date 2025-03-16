@@ -2,10 +2,8 @@
 /__pycache__/
 /log/
 /Key/
+/image/out/
 /docs/weather_memo.txt
-/icon_image/out/detail_weather.png
-/icon_image/out/sample.png
-/icon_image/out/temperature_icon.png
-/icon_image/out/weather_forecast_map.png
 /TemplateMessage/events_list_format.json
 /TemplateMessage/debug_message.json
+/create_rich_menu_image.py
