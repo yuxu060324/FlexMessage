@@ -15,9 +15,10 @@ from JsonControl import (
     package_carousel_message,
     package_message_error
 )
+from setRichMenu import set_rich_menu
 
-if os.getenv("SET_BUILD") != "FLASK_RENDER":
-    set_environ(build_env="FLASK_LOCAL")
+# if os.getenv("SET_BUILD") != "FLASK_RENDER":
+#     set_environ(build_env="FLASK_LOCAL")
 
 CHANNEL_ACCESS_TOKEN = os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"]
 CHANNEL_SECRET = os.environ["LINE_BOT_CHANNEL_SECRET"]
@@ -129,4 +130,5 @@ def handle_message(event):
 
 if __name__ == "__main__":
     logger.info("Flask App running")
+    set_rich_menu()
     app.run(threaded=True)
