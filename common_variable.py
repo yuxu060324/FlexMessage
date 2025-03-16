@@ -16,7 +16,7 @@ RENDER_PROJECT_URL = "https://lineplanbotyamanaka.onrender.com/"
 log_file_name = "project"
 
 # path for debug
-DEBUG_OUTPUT_IMAGE_URL = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/icon_image/out/out_hero.png"
+DEBUG_OUTPUT_IMAGE_URL = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/image/out/out_hero.png"
 
 # --------------------------------
 # environ variable

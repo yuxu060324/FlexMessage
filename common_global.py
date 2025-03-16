@@ -49,50 +49,6 @@ def getMyLogger(name):
     return my_logger
 
 
-# 環境変数を設定するための関数( Debug用 = 本番ではデプロイ環境に直接設定する )
-def set_env():
-    google_calendar_credentials_installed = False
-
-    # LINE FLEX MESSAGE API
-    key_filepath = os.path.join(HOME_ABSPATH, "Key", "line_bot_info.json")
-    with open(key_filepath) as file:
-        line_bot_info = json.load(file)
-    os.environ['LINE_BOT_CHANNEL_ACCESS_TOKEN'] = line_bot_info['CHANNEL_ACCESS_TOKEN']
-    os.environ['LINE_BOT_CHANNEL_SECRET'] = line_bot_info['CHANNEL_SECRET']
-    os.environ['USER_ID'] = line_bot_info['USER_ID']
-
-    # すでに資格情報がインストールされている場合(token.jsonを参照)
-    if google_calendar_credentials_installed:
-
-        # GOOGLE CALENDAR API CREDENTIALS
-        key_filepath = os.path.join(HOME_ABSPATH, "Key", "token.json")
-        with open(key_filepath, encoding="utf-8") as file:
-            google_calendar_token = json.load(file)
-
-        for key in google_calendar_token.keys():
-            environ_key = "GOOGLE_CALENDAR_CREDENTIALS_" + key.upper()
-            os.environ[environ_key] = google_calendar_token[key]
-
-        logger.info('##### テスト環境(API_Credentials)用変数を環境変数に登録しました #####')
-
-    # 資格情報がまだインストールされていない場合
-    else:
-
-        # GOOGLE CALENDAR API INSTALL CREDENTIALS
-        key_filepath = os.path.join(HOME_ABSPATH, "Key", "credentials.json")
-        with open(key_filepath, encoding="utf-8") as file:
-            google_calendar_install_info = json.load(file)["installed"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_CLIENT_ID"] = google_calendar_install_info["client_id"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_PROJECT_ID"] = google_calendar_install_info["project_id"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_AUTH_URI"] = google_calendar_install_info["auth_uri"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_TOKEN_URI"] = google_calendar_install_info["token_uri"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_AUTH_PROVIDER"] = google_calendar_install_info["auth_provider_x509_cert_url"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_CLIENT_SECRET"] = google_calendar_install_info["client_secret"]
-        os.environ["GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS"] = google_calendar_install_info["redirect_uris"][0]
-
-        logger.info("##### テスト環境(Install_Credentials)用変数を環境変数に登録しました #####")
-
-
 # URL check
 def checkURL(url):
     logger.debug(f'Valid URL: {url}')
@@ -106,16 +62,21 @@ def checkURL(url):
         return False
 
 
-# 環境変数の設定
+# 環境変数の設定(基本的にDebug環境での呼出を想定)
 def set_environ(build_env: str):
-    if build_env == "LOCAL":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local.env"))
-    elif build_env == "LOCAL_INSTALLED":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "local_installed.env"))
-    elif build_env == "FLASK_LOCAL":
-        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "flask_local.env"))
+
+    os.environ["SET_BUILD"] = "LOCAL"
+
+    # MessagingAPI(LINE)用環境変数の設定
+    load_dotenv(os.path.join(HOME_ABSPATH, "Key", "line_token.env"))
+
+    # Google Calendar API用の環境変数の設定
+    if build_env == "INSTALL":
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "google_cred_install.env"))
     else:
-        raise ValueError
+        load_dotenv(os.path.join(HOME_ABSPATH, "Key", "google_cred.env"))
+
+    return
 
 
 # loggerの定義

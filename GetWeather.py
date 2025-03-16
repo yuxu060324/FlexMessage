@@ -374,7 +374,7 @@ def create_temperature_icon(temperature_list: list):
 # - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
 
-    if os.environ["SET_BUILD"] == "LOCAL" or os.environ["SET_BUILD"] == "LOCAL_INSTALLED":
+    if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
         # デバッグ用の処理
         return DEBUG_OUTPUT_IMAGE_URL
 
