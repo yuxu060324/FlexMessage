@@ -2,6 +2,7 @@ import os
 import datetime
 from enum import Enum
 from dataclasses import dataclass
+from typing import List
 
 # --------------------------------
 # PATH
@@ -43,12 +44,49 @@ ENV_NAME_GOOGLE_INSTALLED = [
     "GOOGLE_CALENDAR_INSTALL_REDIRECT_URIS",
 ]
 
+# LINEからのメッセージとして、固有の処理を行うメッセージの配列
+LINE_MESSAGE_ACTION_LIST = [
+    "@TodaySchedule",                       # 今日の予定を通知する処理を実行
+    "@TomorrowSchedule",                    # 明日の予定を通知する処理を実行
+    "@WeekSchedule"                         # 1週間の予定を通知する処理を実行
+]
+
+
 # Google Calendarで取得する予定の種類
 class schedule_kind(Enum):
     TODAY = 0,
     TOMORROW = 1,
     WEEKLY = 2,
     NUM_KIND = 3
+
+
+@dataclass
+class RichMenuSizeStruct:
+    width: int
+    height: int
+
+
+@dataclass
+class RichMenuBoundsStruct:
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+@dataclass
+class RichMenuAreasStruct:
+    bounds: RichMenuBoundsStruct
+    action: dict
+
+
+@dataclass
+class RichMenuObjectStruct:
+    size: RichMenuSizeStruct
+    selected: bool
+    name: str
+    chatBarText: str
+    areas: List[RichMenuAreasStruct]
 
 
 # 各イベントの詳細情報

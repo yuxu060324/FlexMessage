@@ -78,22 +78,21 @@ def handle_message(event):
 
     get_schedule_kind = schedule_kind.NUM_KIND
 
-    logger.info(f'Event: {event}')
+    logger.info(f'Event.message: {event.message.text}')
 
-    if (event.message.text != "今日の予定" and
-            event.message.text != "明日の予定" and
-            event.message.text != "1週間の予定"):
+    # 固定文以外のメッセージの場合は、受け取ったメッセージをそのまま返す
+    if event.message.text in LINE_MESSAGE_ACTION_LIST:
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text)
         )
         return
 
-    if event.message.text == "> 今日の予定":
+    if event.message.text == LINE_MESSAGE_ACTION_LIST[0]:           # 今日の予定を通知
         get_schedule_kind = schedule_kind.TODAY
-    elif event.message.text == "> 明日の予定":
+    elif event.message.text == LINE_MESSAGE_ACTION_LIST[1]:         # 明日の予定を通知
         get_schedule_kind = schedule_kind.TOMORROW
-    elif event.message.text == "> 1週間の予定":
+    elif event.message.text == LINE_MESSAGE_ACTION_LIST[2]:         # 1週間の予定を通知
         get_schedule_kind = schedule_kind.WEEKLY
 
     try:
