@@ -89,11 +89,11 @@ def handle_message(event):
         )
         return
 
-    if event.message.text == "今日の予定":
+    if event.message.text == "> 今日の予定":
         get_schedule_kind = schedule_kind.TODAY
-    elif event.message.text == "明日の予定":
+    elif event.message.text == "> 明日の予定":
         get_schedule_kind = schedule_kind.TOMORROW
-    elif event.message.text == "1週間の予定":
+    elif event.message.text == "> 1週間の予定":
         get_schedule_kind = schedule_kind.WEEKLY
 
     try:
