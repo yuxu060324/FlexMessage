@@ -40,11 +40,11 @@ def match_image(base_img, paste_img, position):
 
 
 def save_image(img, name):
-    if not os.path.isdir(os.path.abspath("./icon_image/out")):
-        logger.warning(f'create dir path: ./icon_image/out')
+    if not os.path.isdir(os.path.abspath("image/out")):
+        logger.warning(f'create dir path: ./image/out')
         return -1
 
-    image_path = os.path.join(os.path.abspath("./icon_image/out"), name + ".png")
+    image_path = os.path.join(os.path.abspath("image/out"), name + ".png")
 
     if img is None:
         logger.warning("Image is None")
@@ -75,7 +75,7 @@ def get_sample_weather_icon(weather_code=None):
     img = Image.new("RGBA", size, rgb_color)
     img_back = Image.new("RGBA", size, rgb_color)
 
-    sunny_path = os.path.join(os.path.abspath(".\\icon_image\\weather"), "sunny.png")
+    sunny_path = os.path.join(os.path.abspath("image\\weather"), "sunny.png")
     img_sunny = Image.open(sunny_path).convert('RGBA')  # sunny.pngを透過画像で開く
 
     img.paste(img_sunny)

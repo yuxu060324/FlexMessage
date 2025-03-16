@@ -10,7 +10,7 @@ DAY_OF_WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
 message_template_folder_name = "TemplateMessage"
 
-icon_folder_name = "icon_image/"
+icon_folder_name = "image/"
 event_icon_folder_name = "event/"
 weather_icon_folder_name = "weather/"
 output_folder_name = "out/"
