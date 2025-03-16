@@ -41,17 +41,35 @@ def create_rich_menu_object():
     areas = [
         RichMenuArea(
             bounds=RichMenuBounds(
-                x=0,
-                y=0,
-                width=RICH_MENU_SIZE[0],
-                height=RICH_MENU_SIZE[1]
+                x=RICH_MENU_POSITION_TODAY_SCHEDULE[0],
+                y=RICH_MENU_POSITION_TODAY_SCHEDULE[1],
+                width=RICH_MENU_SIZE_ONE[0],
+                height=RICH_MENU_SIZE_ONE[1]
             ),
-            action=MessageAction(text="> 今日の予定")
+            action=MessageAction(text=LINE_MESSAGE_ACTION_LIST[0])
+        ),
+        RichMenuAreasStruct(
+            bounds=RichMenuBounds(
+                x=RICH_MENU_POSITION_TOMORROW_SCHEDULE[0],
+                y=RICH_MENU_POSITION_TOMORROW_SCHEDULE[1],
+                width=RICH_MENU_SIZE_ONE[0],
+                height=RICH_MENU_SIZE_ONE[1]
+            ),
+            action=MessageAction(text=LINE_MESSAGE_ACTION_LIST[1])
+        ),
+        RichMenuAreasStruct(
+            bounds=RichMenuBounds(
+                x=RICH_MENU_POSITION_WEEK_SCHEDULE[0],
+                y=RICH_MENU_POSITION_WEEK_SCHEDULE[1],
+                width=RICH_MENU_SIZE_ONE[0],
+                height=RICH_MENU_SIZE_ONE[1]
+            ),
+            action=MessageAction(text=LINE_MESSAGE_ACTION_LIST[2])
         )
     ]
 
     rich_menu_to_create = RichMenu(
-        size=RichMenuSize(width=RICH_MENU_SIZE[0], height=RICH_MENU_SIZE[1]),
+        size=RichMenuSize(width=RICH_MENU_SIZE[0], height=RICH_MENU_SIZE[1]/2),
         selected=True,
         name="plan_rich_menu",
         chat_bar_text="メニュー",

@@ -26,6 +26,7 @@ def save_image(img: PIL.Image.Image):
     return
 
 
+# 3*2のリッチメニューを作成
 def image_init():
 
     # ベース画像
@@ -62,10 +63,34 @@ def image_init():
     save_image(img)
 
 
+# お試し版のリッチメニュー作成用
+def create_rich_menu_image_simple():
+
+    # ベース画像
+    img = PIL.Image.new("RGB", (RICH_MENU_SIZE[0], int(RICH_MENU_SIZE[1]/2)), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype("meiryo.ttc", 24)
+
+    # 左上
+    draw.rectangle((0, 0, img.width / 3, img.height), fill=(255, 0, 0))
+    font_position = (img.width / 6, img.height / 2)
+    draw.text(xy=font_position, text="今日の予定", font=font, fill="white", anchor="mm")
+    # 中央上
+    draw.rectangle((img.width / 3, 0, (img.width * 2) / 3, img.height), fill=(0, 255, 0))
+    font_position = (img.width / 2, img.height / 2)
+    draw.text(xy=font_position, text="明日の予定", font=font, fill="black", anchor="mm")
+    # 右上
+    draw.rectangle(((img.width * 2) / 3, 0, img.width, img.height), fill=(0, 0, 255))
+    font_position = ((img.width * 5) / 6, img.height / 2)
+    draw.text(xy=font_position, text="1週間の予定", font=font, fill="white", anchor="mm")
+
+    save_image(img)
+
+
 if __name__ == "__main__":
 
     if os.environ.get("SET_BUILD") == "FLASK_RENDER":
         raise EnvironmentError("フォントファイル(.ttk)がないため、運用環境では実行しないでください。")
 
-    image_init()
+    create_rich_menu_image_simple()
 
