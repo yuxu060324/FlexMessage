@@ -10,7 +10,7 @@ except ImportError:
 # file path
 HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 FILE_NAME_RICH_MENU_IMAGE = "rich_menu.png"
-IMG_RICH_MENU_PATH = os.path.join(HOME_ABSPATH, "image/out", FILE_NAME_RICH_MENU_IMAGE)
+IMG_RICH_MENU_PATH = os.path.join(HOME_ABSPATH, "image", "out", FILE_NAME_RICH_MENU_IMAGE)
 RENDER_PROJECT_PATH_IMAGE = urlparse.urljoin(RENDER_PROJECT_URL, "out/")
 GET_IMG_RICH_MENU_URL = urlparse.urljoin(RENDER_PROJECT_PATH_IMAGE, FILE_NAME_RICH_MENU_IMAGE)
 
@@ -28,8 +28,12 @@ RICH_MENU_POSITION_HOW_TO_USE = ((RICH_MENU_SIZE[0]*2)/3, RICH_MENU_SIZE[1]/2)
 
 
 def save_image(img: PIL.Image.Image):
-    img.save(IMG_RICH_MENU_PATH, quality=95)
-    print(f'save: {IMG_RICH_MENU_PATH}')
+    if os.path.isdir(IMG_RICH_MENU_PATH):
+        img.save(IMG_RICH_MENU_PATH, quality=95)
+        logger.debug(f'save: {IMG_RICH_MENU_PATH}')
+    else:
+        logger.info("無効なファイルパスのため、画像を保存できませんでした。")
+
     return
 
 
