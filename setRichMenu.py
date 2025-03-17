@@ -19,6 +19,7 @@ line_bot_api = LineBotApi(os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"])
 
 # リッチメニューを削除する
 def reset_rich_menu():
+    logger.debug("リッチメニューを削除します")
 
     # リッチメニューの全aliasを選択して削除する
     rich_menu_list = line_bot_api.get_rich_menu_list()
@@ -32,8 +33,10 @@ def reset_rich_menu():
 
 # 画像をリッチメニューに設定する
 def set_image(rich_menu_id, rich_menu_image_path):
+    logger.debug("画像をリッチメニューに設定します。")
     with open(rich_menu_image_path, "rb") as file:
         line_bot_api.set_rich_menu_image(rich_menu_id, "image/png", file)
+    return
 
 
 # リッチメニューのオブジェクトを作成する
@@ -76,16 +79,20 @@ def create_rich_menu_object():
         areas=areas
     )
 
+    logger.debug("リッチメニューの判定を作成します。")
+
     return line_bot_api.create_rich_menu(rich_menu=rich_menu_to_create)
 
 
 # デフォルトのリッチメニューを設定する
 def set_default_rich_menu(rich_menu_id):
+    logger.debug("リッチメニューのデフォルトを設定します")
     line_bot_api.set_default_rich_menu(rich_menu_id=rich_menu_id)
 
 
 # リッチメニューのaliasの登録
 def set_rich_menu_alias(rich_menu_id, rich_menu_alias_id):
+    logger.debug("リッチメニューのエイリアスを設定します")
     alias = RichMenuAlias(
         rich_menu_alias_id=rich_menu_alias_id,
         rich_menu_id=rich_menu_id
