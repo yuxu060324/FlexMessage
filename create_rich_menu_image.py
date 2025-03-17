@@ -1,11 +1,18 @@
 import os
 import PIL
 from PIL import Image, ImageDraw, ImageFont
+from common_global import *
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 # file path
 HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 FILE_NAME_RICH_MENU_IMAGE = "rich_menu.png"
 IMG_RICH_MENU_PATH = os.path.join(HOME_ABSPATH, "image/out", FILE_NAME_RICH_MENU_IMAGE)
+RENDER_PROJECT_PATH_IMAGE = urlparse.urljoin(RENDER_PROJECT_URL, "out/")
+GET_IMG_RICH_MENU_URL = urlparse.urljoin(RENDER_PROJECT_PATH_IMAGE, FILE_NAME_RICH_MENU_IMAGE)
 
 # Rich Menu Size
 RICH_MENU_SIZE = (1250, 750)                                             # リッチメニュー全体のサイズ
