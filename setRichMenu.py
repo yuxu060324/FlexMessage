@@ -107,7 +107,7 @@ def set_rich_menu():
 
         # リッチメニューに画像をアップロードする
         create_rich_menu_image_simple()
-        set_image(rich_menu_id=rich_menu_id, rich_menu_image_path=)
+        set_image(rich_menu_id=rich_menu_id, rich_menu_image_path=GET_IMG_RICH_MENU_URL)
 
         # デフォルトのリッチメニューに設定する
         set_default_rich_menu(rich_menu_id=rich_menu_id)
