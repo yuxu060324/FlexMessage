@@ -48,7 +48,7 @@ def create_rich_menu_object():
             ),
             action=MessageAction(text=LINE_MESSAGE_ACTION_LIST[0])
         ),
-        RichMenuAreasStruct(
+        RichMenuArea(
             bounds=RichMenuBounds(
                 x=RICH_MENU_POSITION_TOMORROW_SCHEDULE[0],
                 y=RICH_MENU_POSITION_TOMORROW_SCHEDULE[1],
@@ -57,7 +57,7 @@ def create_rich_menu_object():
             ),
             action=MessageAction(text=LINE_MESSAGE_ACTION_LIST[1])
         ),
-        RichMenuAreasStruct(
+        RichMenuArea(
             bounds=RichMenuBounds(
                 x=RICH_MENU_POSITION_WEEK_SCHEDULE[0],
                 y=RICH_MENU_POSITION_WEEK_SCHEDULE[1],
