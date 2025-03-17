@@ -342,6 +342,7 @@ def _package_event_schedule(events: list):
         logger.warning("events(all_day) is empty")
         return None
 
+    # テンプレートの設定
     title_box = pack_horizontal(
         [pack_text("スケジュール", size="lg", weight="bold")],
     )
@@ -349,17 +350,20 @@ def _package_event_schedule(events: list):
 
     for event in events:
 
+        # カラーIDの取得
         if event['colorId'] in EVENT_KIND:
             event_kind = EVENT_KIND[event['colorId']]
         else:
             logger.warning("events does not include \"colorId\"")
             return None
 
+        # アイコンの取得
         icon_path = get_icon(icon_kind="event", icon_file_kind=event_kind)
         if icon_path is None:
             logger.warning(f'{event_kind} does not include in \"ICON_WEATHER_FILE\"')
             return None
 
+        # メッセージのパッケージ
         temp_event.append(pack_horizontal(
             [
                 pack_text(event['start_date'].strftime("%H:%M"), size="sm", flex=0),

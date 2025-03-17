@@ -28,6 +28,7 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
 
+set_rich_menu()
 
 
 @app.route("/")
@@ -81,7 +82,7 @@ def handle_message(event):
     logger.info(f'Event.message: {event.message.text}')
 
     # 固定文以外のメッセージの場合は、受け取ったメッセージをそのまま返す
-    if event.message.text in LINE_MESSAGE_ACTION_LIST:
+    if not event.message.text in LINE_MESSAGE_ACTION_LIST:
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text)
