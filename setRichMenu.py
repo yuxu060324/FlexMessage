@@ -37,7 +37,7 @@ def set_image(rich_menu_id, rich_menu_image_path):
 
 
 # リッチメニューのオブジェクトを作成する
-def create_rich_menu_object():
+def create_rich_menu_object(h):
     areas = [
         RichMenuArea(
             bounds=RichMenuBounds(
@@ -106,6 +106,7 @@ def set_rich_menu():
         rich_menu_id = create_rich_menu_object()
 
         # リッチメニューに画像をアップロードする
+        create_rich_menu_image_simple()
         set_image(rich_menu_id=rich_menu_id, rich_menu_image_path=IMG_RICH_MENU_PATH)
 
         # デフォルトのリッチメニューに設定する

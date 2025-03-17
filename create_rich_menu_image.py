@@ -89,8 +89,8 @@ def create_rich_menu_image_simple():
 
 if __name__ == "__main__":
 
-    if os.environ.get("SET_BUILD") == "FLASK_RENDER":
-        raise EnvironmentError("フォントファイル(.ttk)がないため、運用環境では実行しないでください。")
+    # if os.environ.get("SET_BUILD") == "FLASK_RENDER":
+    #     raise EnvironmentError("フォントファイル(.ttk)がないため、運用環境では実行しないでください。")
 
     create_rich_menu_image_simple()
 
