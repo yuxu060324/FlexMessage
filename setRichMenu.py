@@ -37,7 +37,7 @@ def set_image(rich_menu_id, rich_menu_image_path):
 
 
 # リッチメニューのオブジェクトを作成する
-def create_rich_menu_object(h):
+def create_rich_menu_object():
     areas = [
         RichMenuArea(
             bounds=RichMenuBounds(
