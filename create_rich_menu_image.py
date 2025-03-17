@@ -73,6 +73,8 @@ def image_init():
 # お試し版のリッチメニュー作成用
 def create_rich_menu_image_simple():
 
+    logger.debug("リッチメニューの画像を作成します")
+
     # ベース画像
     img = PIL.Image.new("RGB", (RICH_MENU_SIZE[0], int(RICH_MENU_SIZE[1]/2)), (255, 255, 255))
     draw = ImageDraw.Draw(img)
@@ -92,6 +94,10 @@ def create_rich_menu_image_simple():
     draw.text(xy=font_position, text="1週間の予定", font=font, fill="white", anchor="mm")
 
     save_image(img)
+
+    logger.debug("リッチメニューの画像の作成が完了しました")
+
+    return
 
 
 if __name__ == "__main__":
