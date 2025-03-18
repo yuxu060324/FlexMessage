@@ -130,5 +130,4 @@ def handle_message(event):
 
 if __name__ == "__main__":
     logger.info("Flask App running")
-    set_rich_menu()
     app.run(threaded=True)

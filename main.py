@@ -1,3 +1,5 @@
+# ローカル環境で動作を確認するためのファイル
+
 from linebot import LineBotApi
 from linebot.models import TextSendMessage, FlexSendMessage
 from common_global import *
