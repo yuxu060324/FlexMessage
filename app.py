@@ -15,10 +15,6 @@ from JsonControl import (
     package_carousel_message,
     package_message_error
 )
-from setRichMenu import set_rich_menu
-
-# if os.getenv("SET_BUILD") != "FLASK_RENDER":
-#     set_environ(build_env="FLASK_LOCAL")
 
 CHANNEL_ACCESS_TOKEN = os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"]
 CHANNEL_SECRET = os.environ["LINE_BOT_CHANNEL_SECRET"]
@@ -27,9 +23,6 @@ app = Flask(__name__)
 
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
-
-set_rich_menu()
-
 
 @app.route("/")
 def home():
@@ -42,21 +35,6 @@ def view_image(filename):
     logger.debug(f'filename: {filename}')
 
     return send_from_directory(OUT_FOLDER_PATH, filename)
-    #
-    # message = f'<img src={OUT_FILE_PATH_HERO}>'
-    #
-    # # ログファイルの中身を取得
-    # path = os.path.join(HOME_ABSPATH, "log", "project.log")
-    # if os.path.isdir(path) and os.path.isfile(path):
-    #     with open(path) as file:
-    #         message = json.load(file)
-    #
-    # OUT_FILE_PATH_HERO
-    #
-    # if message is None:
-    #     message = "Not log"
-    #
-    # return message
 
 # LINEのユーザからの情報を受け取る。
 @app.route("/callback", methods=['POST'])
