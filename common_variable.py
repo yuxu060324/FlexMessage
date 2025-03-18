@@ -18,6 +18,9 @@ log_file_name = "project"
 # path for debug
 DEBUG_OUTPUT_IMAGE_URL = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/image/out/out_hero.png"
 
+# font file path
+FONT_FILE_PATH_MEIRYO = os.path.join(HOME_ABSPATH, "image", "Font", "meiryo.ttc")
+
 # --------------------------------
 # environ variable
 # --------------------------------

@@ -316,11 +316,11 @@ def create_detail_weather(weather_detail: str):
 
     # 天気の詳細情報の記載
     weather_detail_position = (int(WEATHER_NAME_SIZE[0] / 2), int(WEATHER_NAME_SIZE[1] / 2))
-    # font = ImageFont.truetype("meiryo.ttc", 12)
+    font = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, 12)
     draw.text(xy=weather_detail_position,
               text=weather_detail,
               fill="black",
-              # font=font,
+              font=font,
               anchor="mm")
 
     # 画像の保存

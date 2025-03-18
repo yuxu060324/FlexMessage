@@ -53,7 +53,7 @@ def image_init():
     draw.rectangle((img.width / 3, 0, (img.width * 2) / 3, img.height / 2), fill=(0, 255, 0))
     font_position = (img.width / 2, img.height / 4)
     draw.text(xy=font_position, text="明日の予定", font=font, fill="black", anchor="mm")
-   # 右上
+    # 右上
     draw.rectangle(((img.width * 2) / 3, 0, img.width, img.height / 2), fill=(0, 0, 255))
     font_position = ((img.width*5) / 6, img.height / 4)
     draw.text(xy=font_position, text="1週間の予定", font=font, fill="white", anchor="mm")
@@ -82,7 +82,7 @@ def create_rich_menu_image_simple():
     # ベース画像
     img = PIL.Image.new("RGB", (RICH_MENU_SIZE[0], int(RICH_MENU_SIZE[1]/2)), (255, 255, 255))
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype("meiryo.ttc", 24)
+    font = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, 24)
 
     # 左上
     draw.rectangle((0, 0, img.width / 3, img.height), fill=(255, 0, 0))
