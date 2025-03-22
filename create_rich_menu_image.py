@@ -1,5 +1,4 @@
 import os
-import PIL
 from PIL import Image, ImageDraw, ImageFont
 from common_global import *
 try:
@@ -27,13 +26,9 @@ RICH_MENU_POSITION_ADD_SCHEDULE = (RICH_MENU_SIZE[0]/3, RICH_MENU_SIZE[1]/2)
 RICH_MENU_POSITION_HOW_TO_USE = ((RICH_MENU_SIZE[0]*2)/3, RICH_MENU_SIZE[1]/2)
 
 
-def save_image(img: PIL.Image.Image):
-    if os.path.isdir(IMG_RICH_MENU_PATH):
-        img.save(IMG_RICH_MENU_PATH, quality=95)
-        logger.debug(f'save: {IMG_RICH_MENU_PATH}')
-    else:
-        logger.info("無効なファイルパスのため、画像を保存できませんでした。")
-
+def save_image(img: Image.Image):
+    img.save(IMG_RICH_MENU_PATH, quality=95)
+    logger.debug(f'save: {IMG_RICH_MENU_PATH}')
     return
 
 
@@ -41,7 +36,7 @@ def save_image(img: PIL.Image.Image):
 def image_init():
 
     # ベース画像
-    img = PIL.Image.new("RGB", RICH_MENU_SIZE, (255, 255, 255))
+    img = Image.new("RGB", RICH_MENU_SIZE, (255, 255, 255))
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("meiryo.ttc", 20)
 
@@ -80,9 +75,9 @@ def create_rich_menu_image_simple():
     logger.debug("リッチメニューの画像を作成します")
 
     # ベース画像
-    img = PIL.Image.new("RGB", (RICH_MENU_SIZE[0], int(RICH_MENU_SIZE[1]/2)), (255, 255, 255))
+    img = Image.new("RGB", (RICH_MENU_SIZE[0], int(RICH_MENU_SIZE[1]/2)), (255, 255, 255))
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, 24)
+    font = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, size=60)
 
     # 左上
     draw.rectangle((0, 0, img.width / 3, img.height), fill=(255, 0, 0))
