@@ -80,13 +80,22 @@ def set_environ(build_env: str):
 		return None
 
 	# MessagingAPI(LINE)用環境変数の設定
-	load_dotenv(os.path.join(env_dir_path, linebot_env_file_name))
+	if os.path.isfile(os.path.join(env_dir_path, linebot_env_file_name)):
+		load_dotenv(os.path.join(env_dir_path, linebot_env_file_name))
+	else:
+		raise EnvironmentError(f'{linebot_env_file_name} is not exist')
 
 	# Google Calendar API用の環境変数の設定
 	if build_env == "INSTALL":
-		load_dotenv(os.path.join(env_dir_path, google_auth_install_env_file_name))
+		if os.path.isfile(os.path.join(env_dir_path, google_auth_install_env_file_name)):
+			load_dotenv(os.path.join(env_dir_path, google_auth_install_env_file_name))
+		else:
+			raise EnvironmentError(f'{google_auth_install_env_file_name} is not exist')
 	else:
-		load_dotenv(os.path.join(env_dir_path, google_auth_env_file_name))
+		if os.path.isfile(os.path.join(env_dir_path, google_auth_env_file_name)):
+			load_dotenv(os.path.join(env_dir_path, google_auth_env_file_name))
+		else:
+			raise EnvironmentError(f'{google_auth_env_file_name} is not exist')
 
 	return
 
