@@ -17,14 +17,10 @@ from JsonControl import (
 )
 
 set_environ(build_env="")
-
-CHANNEL_ACCESS_TOKEN = os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"]
-CHANNEL_SECRET = os.environ["LINE_BOT_CHANNEL_SECRET"]
+line_bot_api = LineBotApi(os.getenv("LINE_BOT_CHANNEL_ACCESS_TOKEN"))
+handler = WebhookHandler(os.getenv("LINE_BOT_CHANNEL_SECRET"))
 
 app = Flask(__name__)
-
-line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(CHANNEL_SECRET)
 
 @app.route("/")
 def home():
