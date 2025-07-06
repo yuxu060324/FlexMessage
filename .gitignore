@@ -2,6 +2,7 @@
 /__pycache__/
 /log/
 /Key/
+/tools/
 /image/out/
 /docs/weather_memo.txt
 /TemplateMessage/events_list_format.json
