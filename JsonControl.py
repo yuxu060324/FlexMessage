@@ -342,12 +342,17 @@ def _package_event_schedule(events: list):
         logger.warning("events(all_day) is empty")
         return None
 
-    # テンプレートの設定
+    # ----------------------------
+    # 本ブランチで改修を行う箇所
+    # ----------------------------
+
+    # テンプレート
     title_box = pack_horizontal(
         [pack_text("スケジュール", size="lg", weight="bold")],
     )
     temp_event = []
 
+    # レーンごとに予定を追加していく
     for event in events:
 
         # カラーIDの取得
@@ -384,9 +389,15 @@ def _package_event_schedule(events: list):
             # alignItems="flex-start"
         ))
 
+    # レーンごとの予定のブロックを作成していく
     event_detail = pack_vertical(temp_event)
 
+    # メッセージに格納する
     _message_body_schedule = pack_vertical([title_box, event_detail], paddingTop="md")
+
+    # ----------------------------
+    # 本ブランチで改修を行う箇所 End
+    # ----------------------------
 
     logger.debug("Finished set up body_event")
 
@@ -401,9 +412,9 @@ def _package_body(events: list):
 
     # パラメータチェック
     if (not "all_day_events" in events) and (not "schedule_events" in events):
-        return None
+        raise ValueError("リストに必要な要素が格納されていません")
 
-    if (len(events["all_day_events"]) == 0) or (len(events["schedule_events"]) == 0):
+    if not events["all_day_events"] and not events["schedule_events"]:
         _body = pack_vertical(
             [pack_text("予定なし", color="#0000a0", size="xl", weight="bold")],
             paddingAll="lg",

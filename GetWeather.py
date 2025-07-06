@@ -113,7 +113,7 @@ def create_weather_icon_only(weather_before=None):
 
     logger.info("Finished create to weather_icon(Only)")
 
-    return
+    return img
 
 
 # weather = "時々" の場合の画像生成
@@ -157,7 +157,7 @@ def create_weather_icon_often(weather_before=None, weather_after=None):
 
     logger.info("Finished create to weather_icon(often)")
 
-    return
+    return img
 
 
 # weather = "のち" の場合の画像生成
@@ -203,7 +203,7 @@ def create_weather_icon_after(weather_before=None, weather_after=None):
 
     logger.info("Finished create to weather_icon(after)")
 
-    return
+    return img
 
 
 # weather = "一時" の場合の画像生成
@@ -247,7 +247,7 @@ def create_weather_icon_temporary(weather_before=None, weather_after=None):
 
     logger.info("Finished create to weather_icon(temporary)")
 
-    return
+    return img
 
 
 def create_weather_icon(jma_weather_code=None):
@@ -324,7 +324,8 @@ def create_detail_weather(weather_detail: str):
               anchor="mm")
 
     # 画像の保存
-    save_image(img, name="detail_weather")
+    if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
+        save_image(img, name="detail_weather")
 
     logger.debug("Finished create_detail_weather()")
 
@@ -358,7 +359,8 @@ def create_temperature_icon(temperature_list: list):
               text=temperature_list[0], fill=TEMPERATURE_MIN_FG_COLOR, font_size=20, anchor="mm")
 
     # 画像の保存
-    save_image(img, name="temperature_icon")
+    if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
+        save_image(img, name="temperature_icon")
 
     logger.debug("Finished create_temperature_icon()")
 
@@ -395,7 +397,7 @@ def get_weather(place_code="130000"):
     jma_weather = jma_weather.replace("\u3000", " ")    # 空白文字の置き換え
     logger.info(f"weather: {jma_weather}")
     try:
-        create_detail_weather(jma_weather)
+        detail_weather_img = create_detail_weather(jma_weather)
     except Exception as e:
         logger.warning(f'ERROR: create_detail_weather(): jma_weather={jma_weather}')
         logger.warning(f'{e.__class__.__name__}: {e}')
@@ -405,7 +407,7 @@ def get_weather(place_code="130000"):
     jma_weather_code = int(jma_json[0]["timeSeries"][0]["areas"][0]["weatherCodes"][-1])
     logger.info(f"weather_code: {jma_weather_code}")
     try:
-        create_weather_icon(jma_weather_code)
+        weather_forecast_map_img = create_weather_icon(jma_weather_code)
     except Exception as e:
         logger.warning(f'ERROR: create_weather_icon(): jma_weather_code={jma_weather_code}')
         logger.warning(f'{e.__class__.__name__}: {e}')
@@ -415,7 +417,7 @@ def get_weather(place_code="130000"):
     jma_temp = jma_json[0]["timeSeries"][2]["areas"][0]["temps"]
     logger.info(f"temps: {jma_temp}")
     try:
-        create_temperature_icon(jma_temp)
+        temperature_img = create_temperature_icon(jma_temp)
     except Exception as e:
         logger.warning(f'ERROR: create_temperature_icon(): jma_temp={jma_temp}')
         logger.warning(f'{e.__class__.__name__}: {e}')
@@ -424,10 +426,6 @@ def get_weather(place_code="130000"):
     # 作成した画像から一つの画像を作成する
 
     img = Image.new("RGB", size=HERO_SIZE, color="#000000")
-    weather_forecast_map_img = Image.open(OUT_FILE_PATH_WEATHER_MAP)
-    temperature_img = Image.open(OUT_FILE_PATH_TEMPERATURE)
-    detail_weather_img = Image.open(OUT_FILE_PATH_DETAIL_WEATHER)
-
     img.paste(weather_forecast_map_img, HERO_POSITION_WEATHER_MAP)
     img.paste(temperature_img, HERO_POSITION_TEMPERATURE)
     img.paste(detail_weather_img, HERO_POSITION_DETAIL_WEATHER)

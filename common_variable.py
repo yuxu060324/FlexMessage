@@ -21,6 +21,13 @@ DEBUG_OUTPUT_IMAGE_URL = "https://raw.githubusercontent.com/yuxu060324/FlexMessa
 # font file path
 FONT_FILE_PATH_MEIRYO = os.path.join(HOME_ABSPATH, "image", "Font", "meiryo.ttc")
 
+# dotenv file path
+linebot_env_file_name = "line_token.env"
+google_auth_env_file_name = "google_cred.env"
+google_auth_install_env_file_name = "google_cred_install.env"
+DOTENV_DIR_PATH_RENDER = os.path.join(HOME_ABSPATH, "etc", "secret")
+DOTENV_DIR_PATH_LOCAL = os.path.join(HOME_ABSPATH, "Key")
+
 # --------------------------------
 # environ variable
 # --------------------------------

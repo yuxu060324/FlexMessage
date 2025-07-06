@@ -16,6 +16,8 @@ from JsonControl import (
     package_message_error
 )
 
+
+
 CHANNEL_ACCESS_TOKEN = os.environ["LINE_BOT_CHANNEL_ACCESS_TOKEN"]
 CHANNEL_SECRET = os.environ["LINE_BOT_CHANNEL_SECRET"]
 
