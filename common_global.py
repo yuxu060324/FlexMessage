@@ -70,32 +70,39 @@ def set_environ(build_env: str):
 		logger.warning("The environment variable “SET_BUILD” is not set to a value")
 		return None
 
-	if os.getenv("SET_BUILD") == "LOCAL":
-		env_dir_path = DOTENV_DIR_PATH_LOCAL
-	elif os.getenv("SET_BUILD") == "FLASK_RENDER":
-		env_dir_path = DOTENV_DIR_PATH_RENDER
-	else:
-		# エラーログを出力
-		logger.warning("The environment variable “SET_BUILD” has an unexpected value")
-		return None
+	linebot_env_file_path = DOTENV_DIR_PATH_RENDER + "/line_token.env"
+	google_auth_env_file_path = DOTENV_DIR_PATH_RENDER + "/google_cred.env"
 
-	# MessagingAPI(LINE)用環境変数の設定
-	if os.path.isfile(os.path.join(env_dir_path, linebot_env_file_name)):
-		load_dotenv(os.path.join(env_dir_path, linebot_env_file_name))
-	else:
-		raise EnvironmentError(f'{linebot_env_file_name} is not exist')
+	load_dotenv(linebot_env_file_path)
+	load_dotenv(google_auth_env_file_path)
 
-	# Google Calendar API用の環境変数の設定
-	if build_env == "INSTALL":
-		if os.path.isfile(os.path.join(env_dir_path, google_auth_install_env_file_name)):
-			load_dotenv(os.path.join(env_dir_path, google_auth_install_env_file_name))
-		else:
-			raise EnvironmentError(f'{google_auth_install_env_file_name} is not exist')
-	else:
-		if os.path.isfile(os.path.join(env_dir_path, google_auth_env_file_name)):
-			load_dotenv(os.path.join(env_dir_path, google_auth_env_file_name))
-		else:
-			raise EnvironmentError(f'{google_auth_env_file_name} is not exist')
+	#
+	# if os.getenv("SET_BUILD") == "LOCAL":
+	# 	env_dir_path = DOTENV_DIR_PATH_LOCAL
+	# elif os.getenv("SET_BUILD") == "FLASK_RENDER":
+	# 	env_dir_path = DOTENV_DIR_PATH_RENDER
+	# else:
+	# 	# エラーログを出力
+	# 	logger.warning("The environment variable “SET_BUILD” has an unexpected value")
+	# 	return None
+	#
+	# # MessagingAPI(LINE)用環境変数の設定
+	# if os.path.isfile(os.path.join(env_dir_path, linebot_env_file_name)):
+	# 	load_dotenv(os.path.join(env_dir_path, linebot_env_file_name))
+	# else:
+	# 	raise EnvironmentError(f'{linebot_env_file_name} is not exist')
+	#
+	# # Google Calendar API用の環境変数の設定
+	# if build_env == "INSTALL":
+	# 	if os.path.isfile(os.path.join(env_dir_path, google_auth_install_env_file_name)):
+	# 		load_dotenv(os.path.join(env_dir_path, google_auth_install_env_file_name))
+	# 	else:
+	# 		raise EnvironmentError(f'{google_auth_install_env_file_name} is not exist')
+	# else:
+	# 	if os.path.isfile(os.path.join(env_dir_path, google_auth_env_file_name)):
+	# 		load_dotenv(os.path.join(env_dir_path, google_auth_env_file_name))
+	# 	else:
+	# 		raise EnvironmentError(f'{google_auth_env_file_name} is not exist')
 
 	return
 
