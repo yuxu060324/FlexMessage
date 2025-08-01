@@ -263,7 +263,7 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
 				sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
 
 		# 時間制限付きの予定
-		else:
+		elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+09:00$', event_start_date):
 
 			event_start         = datetime.datetime.strptime(event_start_date, '%Y-%m-%dT%H:%M:%S+09:00')
 			event_end           = datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00')
@@ -283,11 +283,14 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
 			event_list_index = (event_start - start_date).days
 
 			# 開始と終了の日数を算出
-			bet_date = (event_end - event_start).days
+			bet_date = (event_end - event_start).days + 1		# 開始日の配列にも入れるため、+1を行う。
 
 			# 同じイベント予定を別日に追加
 			for i in range(bet_date):
 				sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
+
+		else:
+			logger.warning("The time notation does not match your expectations. Or, the time zone is different.")
 
 	return dict(
 		start_date=start_date,
