@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, send_file
+from flask import Flask, request, abort, send_file, render_template_string
 from json_global import *
 from linebot import (
 	LineBotApi, WebhookHandler
@@ -35,15 +35,24 @@ def change_image():
 	# 画像生成
 	get_weather(place_code="130000")
 
-	return
+	html = """
+		<html>
+			<body>
+				<h1>天気: {{ status }}</h1>
+				<img src="{{ url_for('static', filename='image/out/weather.png') }}">
+			</body>
+		</html>
+	"""
+
+	return render_template_string(html)
 
 # 天気画像表示
 @app.route("/view_weather_image")
 def view_weather_image():
 
-	get_weather_path()
+	path = get_weather_path()
 
-	return
+	return send_file(path)
 
 @app.route("/out/<filename>")
 def view_image(filename):
