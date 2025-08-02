@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, send_from_directory
+from flask import Flask, request, abort, send_file
 from json_global import *
 from linebot import (
 	LineBotApi, WebhookHandler
@@ -48,10 +48,15 @@ def view_weather_image():
 @app.route("/out/<filename>")
 def view_image(filename):
 
+	path = os.path.join(app.root_path, "static", "image", "out", filename)
+
+	if not os.path.exists(path):
+		return "ファイルが存在しません", 404
+
 	logger.debug(f'dirname: {OUT_FOLDER_PATH}')
 	logger.debug(f'filename: {filename}')
 
-	return send_from_directory(OUT_FOLDER_PATH, filename)
+	return send_file(path)
 
 # LINEのユーザからの情報を受け取る。
 @app.route("/callback", methods=['POST'])
