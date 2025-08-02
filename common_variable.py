@@ -29,7 +29,7 @@ DOTENV_DIR_PATH_RENDER = "/etc/secrets/"
 DOTENV_DIR_PATH_LOCAL = os.path.join(HOME_ABSPATH, "Key")
 
 # 画像を保存するパス
-OUTPUT_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "image", "out")
+OUTPUT_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "image", "out")
 
 # output file image path
 if os.getenv("SET_BUILD") == "FLASK_RENDER":

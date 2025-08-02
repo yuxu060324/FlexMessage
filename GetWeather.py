@@ -44,7 +44,12 @@ def save_image(img: Image, name):
 		logger.warning("Image is None")
 		return -1
 
+	# ディレクトリが無ければ、作成する
+	os.makedirs(OUTPUT_FILE_PATH, exist_ok=True)
+
+	# 保存する画像ファイルのパス
 	image_path = os.path.join(OUTPUT_FILE_PATH, name + ".png")
+
 	img.save(image_path, quality=95)
 	logger.debug(f'Finished to save a picture: {image_path}')
 
