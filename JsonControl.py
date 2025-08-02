@@ -3,7 +3,7 @@ import json
 import urllib.request
 from typing import Dict, Union, Any
 from json_global import *
-from GetWeather import get_weather
+from GetWeather import get_weather_path
 
 try:
     import urlparse
@@ -464,7 +464,7 @@ def _package_footer():
 # Flex Messageのヒーロ部(画像)をパッケージ
 def _package_hero():
     # place_codeは気象庁APIを参照(130000は東京地方の場所コード)
-    weather_picture_path = get_weather(place_code="130000")
+    weather_picture_path = get_weather_path()
 
     # URLが設定されているかを確認
     if weather_picture_path is None:
