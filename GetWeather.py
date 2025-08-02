@@ -141,7 +141,9 @@ def create_weather_icon_often(weather_before=None, weather_after=None):
 		int(wimg / 4) - int(weather_img_before.size[0] / 2), int(himg / 2) - int(weather_img_before.size[1] / 2))
 	# 遷移後のアイコン表示位置 -> ((wimg*2)/4, himg/2)
 	after_position = (
-		int((wimg * 3) / 4) - int(weather_img_after.size[0] / 2), int((himg * 2) / 3) - int(weather_img_after.size[1] / 2))
+		int((wimg * 3) / 4) - int(weather_img_after.size[0] / 2),
+		int((himg * 2) / 3) - int(weather_img_after.size[1] / 2)
+	)
 
 	img = match_image(base_img=img, paste_img=weather_img_before, position=before_position)
 	img = match_image(base_img=img, paste_img=weather_img_after, position=after_position)
@@ -231,7 +233,9 @@ def create_weather_icon_temporary(weather_before=None, weather_after=None):
 		int(wimg / 4) - int(weather_img_before.size[0] / 2), int(himg / 2) - int(weather_img_before.size[1] / 2))
 	# 遷移後のアイコン表示位置 -> ((wimg*2)/4, himg/2)
 	after_position = (
-		int((wimg * 3) / 4) - int(weather_img_after.size[0] / 2), int((himg * 2) / 3) - int(weather_img_after.size[1] / 2))
+		int((wimg * 3) / 4) - int(weather_img_after.size[0] / 2),
+		int((himg * 2) / 3) - int(weather_img_after.size[1] / 2)
+	)
 
 	img = match_image(base_img=img, paste_img=weather_img_before, position=before_position)
 	img = match_image(base_img=img, paste_img=weather_img_after, position=after_position)
@@ -245,7 +249,6 @@ def create_weather_icon_temporary(weather_before=None, weather_after=None):
 
 
 def create_weather_icon(jma_weather_code=None):
-
 	# パラメータチェック
 	if jma_weather_code is None:
 		logger.warning("weather_code is None")
@@ -261,7 +264,9 @@ def create_weather_icon(jma_weather_code=None):
 	weather_transition = WEATHER_TRANSITION(weather_code=weather_code)
 	weather_before = WEATHER_KIND_before(weather_code=weather_code)
 	weather_after = WEATHER_KIND_after(weather_code=weather_code)
-	logger.debug(f'weather_before: {weather_before}, weather_transition: {weather_transition}, weather_after: {weather_after}')
+	logger.debug(
+		f'weather_before: {weather_before}, weather_transition: {weather_transition}, weather_after: {weather_after}'
+	)
 
 	# 画像生成の場合分け
 
@@ -298,7 +303,6 @@ def create_weather_icon(jma_weather_code=None):
 
 
 def create_detail_weather(weather_detail: str):
-
 	# パラメータチェック
 	if weather_detail == "":
 		logger.warning("weather_detail does not set info")
@@ -311,11 +315,13 @@ def create_detail_weather(weather_detail: str):
 	# 天気の詳細情報の記載
 	weather_detail_position = (int(WEATHER_NAME_SIZE[0] / 2), int(WEATHER_NAME_SIZE[1] / 2))
 	font = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, 12)
-	draw.text(xy=weather_detail_position,
-			  text=weather_detail,
-			  fill="black",
-			  font=font,
-			  anchor="mm")
+	draw.text(
+		xy=weather_detail_position,
+		text=weather_detail,
+		fill="black",
+		font=font,
+		anchor="mm"
+	)
 
 	# 画像の保存
 	if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
@@ -327,7 +333,6 @@ def create_detail_weather(weather_detail: str):
 
 
 def create_temperature_icon(temperature_list: list):
-
 	# パラメータチェック
 	if len(temperature_list) < 2:
 		return -1
@@ -337,20 +342,36 @@ def create_temperature_icon(temperature_list: list):
 	draw = ImageDraw.Draw(img)
 
 	# 背景色の設定
-	draw.rectangle([(0, 0), (TEMPERATURE_SIZE[0], TEMPERATURE_SIZE[1] / 2)],
-				   fill=TEMPERATURE_MAX_BG_COLOR,
-				   outline=TEMPERATURE_MAX_FG_COLOR, width=5)
-	draw.rectangle([(0, TEMPERATURE_SIZE[1] / 2), (TEMPERATURE_SIZE[0], TEMPERATURE_SIZE[1])],
-				   fill=TEMPERATURE_MIN_BG_COLOR,
-				   outline=TEMPERATURE_MIN_FG_COLOR, width=5)
+	draw.rectangle(
+		[(0, 0), (TEMPERATURE_SIZE[0], TEMPERATURE_SIZE[1] / 2)],
+		fill=TEMPERATURE_MAX_BG_COLOR,
+		outline=TEMPERATURE_MAX_FG_COLOR,
+		width=5
+	)
+	draw.rectangle(
+		[(0, TEMPERATURE_SIZE[1] / 2), (TEMPERATURE_SIZE[0], TEMPERATURE_SIZE[1])],
+		fill=TEMPERATURE_MIN_BG_COLOR,
+		outline=TEMPERATURE_MIN_FG_COLOR,
+		width=5
+	)
 
 	# 文字の記載
 	temperature_max_position = (TEMPERATURE_SIZE[0] / 2, TEMPERATURE_SIZE[1] / 4)
 	temperature_min_position = (TEMPERATURE_SIZE[0] / 2, (TEMPERATURE_SIZE[1] * 3) / 4)
-	draw.text(xy=temperature_max_position,
-			  text=temperature_list[1], fill=TEMPERATURE_MAX_FG_COLOR, font_size=20, anchor="mm")
-	draw.text(xy=temperature_min_position,
-			  text=temperature_list[0], fill=TEMPERATURE_MIN_FG_COLOR, font_size=20, anchor="mm")
+	draw.text(
+		xy=temperature_max_position,
+		text=temperature_list[1],
+		fill=TEMPERATURE_MAX_FG_COLOR,
+		font_size=20,
+		anchor="mm"
+	)
+	draw.text(
+		xy=temperature_min_position,
+		text=temperature_list[0],
+		fill=TEMPERATURE_MIN_FG_COLOR,
+		font_size=20,
+		anchor="mm"
+	)
 
 	# 画像の保存
 	if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
@@ -361,15 +382,12 @@ def create_temperature_icon(temperature_list: list):
 	return img
 
 
-# Get Weather from Japan Meteorological Agency
-# @param    [in]    place_code      Code for where to get the weather (details: https://www.jma.go.jp/bosai/common/const/area.json)
-# @param    [out]   weather_picture_path    path of weather_picture
-# @discription
-# - 外部公開API
-# - このファイルに定義している関数は、この関数以外、直接呼び出さないようにする
-# - 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
+# @details	Get Weather from Japan Meteorological Agency
+# @param	[in]	place_code				Code for where to get the weather
+# @param	[out]	weather_picture_path	path of weather_picture
+# @description - 外部公開API - このファイルに定義している関数は、この関数以外、直接呼び出さないようにする -
+# 天気、詳細内容、最高/最低気温の情報をまとめた画像を返り値として設定
 def get_weather(place_code="130000"):
-
 	# if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
 	# 	# デバッグ用の処理
 	# 	return DEBUG_OUTPUT_IMAGE_URL
@@ -388,7 +406,7 @@ def get_weather(place_code="130000"):
 
 	# 気象情報(詳細な情報)
 	jma_weather = jma_json[0]["timeSeries"][0]["areas"][0]["weathers"][-1]
-	jma_weather = jma_weather.replace("\u3000", " ")    # 空白文字の置き換え
+	jma_weather = jma_weather.replace("\u3000", " ")		# 空白文字の置き換え
 	logger.info(f"weather: {jma_weather}")
 	try:
 		detail_weather_img = create_detail_weather(jma_weather)
@@ -430,7 +448,6 @@ def get_weather(place_code="130000"):
 
 
 def get_weather_path():
-
 	path = urlparse.urljoin(WEATHER_IMAGE_FILE_PATH, out_file_name_hero + ".png")
 	logger.debug(f'file_path: {path}')
 
