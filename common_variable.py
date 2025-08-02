@@ -34,7 +34,7 @@ OUTPUT_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sta
 # output file image path
 if os.getenv("SET_BUILD") == "FLASK_RENDER":
 	# render.com 実行環境
-	WEATHER_IMAGE_FILE_PATH = "static/image/out/"
+	WEATHER_IMAGE_FILE_PATH = "https://lineplanbotyamanaka.onrender.com/out/"
 else:
 	# デバッグ環境
 	WEATHER_IMAGE_FILE_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/image/out/"
