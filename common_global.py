@@ -57,7 +57,8 @@ def checkURL(url):
 		logger.debug(f'URL OK: {url}')
 		f.close()
 		return True
-	except Exception:
+	except Exception as ex:
+		logger.warning(f'{ex.__class__.__name__}: {ex.args}')
 		logger.warning(f'URL is not found: {url}')
 		return False
 

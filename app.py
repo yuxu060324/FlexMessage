@@ -35,16 +35,7 @@ def change_image():
 	# 画像生成
 	get_weather(place_code="130000")
 
-	html = """
-		<html>
-			<body>
-				<h1>天気: {{ status }}</h1>
-				<img src="{{ url_for('static', filename='image/out/weather.png') }}">
-			</body>
-		</html>
-	"""
-
-	return render_template_string(html)
+	return "画像を生成しました。<br><a href='/show'>画像を表示</a>"
 
 # 天気画像表示
 @app.route("/view_weather_image")
@@ -52,7 +43,16 @@ def view_weather_image():
 
 	path = get_weather_path()
 
-	return send_file(path)
+	html = """
+		<html>
+			<body>
+				<h1>天気画像</h1>
+				<img src="/static/image/out/out_hero.png" alt="天気画像">
+			</body>
+		</html>
+	"""
+
+	return render_template_string(html)
 
 @app.route("/out/<filename>")
 def view_image(filename):
