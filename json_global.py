@@ -105,7 +105,7 @@ HERO_POSITION_DETAIL_WEATHER = (0, WEATHER_FORECAST_MAP_SIZE[1])
 out_file_name_detail_weather = "detail_weather"
 out_file_name_temperature = "temperature_icon"
 out_file_name_weather_map = "weather_forecast_map"
-out_file_name_hero = "out_hero"
+out_file_name_hero = "out_hero_20250804"
 
 # 最高/最低気温の背景/枠 の色
 TEMPERATURE_MAX_BG_COLOR = "#ffc0c0"    # 最高気温の背景色
