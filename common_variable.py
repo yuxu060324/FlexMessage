@@ -39,6 +39,11 @@ else:
 	# デバッグ環境
 	WEATHER_IMAGE_FILE_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/image/out/"
 
+# --------------------------------
+# datetime TimeZone
+# --------------------------------
+
+JST = datetime.timezone(datetime.timedelta(hours=9))
 
 # --------------------------------
 # environ variable
@@ -73,14 +78,6 @@ LINE_MESSAGE_ACTION_LIST = [
 	"@WeekSchedule",						# 1週間の予定を通知する処理を実行
 	"@GetWeatherImage",						# 今日の天気の画像を更新する処理を実行
 ]
-
-
-# Google Calendarで取得する予定の種類
-class schedule_kind(Enum):
-	TODAY = 0,
-	TOMORROW = 1,
-	WEEKLY = 2,
-	NUM_KIND = 3
 
 
 @dataclass

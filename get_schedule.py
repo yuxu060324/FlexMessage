@@ -13,37 +13,13 @@ from common_global import *
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-
-
-# 予定表から取得する開始日時と終了日時を設定する関数
-def get_schedule_time(kind: schedule_kind):
-	today_date = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-
-	if kind == schedule_kind.TODAY:
-		start_date = today_date
-		end_date = start_date + datetime.timedelta(days=1)
-		logger.info("Setting to TODAY")
-	elif kind == schedule_kind.TOMORROW:
-		start_date = today_date + datetime.timedelta(days=1)
-		end_date = start_date + datetime.timedelta(days=1)
-		logger.info("Setting to TOMORROW")
-	elif kind == schedule_kind.WEEKLY:
-		start_date = today_date
-		end_date = start_date + datetime.timedelta(days=8)
-		logger.info("Setting to WEEKLY")
-	else:
-		logger.warning("kind does not include in schedule_kind")
-		start_date = today_date
-		end_date = start_date + datetime.timedelta(days=1)
-
-	return start_date, end_date
-
+JST = datetime.timezone(datetime.timedelta(hours=9))
 
 # WEEKLYを今週と来週、今からの3つ用意したいな
 
 # Google Calendar APIの資格情報の環境変数を更新する
 # credentials.to_json()の返り値が"str"型
-def update_environ_credentials(credentials: str):
+def _update_environ_credentials(credentials: str):
 	# return cls(
 	#     token=info.get("token"),
 	#     refresh_token=info.get("refresh_token"),
@@ -81,7 +57,7 @@ def update_environ_credentials(credentials: str):
 
 
 # Google Calendar APIの資格情報を取得する
-def get_credentials():
+def _get_credentials():
 	# 環境変数の確認(credentials)
 	if (
 			not "GOOGLE_CALENDAR_CREDENTIALS_TOKEN" in os.environ or
@@ -177,13 +153,13 @@ def get_credentials():
 		logger.info("トークン情報を登録しました。")
 
 	# 環境変数の更新
-	update_environ_credentials(credentials=authorized_credentials.to_json())
+	_update_environ_credentials(credentials=authorized_credentials.to_json())
 
 	return authorized_credentials
 
 
 # 作成したイベント情報を格納するリストを作成する。
-def init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
+def _init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
 
 	# 終了時間が開始時間より早くないかを判定
 	if start > end:
@@ -212,9 +188,9 @@ def init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
 
 
 # 取得したイベントを終日イベントと期限付きイベントに分ける
-def create_events_list(start_date: datetime.datetime, end_date: datetime.datetime, events: list):
+def _create_events_list(start_date: datetime.datetime, end_date: datetime.datetime, events: list):
 
-	sort_event_list = init_sort_event_list(start=start_date, end=end_date)
+	sort_event_list = _init_sort_event_list(start=start_date, end=end_date)
 
 	# イベントが何もない(予定なし)の場合は、初期値のまま返却
 	if not events:
@@ -252,7 +228,9 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
 			)
 
 			# イベントを格納するリストのインデックスを取得
-			event_list_index = (event_start - start_date).days
+			logger.debug(event_start)
+			logger.debug(start_date)
+			event_list_index = (event_start.replace(tzinfo=JST) - start_date).days
 
 			# 開始と終了の日数を算出
 			bet_date = (event_end - event_start).days
@@ -265,8 +243,10 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
 		# 時間制限付きの予定
 		elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+09:00$', event_start_date):
 
-			event_start         = datetime.datetime.strptime(event_start_date, '%Y-%m-%dT%H:%M:%S+09:00')
-			event_end           = datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00')
+			event_start         = datetime.datetime.fromisoformat(event_start_date)
+			# event_start         = datetime.datetime.strptime(event_start_date, '%Y-%m-%dT%H:%M:%S+09:00')
+			event_end           = datetime.datetime.fromisoformat(event['end'].get('dateTime'))
+			# event_end           = datetime.datetime.strptime(event['end'].get('dateTime'), '%Y-%m-%dT%H:%M:%S+09:00')
 			event_title         = event['summary']
 			event_description   = event['description'] if 'description' in event else "-"
 			event_colorId       = event['colorId'] if 'colorId' in event else "-"
@@ -300,16 +280,11 @@ def create_events_list(start_date: datetime.datetime, end_date: datetime.datetim
 
 
 # Google Calendar APIから予定を取得する関数
-# @return       None            異常終了
-# @param[in]    schedule_kind   取得するスケジュールの種類
-def get_calendar_event(schedule_kind: schedule_kind):
-
-	# スケジュールを取得する開始時間と終了時間を取得する。
-	start_date, end_date = get_schedule_time(schedule_kind)
+def get_calendar_event(start_date: datetime.datetime, end_date: datetime.datetime):
 
 	# 資格情報の取得
 	try:
-		creds = get_credentials()
+		creds = _get_credentials()
 	except ValueError as ex:
 		logger.warning("Failed to getting credentials of google_api")
 		logger.warning(ex)
@@ -319,8 +294,8 @@ def get_calendar_event(schedule_kind: schedule_kind):
 		logger.warning(f'{e.__class__.__name__}: {e}')
 		return None
 
-	start = start_date.isoformat() + 'Z'  # Googleカレンダーのイベントを取得する開始日
-	end = end_date.isoformat() + 'Z'  # Googleカレンダーのイベントを取得する終了日
+	start = start_date.isoformat()		# Googleカレンダーのイベントを取得する開始日
+	end = end_date.isoformat()			# Googleカレンダーのイベントを取得する終了日
 
 	# Google Calendar APIから予定を取得してくる
 	try:
@@ -332,7 +307,8 @@ def get_calendar_event(schedule_kind: schedule_kind):
 			timeMin=start,
 			timeMax=end,
 			singleEvents=True,
-			orderBy='startTime'
+			orderBy='startTime',
+			timeZone="Asia/Tokyo"
 		).execute()
 		events = events_result.get('items', [])
 
@@ -375,4 +351,18 @@ def get_calendar_event(schedule_kind: schedule_kind):
 	len_event = len(events)
 	logger.info(f'Number getting event: {len_event}')
 
-	return create_events_list(start_date=start_date, end_date=end_date, events=events)
+	return _create_events_list(start_date=start_date, end_date=end_date, events=events)
+
+if __name__ == "__main__":
+	os.environ["SET_BUILD"] = "LOCAL"
+	set_environ(build_env="")
+
+	start_date = datetime.datetime.now(JST).replace(hour=0, minute=0, second=0, microsecond=0)
+	end_date = start_date + datetime.timedelta(days=8, seconds=-1)
+
+	events = get_calendar_event(start_date=start_date, end_date=end_date)
+
+	if events is None:
+		print("Error")
+	else:
+		print(events)

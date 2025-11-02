@@ -5,7 +5,10 @@ from logging import StreamHandler
 import urllib.request
 from dotenv import load_dotenv
 from common_variable import *
-
+try:
+	import urlparse
+except ImportError:
+	import urllib.parse as urlparse
 
 # logger
 def getMyLogger(name):
@@ -51,7 +54,7 @@ def getMyLogger(name):
 
 # URL check
 def checkURL(url):
-	logger.debug(f'Valid URL: {url}')
+	logger.debug(f'Check URL: {url}')
 	try:
 		f = urllib.request.urlopen(url=url)
 		logger.debug(f'URL OK: {url}')
@@ -62,6 +65,15 @@ def checkURL(url):
 		logger.warning(f'URL is not found: {url}')
 		return False
 
+
+def checkPATH(path: str):
+	logger.debug(f'Check PATH: {path}')
+	if os.path.isfile(path):
+		logger.debug(f'PATH OK: {path}')
+		return True
+	else:
+		logger.warning(f'PATH is not found: {path}')
+		return False
 
 # 環境変数の設定(基本的にDebug環境での呼出を想定)
 def set_environ(build_env: str):
