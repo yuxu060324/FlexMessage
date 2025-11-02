@@ -5,7 +5,7 @@
 /tools/
 /image/out/
 /static/
-/docs/weather_memo.txt
+/docs/
 /TemplateMessage/events_list_format.json
 /TemplateMessage/debug_message.json
 /create_rich_menu_image.py
