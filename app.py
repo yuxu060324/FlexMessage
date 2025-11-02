@@ -138,26 +138,6 @@ def handle_message(event):
 
 	logger.debug(f'payload: {payload}')
 
-	try:
-		# Googleカレンダーから予定の取得
-		events = get_calendar_event(schedule_kind=get_schedule_kind)
-
-		if events is None:
-			logger.warning("Events is Empty")
-			raise EnvironmentError("Could not retrieve event.")
-
-		if get_schedule_kind == schedule_kind.WEEKLY:
-			payload = package_carousel_message(schedule_dict=events)
-		else:
-			payload = package_message_one_day(events_list=events)
-
-		# ログファイルに出力
-		logger.debug(f'payload: {payload}')
-
-	except Exception as e:
-		payload = package_message_error()
-		logger.warning(f'{e.__class__.__name__}: {e}')
-
 	if payload is not None:
 		# FlexMessage形式のメッセージ作成
 		obj = FlexSendMessage(alt_text="Message", contents=payload)
