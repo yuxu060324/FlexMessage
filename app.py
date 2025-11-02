@@ -76,11 +76,14 @@ def change_image():
 def view_weather_image():
 
 	filename = main_app.get_weather_image_path()
-	path = os.path.join(app.root_path, "static", "image", "out", filename)
-
-	if not os.path.exists(path):
+	if filename is not None:
+		path = os.path.join(app.root_path, "static", "image", "out", filename)
+	else:
 		# デフォルトファイルを設定
 		path = os.path.join(app.root_path, "image", "weather", "out_weather_image_default.png")
+
+	if not os.path.exists(path):
+		return "ファイルが存在しません", 404
 
 	logger.debug(f'dirname: {OUT_FOLDER_PATH}')
 	logger.debug(f'filename: {filename}')
