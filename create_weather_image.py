@@ -1,6 +1,6 @@
 import requests
 from json_global import *
-import time
+# import time
 from PIL import Image, ImageDraw, ImageFont
 
 try:
@@ -48,11 +48,11 @@ def _save_image(img: Image, name):
 	img.save(image_path, quality=95)
 	img.close()			# 明示的にクローズ
 
-	# ファイルの存在確認
-	for _ in range(3):
-		if os.path.isfile(image_path):
-			break
-		time.sleep(0.1)
+	# # ファイルの存在確認
+	# for _ in range(3):
+	# 	if os.path.isfile(image_path):
+	# 		break
+	# 	time.sleep(0.1)
 
 	logger.debug(f'Finished to save a picture: {image_path}')
 
