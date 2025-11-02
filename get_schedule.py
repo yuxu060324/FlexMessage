@@ -358,7 +358,7 @@ if __name__ == "__main__":
 	set_environ(build_env="")
 
 	start_date = datetime.datetime.now(JST).replace(hour=0, minute=0, second=0, microsecond=0)
-	end_date = start_date + datetime.timedelta(days=8, seconds=-1)
+	end_date = start_date + datetime.timedelta(days=1, seconds=-1)
 
 	events = get_calendar_event(start_date=start_date, end_date=end_date)
 

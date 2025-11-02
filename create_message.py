@@ -477,7 +477,7 @@ def package_message_one_day(events_list: dict, image_path: str = None):
 # 任意の1日分の予定をFlex Message形式でパッケージ(画像なし)
 def package_message_one_day_none_image(date: datetime.datetime, events_list: list):
 	_message_header = _package_header(date=date)
-	_message_body = _package_body(events=events_list["sort_event_list"])
+	_message_body = _package_body(events=events_list)
 	_message_footer = _package_footer()
 
 	if _message_header is None:
