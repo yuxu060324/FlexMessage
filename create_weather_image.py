@@ -431,7 +431,8 @@ def create_weather_image(place_code: str = "130000"):
 
 	try:
 		# ファイルの削除
-		_delete_old_images()
+		if os.path.isdir(OUTPUT_FILE_PATH):
+			_delete_old_images()
 
 		# 画像の保存
 		_save_image(img=img, name=output_file_path)

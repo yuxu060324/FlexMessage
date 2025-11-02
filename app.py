@@ -12,7 +12,7 @@ from linebot.models import (
 
 from MainClass import MainApp
 
-# os.environ["SET_BUILD"] = "LOCAL"			# nogrok環境での動作確認用
+os.environ["SET_BUILD"] = "LOCAL"			# nogrok環境での動作確認用
 
 set_environ(build_env="")
 line_bot_api = LineBotApi(os.getenv("LINE_BOT_CHANNEL_ACCESS_TOKEN"))
