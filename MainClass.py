@@ -34,6 +34,7 @@ class MainApp:
 		try:
 			# 予定の取得
 			events = get_calendar_event(start_date=today, end_date=tomorrow)
+			logger.debug(f'event: {events}')
 			payload = package_message_one_day(events_list=events, image_path=self.get_weather_image_path())
 		except Exception as e:
 			payload = package_message_error()
@@ -53,6 +54,7 @@ class MainApp:
 		try:
 			# 予定の取得
 			events = get_calendar_event(start_date=date, end_date=end_date)
+			logger.debug(f'event: {events}')
 			payload = package_message_one_day_none_image(date=date, events_list=events)
 		except Exception as e:
 			payload = package_message_error()
@@ -69,6 +71,7 @@ class MainApp:
 		try:
 			# 予定の取得
 			events_dict = get_calendar_event(start_date=start_date, end_date=end_date)
+			logger.debug(f'event: {events_dict}')
 			payload = package_carousel_message(schedule_dict=events_dict)
 		except Exception as e:
 			payload = package_message_error()
