@@ -55,7 +55,7 @@ class MainApp:
 			# 予定の取得
 			events = get_calendar_event(start_date=date, end_date=end_date)
 			logger.debug(f'event: {events}')
-			payload = package_message_one_day_none_image(date=date, events_list=events)
+			payload = package_message_one_day_none_image(date=date, events_list=events["sort_event_list"][0])
 		except Exception as e:
 			payload = package_message_error()
 			logger.warning(f'{e.__class__.__name__}: {e}')
