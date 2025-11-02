@@ -34,6 +34,11 @@ def change_image():
 	main_app.create_hero_image()
 
 	file_name = main_app.get_weather_image_path()
+	logger.debug(f'filename: {file_name}')
+	if file_name is None:
+		logger.warning("weather_image does not create")
+		return "内部矛盾エラーが発生しました", 404
+
 	file_path = os.path.join(app.root_path, "static", "image", "out", file_name)
 	logger.debug(f'file_path: {file_path}')
 
