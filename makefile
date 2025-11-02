@@ -7,10 +7,26 @@ default:
 help:
 	@echo make [option]
 	@echo [option]: FLASK_LOCAL, NGROK_RUN, FLASK_RENDER, rich_image
+	@echo FLASK_RENDER: Option for operational use, running apps on servers
 	@echo FLASK_LOCAL: Option for debugging, sending line messages in the local_env.
 	@echo NGROK_RUN: Option for debugging, set up server for line in local_env
-	@echo FLASK_RENDER: Option for operational use, running apps on servers
 	@echo rich_image: Local work options, generate rich menu images
+	@echo weather_image: Local work options, generate weather images
+
+
+# =====================================================
+# 					本番(Render.com)用
+# =====================================================
+
+# 運用用
+.PHONY: FLASK_RENDER
+FLASK_RENDER:
+	gunicorn app:app --workers 4 --threads 2 --max-requests 500
+
+
+# =====================================================
+# 					ローカル検証用
+# =====================================================
 
 # local環境での接続確認用
 .PHONY: FLASK_LOCAL
@@ -24,14 +40,25 @@ FLASK_LOCAL:
 NGROK_RUN:
 	ngrok http 8080
 
-# 運用用
-.PHONY: FLASK_RENDER
-FLASK_RENDER:
-	gunicorn app:app --workers 4 --threads 2 --max-requests 500
 
+# =====================================================
+# 					ローカル動作用
+# =====================================================
 
-# リッチメニュー画像作成
+# リッチメニュー画像作成(ローカルテスト用)
 .PHONY: rich_image
 rich_image:
 	python create_rich_menu_image.py
+
+# 天気画像を作成(ローカルテスト用)
+.PHONY: weather_image
+weather_image:
+	python create_weather_image.py
+
+# 予定表を取得(ローカルテスト用)
+.PHONY: get_schedule
+get_schedule:
+	python get_schedule.py
+
+
 
