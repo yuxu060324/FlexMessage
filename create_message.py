@@ -406,8 +406,7 @@ def _package_hero(image_path: str = None):
 	# 有効なURLかを確認
 	if checkPATH(image_path) is not True:
 		if checkURL(image_path) is not True:
-			raise ValueError("Invalid URL.")
-			return None
+			image_path = WEATHER_IMAGE_DEFAULT_FILE_URL
 
 	_message_hero = _pack_image(path=image_path, size="full", aspectRatio="16:9")
 
@@ -419,7 +418,7 @@ def _package_hero(image_path: str = None):
 # 1日分の予定をFlex Message形式でパッケージ(画像有り)
 # @param    [in]    events_list   setting schedule event in body of message
 # @param    [out]   payload       output message
-def package_message_one_day(events_list: dict, image_path: str = None):
+def package_message_one_day(events_list: dict):
 	# 開始日、終了日、イベント数が用意されているかを確認する。
 	if events_list.get("start_date") is None:
 		logger.warning("\"start_date\" is not set in the list of arguments.")
@@ -437,7 +436,7 @@ def package_message_one_day(events_list: dict, image_path: str = None):
 	schedule_list = events_list.get("sort_event_list")[0]  # 1日分のため、リストの最初のみ取得
 
 	_message_header = _package_header(date=date)
-	_message_hero = _package_hero(image_path=image_path)
+	_message_hero = _package_hero(image_path=WEATHER_IMAGE_FILE_URL)
 	_message_body = _package_body(events=schedule_list)
 	_message_footer = _package_footer()
 

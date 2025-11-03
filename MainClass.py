@@ -35,7 +35,7 @@ class MainApp:
 			# 予定の取得
 			events = get_calendar_event(start_date=today, end_date=tomorrow)
 			logger.debug(f'event: {events}')
-			payload = package_message_one_day(events_list=events, image_path=self.get_weather_image_path())
+			payload = package_message_one_day(events_list=events)
 		except Exception as e:
 			payload = package_message_error()
 			logger.warning(f'{e.__class__.__name__}: {e}')
