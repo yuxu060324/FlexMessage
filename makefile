@@ -6,12 +6,11 @@ default:
 .PHONY: help
 help:
 	@echo make [option]
-	@echo [option]: FLASK_LOCAL, NGROK_RUN, FLASK_RENDER, rich_image
+	@echo [option]: FLASK_RENDER, FLASK_LOCAL, NGROK_RUN, rich_image
 	@echo FLASK_RENDER: Option for operational use, running apps on servers
 	@echo FLASK_LOCAL: Option for debugging, sending line messages in the local_env.
 	@echo NGROK_RUN: Option for debugging, set up server for line in local_env
 	@echo rich_image: Local work options, generate rich menu images
-	@echo weather_image: Local work options, generate weather images
 
 
 # =====================================================
@@ -49,11 +48,6 @@ NGROK_RUN:
 .PHONY: rich_image
 rich_image:
 	python create_rich_menu_image.py
-
-# 天気画像を作成(ローカルテスト用)
-.PHONY: weather_image
-weather_image:
-	python create_weather_image.py
 
 # 予定表を取得(ローカルテスト用)
 .PHONY: get_schedule
