@@ -1,3 +1,4 @@
+import requests
 from common_global import *
 from get_schedule import get_calendar_event
 from create_weather_image import create_weather_image
@@ -10,20 +11,7 @@ from create_message import (
 
 class MainApp:
 	def __init__(self):
-		self.out_file_name = None
-
-	def get_weather_image_path(self):
-		if self.out_file_name is None:
-			return None
-
-		path = self.out_file_name
-
-		logger.info(f'file_path: {path}')
-		return path
-
-	def create_hero_image(self):
-		self.out_file_name = create_weather_image(place_code="130000")
-		return
+		logger.debug("MainApp Run")
 
 	def create_today_schedule_message(self):
 

@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, request, abort, send_file, url_for, render_template_string
 from json_global import *
 from linebot import (
@@ -26,82 +27,6 @@ main_app = MainApp()
 def home():
 	return "HOME"
 
-# 画像変更
-@app.route("/change_image")
-def change_image():
-
-	# 画像生成
-	main_app.create_hero_image()
-
-	file_name = main_app.get_weather_image_path()
-	logger.debug(f'filename: {file_name}')
-	if file_name is None:
-		logger.warning("weather_image does not create")
-		return "内部矛盾エラーが発生しました", 404
-
-	file_path = os.path.join(app.root_path, "static", "image", "out", file_name)
-	logger.debug(f'file_path: {file_path}')
-
-	# ブラウザ表示用の URL（static フォルダから配信）
-	image_url = RENDER_PROJECT_URL + "view_weather_image"
-	logger.debug(f'image_url: {image_url}')
-
-	html = """
-	<!doctype html>
-	<html>
-		<head>
-			<meta charset="utf-8">
-			<title>ファイルパスと画像表示</title>
-			<style>
-				body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "メイリオ"; padding: 24px; }
-				.path { font-weight: bold; margin-bottom: 12px; }
-				img { border: 1px solid #ddd; max-width: 100%; height: auto; display:block; margin-top:8px; }
-			</style>
-		</head>
-		<body>
-			<div class="path">file_path: {{ file_path }}</div>
-			{% if image_url %}
-				<img src="{{ image_url }}" alt="generated image">
-			{% else %}
-				<div>画像ファイルが見つかりませんでした。</div>
-			{% endif %}
-		</body>
-	</html>
-	"""
-
-	return render_template_string(html, file_path=file_path, image_url=image_url)
-
-# 天気画像表示
-@app.route("/view_weather_image")
-def view_weather_image():
-
-	filename = main_app.get_weather_image_path()
-	if filename is not None:
-		path = os.path.join(app.root_path, "static", "image", "out", filename)
-	else:
-		# デフォルトファイルを設定
-		path = os.path.join(app.root_path, "image", "weather", "out_weather_image_default.png")
-
-	if not os.path.exists(path):
-		return "ファイルが存在しません", 404
-
-	logger.debug(f'dirname: {OUT_FOLDER_PATH}')
-	logger.debug(f'filename: {filename}')
-
-	return send_file(path)
-
-@app.route("/weather/<filename>")
-def view_weather_temp_image(filename):
-
-	path = os.path.join(app.root_path, "image", "weather", filename)
-
-	if not os.path.exists(path):
-		return "ファイルが存在しません", 404
-
-	logger.debug(f'dirname: {WEATHER_PATH}')
-	logger.debug(f'filename: {filename}')
-
-	return send_file(path)
 
 # LINEのユーザからの情報を受け取る。
 @app.route("/callback", methods=['POST'])
