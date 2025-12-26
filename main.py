@@ -24,13 +24,7 @@ main_app = MainApp()
 # main( for debug )
 def main():
 
-	main_app.create_hero_image()
-	file_path = main_app.get_weather_image_path()
-	logger.debug(f'get_file_path: {file_path}')
-	if file_path is None:
-		raise ValueError("Internal Error")
-
-	payload = main_app.create_schedule_message_week()
+	payload = main_app.create_today_schedule_message()
 
 	# デバッグ用
 	# debug_file_path = os.path.join(HOME_ABSPATH, "TemplateMessage", "debug_message.json")
