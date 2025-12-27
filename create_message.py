@@ -3,6 +3,7 @@ import json
 import urllib.request
 from typing import Dict, Union, Any
 from json_global import *
+import requests
 
 try:
 	import urlparse
@@ -397,11 +398,13 @@ def _package_footer():
 
 
 # Flex Messageのヒーロ部(画像)をパッケージ
-def _package_hero(image_path: str = None):
+def _package_hero():
 
-	if image_path is None:
-		raise ValueError("Image URL is not set.")
-		return None
+	res = requests.get(GET_WEATHER_IMAGE_FILE_URL)
+	weather_image_filename = res.text
+
+	image_path = urlparse.urljoin(VIEW_WEATHER_IMAGE_FILE_URL, weather_image_filename)
+	logger.debug(f'image_path: {image_path}')
 
 	# 有効なURLかを確認
 	if checkPATH(image_path) is not True:
@@ -436,7 +439,7 @@ def package_message_one_day(events_list: dict):
 	schedule_list = events_list.get("sort_event_list")[0]  # 1日分のため、リストの最初のみ取得
 
 	_message_header = _package_header(date=date)
-	_message_hero = _package_hero(image_path=WEATHER_IMAGE_FILE_URL)
+	_message_hero = _package_hero()
 	_message_body = _package_body(events=schedule_list)
 	_message_footer = _package_footer()
 
