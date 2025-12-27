@@ -126,26 +126,31 @@ OUT_FILE_PATH_TEMPERATURE = os.path.join(OUT_FOLDER_PATH, out_file_name_temperat
 # イベントアイコンのファイルパス
 ICON_EVENT_FILE = {
 	"task": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "task.png"),
-	"event": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "event.png"),
 	"game": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "game.png"),
+	"event": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "event.png"),
 	"commu": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "commu.png"),
+	"music": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "music.png"),
+	"money": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "money.png"),
 	"eating": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "eating.png"),
+	"sports": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "sports.png"),
+	"reading": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "reading.png"),
 	"hospital": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "hospital.png"),
+	"attractions": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "attractions.png"),
 	"other": urlparse.urljoin(ICON_EVENT_FOLDER_URL, "other.png"),
 }
 
 EVENT_KIND = {
 	"1": "eating",
-	"2": "other",
-	"3": "commu",
-	"4": "other",
-	"5": "game",
-	"6": "event",
-	"7": "other",
-	"8": "other",
-	"9": "hospital",
-	"10": "other",
-	"11": "task",
+	"2": "game",
+	"3": "sports",
+	"4": "task",
+	"5": "money",
+	"6": "music",
+	"7": "reading",
+	"8": "event",
+	"9": "commu",
+	"10": "attractions",
+	"11": "hospital",
 	"-": "other"
 }
 
