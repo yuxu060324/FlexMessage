@@ -30,7 +30,8 @@ DOTENV_DIR_PATH_LOCAL = os.path.join(HOME_ABSPATH, "Key")
 
 # 画像を保存するパス
 OUTPUT_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "image", "out")
-WEATHER_IMAGE_FILE_URL = "https://line-weather-image-control.onrender.com/image"
+GET_WEATHER_IMAGE_FILE_URL = "https://line-weather-image-control.onrender.com/get_image_filename"
+VIEW_WEATHER_IMAGE_FILE_URL = "https://line-weather-image-control.onrender.com/image/"
 WEATHER_IMAGE_DEFAULT_FILE_URL = "https://lineplanbotyamanaka.onrender.com/weather/" + "out_weather_image_default.png"
 
 # output file image path
