@@ -1,4 +1,3 @@
-import requests
 from flask import Flask, request, abort, send_file, url_for, render_template_string
 from json_global import *
 from linebot import (
