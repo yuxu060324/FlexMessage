@@ -42,10 +42,11 @@ HEADER_TEXT_DATE_COLOR = "#ffffffB0"
 HEADER_TEXT_DATE_SIZE = "sm"
 
 # text of date
-HEADER_TEXT_COLOR = "#c00000"
+HEADER_TEXT_COLOR = "#ffffff"
 HEADER_TEXT_SIZE = "xl"
 
-HEADER_BACK_COLOR = "#0367D3"
+HEADER_BACK_COLOR_NORMAL = "#0367D3"
+HEADER_BACK_COLOR_HOLIDAY = "#ff4500"
 
 # -------------------------------
 # Hero

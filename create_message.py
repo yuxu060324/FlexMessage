@@ -248,7 +248,7 @@ def _get_icon(icon_kind, icon_file_kind):
 
 
 # Flex Messageのヘッダ部をパッケージする関数
-def _package_header(date: datetime.datetime):
+def _package_header(date: datetime.datetime, is_holiday: bool):
 	# パラメータチェック
 	if type(date) is not datetime.datetime:
 		logger.warning("Setting parameter(data) is not right")
@@ -260,13 +260,26 @@ def _package_header(date: datetime.datetime):
 
 	# 日付のboxの追加
 	date_box = _pack_vertical([
-		_pack_text("DATE", color="#ffffffB0", size="sm"),
-		_pack_text(date_str, color="#ffffff", size="xl", flex=4, weight="bold")
+		_pack_text(HEADER_TEXT_DATE, color=HEADER_TEXT_DATE_COLOR, size=HEADER_TEXT_DATE_SIZE),
+		_pack_text(date_str, color=HEADER_TEXT_COLOR, size=HEADER_TEXT_SIZE, flex=4, weight="bold")
 	])
 
-	# weatherのlayoutなしでheaderを作成
-	_message_header = _pack_horizontal([date_box], spacing='md', height="90px", paddingAll="20px",
-									   backgroundColor="#0367D3")
+	if is_holiday:
+		_message_header = _pack_horizontal(
+			[date_box],
+			spacing='md',
+			height="90px",
+			paddingAll="20px",
+			backgroundColor=HEADER_BACK_COLOR_HOLIDAY
+		)
+	else:
+		_message_header = _pack_horizontal(
+			[date_box],
+			spacing='md',
+			height="90px",
+			paddingAll="20px",
+			backgroundColor=HEADER_BACK_COLOR_NORMAL
+		)
 
 	logger.debug("Finished set up header")
 	return _message_header
@@ -349,7 +362,7 @@ def _package_event_schedule(events: list):
 
 
 # Flex Messageのボディ部(全体)をパッケージする関数
-def _package_body(events: list):
+def _package_body(events: dict):
 
 	_message_body_all_day = {}
 	_message_body_schedule = {}
@@ -437,8 +450,9 @@ def package_message_one_day(events_list: dict):
 
 	# スケジュールのリストを取得
 	schedule_list = events_list.get("sort_event_list")[0]  # 1日分のため、リストの最初のみ取得
+	logger.debug(f'schedule_list: {schedule_list}')
 
-	_message_header = _package_header(date=date)
+	_message_header = _package_header(date=date, is_holiday=schedule_list.get("holiday"))
 	_message_hero = _package_hero()
 	_message_body = _package_body(events=schedule_list)
 	_message_footer = _package_footer()
@@ -477,8 +491,8 @@ def package_message_one_day(events_list: dict):
 
 
 # 任意の1日分の予定をFlex Message形式でパッケージ(画像なし)
-def package_message_one_day_none_image(date: datetime.datetime, events_list: list):
-	_message_header = _package_header(date=date)
+def package_message_one_day_none_image(date: datetime.datetime, events_list: dict):
+	_message_header = _package_header(date=date, is_holiday=events_list.get("holiday"))
 	_message_body = _package_body(events=events_list)
 	_message_footer = _package_footer()
 

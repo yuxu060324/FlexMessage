@@ -24,7 +24,7 @@ main_app = MainApp()
 # main( for debug )
 def main():
 
-	payload = main_app.create_today_schedule_message()
+	payload = main_app.create_schedule_message_week()
 
 	# デバッグ用
 	# debug_file_path = os.path.join(HOME_ABSPATH, "TemplateMessage", "debug_message.json")

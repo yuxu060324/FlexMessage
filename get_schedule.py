@@ -3,6 +3,7 @@ from __future__ import print_function
 import datetime
 import re
 import os.path
+import jpholiday
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -15,7 +16,16 @@ from common_global import *
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 JST = datetime.timezone(datetime.timedelta(hours=9))
 
-# WEEKLYを今週と来週、今からの3つ用意したいな
+def is_holiday(dt: datetime.datetime):
+
+	if dt.weekday() >= 5:
+		return True
+
+	if jpholiday.is_holiday(dt):
+		return True
+
+	return False
+
 
 # Google Calendar APIの資格情報の環境変数を更新する
 # credentials.to_json()の返り値が"str"型
@@ -174,6 +184,7 @@ def _init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
 		events_list.append(
 			dict(
 				date=temp_date,
+				holiday=is_holiday(temp_date),
 				all_day_events=[],
 				schedule_events=[]
 			)
