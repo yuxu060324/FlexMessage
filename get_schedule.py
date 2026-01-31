@@ -191,6 +191,7 @@ def _init_sort_event_list(start: datetime.datetime, end: datetime.datetime):
 def _create_events_list(start_date: datetime.datetime, end_date: datetime.datetime, events: list):
 
 	sort_event_list = _init_sort_event_list(start=start_date, end=end_date)
+	logger.debug(f'start: {start_date}, end: {end_date}, len(sort_event_list): {len(sort_event_list)}')
 
 	# イベントが何もない(予定なし)の場合は、初期値のまま返却
 	if not events:
@@ -208,9 +209,12 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 		logger.debug(f'event: {event}')
 
 		event_start_date = event['start'].get('dateTime', event['start'].get('date'))
+		logger.debug(f'event_start_date: {event_start_date}')
 
 		# 終日の予定
 		if re.match(r'^\d{4}-\d{2}-\d{2}$', event_start_date):
+
+			logger.debug('all day event')
 
 			# イベント情報の取得
 			event_start         = datetime.datetime.strptime(event['start'].get('date'), '%Y-%m-%d')
@@ -237,11 +241,14 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 
 			# 同じイベント予定を別日に追加
 			for i in range(bet_date):
-				logger.debug(f'bet_date:{bet_date}, event_list_index:{event_list_index}, i:{i}')
-				sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
+				if event_list_index+i <= len(sort_event_list):
+					logger.debug(f'bet_date:{bet_date}, event_list_index:{event_list_index}, i:{i}')
+					sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
 
 		# 時間制限付きの予定
 		elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+09:00$', event_start_date):
+
+			logger.debug('schedule event')
 
 			event_start         = datetime.datetime.fromisoformat(event_start_date)
 			# event_start         = datetime.datetime.strptime(event_start_date, '%Y-%m-%dT%H:%M:%S+09:00')
@@ -267,7 +274,9 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 
 			# 同じイベント予定を別日に追加
 			for i in range(bet_date):
-				sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
+				if event_list_index+i < len(sort_event_list):
+					logger.debug(f'bet_date:{bet_date}, schedule_events:{event_list_index}, i:{i}')
+					sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
 
 		else:
 			logger.warning("The time notation does not match your expectations. Or, the time zone is different.")
