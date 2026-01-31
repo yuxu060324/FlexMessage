@@ -17,10 +17,10 @@ def getMyLogger(name):
 
 	# デプロイ環境
 	if os.getenv("SET_BUILD") == "FLASK_RENDER":
-		my_logger.setLevel(logging.DEBUG)
+		my_logger.setLevel(logging.INFO)
 
 		handler = logging.StreamHandler(sys.stdout)
-		handler.setLevel(logging.DEBUG)
+		handler.setLevel(logging.INFO)
 		formatter = logging.Formatter('[%(filename)s:%(lineno)d %(funcName)s] %(message)s')
 
 		handler.setFormatter(formatter)

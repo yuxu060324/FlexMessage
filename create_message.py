@@ -539,8 +539,12 @@ def package_carousel_message(schedule_dict: dict):
 
 
 def package_message_error():
-	with open(ERROR_MESSAGE_FILE_PATH, "r") as file:
-		_message = json.load(file)
+
+	logger.info("Package Error Message")
+
+	if os.path.isfile(ERROR_MESSAGE_FILE_PATH):
+		with open(ERROR_MESSAGE_FILE_PATH, "r", encoding="utf-8") as file:
+			_message = json.load(file)
 
 	return _message
 
