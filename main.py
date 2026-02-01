@@ -24,7 +24,16 @@ main_app = MainApp()
 # main( for debug )
 def main():
 
-	payload = main_app.create_schedule_message_week()
+	# 今日の予定
+	payload = main_app.create_today_schedule_message()
+
+	# 明日の予定
+	# today = datetime.datetime.now(JST).replace(hour=0, minute=0, second=0, microsecond=0)
+	# tomorrow = today + datetime.timedelta(days=1)
+	# payload = main_app.create_schedule_message_no_image(date=tomorrow)
+
+	# 来週の予定
+	# payload = main_app.create_schedule_message_week()
 
 	# デバッグ用
 	# debug_file_path = os.path.join(HOME_ABSPATH, "TemplateMessage", "debug_message.json")
