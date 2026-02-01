@@ -295,9 +295,17 @@ def _package_event_all_body(events: list):
 	temp_event = []
 
 	for event in events:
+
+		logger.debug(f'event: {event}')
+
+		if event["start_date"].date() != event["end_date"].date():
+			text_event = event['title'] + "(" + event["start_date"].strftime("%m/%d") + " ~ " + event["end_date"].strftime("%m/%d") + ")"
+		else:
+			text_event = event['title']
+
 		temp_event.append(_pack_horizontal([
 			_pack_circle(width="8px", hegiht="8px"),
-			_pack_text(event['title'], size="sm", margin="md")
+			_pack_text(text_event, size="sm", margin="md")
 		], paddingStart="lg", alignItems="center"))
 
 	event_detail = _pack_vertical(temp_event)
@@ -326,6 +334,8 @@ def _package_event_schedule(events: list):
 	# レーンごとに予定を追加していく
 	for event in events:
 
+		logger.debug(f'event: {event}')
+
 		# カラーIDの取得
 		if event['colorId'] in EVENT_KIND:
 			event_kind = EVENT_KIND[event['colorId']]
@@ -341,7 +351,11 @@ def _package_event_schedule(events: list):
 
 		# メッセージのパッケージ
 		temp_event.append(_pack_horizontal([
-			_pack_text(event['start_date'].strftime("%H:%M"), size="sm", flex=0),
+			_pack_text(
+				text=event['start_date'].strftime("%H:%M") + " ~ " + event['end_date'].strftime("%H:%M"),
+				size="sm",
+				flex=0
+			),
 			_pack_baseline([_pack_icon(path=icon_path, size="sm")], width="25px", height="25px", offsetStart="5px", offsetTop="3px"),
 			_pack_text(event['title'], size="sm")
 		], margin="md", align="center", paddingStart="lg"))

@@ -16,6 +16,7 @@ from common_global import *
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 JST = datetime.timezone(datetime.timedelta(hours=9))
 
+
 def is_holiday(dt: datetime.datetime):
 
 	if dt.weekday() >= 5:
@@ -25,6 +26,24 @@ def is_holiday(dt: datetime.datetime):
 		return True
 
 	return False
+
+
+def get_event_start_time(event_start_date: datetime.datetime, list_start_date: datetime.datetime):
+
+	if event_start_date <= list_start_date:
+		return list_start_date
+
+	return event_start_date
+
+
+def get_event_end_date(event_end_date: datetime.datetime, list_start_date: datetime.datetime):
+
+	list_end_date = list_start_date + datetime.timedelta(days=1, microseconds=-1)
+
+	if list_end_date <= event_end_date:
+		return list_end_date
+
+	return event_end_date
 
 
 # Google Calendar APIの資格情報の環境変数を更新する
@@ -236,7 +255,7 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 
 			event_all_day_dict = dict(
 				start_date=event_start,
-				end_date=event_end,
+				end_date=event_end + datetime.timedelta(seconds=-1),		# 終了日は次の日になってしまうため、前日のギリギリに設定する
 				title=event_title,
 				description=event_description,
 				colorId=event_colorId
@@ -245,14 +264,18 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 			# イベントを格納するリストのインデックスを取得
 			logger.debug(event_start)
 			logger.debug(start_date)
-			event_list_index = (event_start.replace(tzinfo=JST) - start_date).days
+
+			if start_date <= event_start.replace(tzinfo=JST):
+				event_list_index = (event_start.replace(tzinfo=JST) - start_date).days
+			else:
+				event_list_index = 0
 
 			# 開始と終了の日数を算出
 			bet_date = (event_end - event_start).days
 
 			# 同じイベント予定を別日に追加
 			for i in range(bet_date):
-				if event_list_index+i <= len(sort_event_list):
+				if event_list_index+i < len(sort_event_list):
 					logger.debug(f'bet_date:{bet_date}, event_list_index:{event_list_index}, i:{i}')
 					sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
 
@@ -269,25 +292,40 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 			event_description   = event['description'] if 'description' in event else "-"
 			event_colorId       = event['colorId'] if 'colorId' in event else "-"
 
-			event_all_day_dict = dict(
-				start_date=event_start,
-				end_date=event_end,
-				title=event_title,
-				description=event_description,
-				colorId=event_colorId
-			)
-
 			# イベントを格納するリストのインデックスを取得
-			event_list_index = (event_start - start_date).days
+			if start_date <= event_start:
+				event_list_index = (event_start - start_date).days
+			else:
+				# リストの日付より、イベントの開始日が前の場合
+				event_list_index = 0
 
 			# 開始と終了の日数を算出
 			bet_date = (event_end - event_start).days + 1		# 開始日の配列にも入れるため、+1を行う。
 
 			# 同じイベント予定を別日に追加
-			for i in range(bet_date):
-				if event_list_index+i < len(sort_event_list):
-					logger.debug(f'bet_date:{bet_date}, schedule_events:{event_list_index}, i:{i}')
-					sort_event_list[event_list_index+i]["schedule_events"].append(event_all_day_dict)
+			for temp_date in range(bet_date):
+
+				# リストの開始時間の取得
+				list_start_date = start_date + datetime.timedelta(days=event_list_index + temp_date)
+
+				# イベントの開始時間の判定
+				temp_event_start_time = get_event_start_time(event_start_date=event_start, list_start_date=list_start_date)
+
+				# イベントの終了時間の判定
+				temp_event_end_time = get_event_end_date(event_end_date=event_end, list_start_date=list_start_date)
+
+				# イベント情報設定
+				event_all_day_dict = dict(
+					start_date=temp_event_start_time,
+					end_date=temp_event_end_time,
+					title=event_title,
+					description=event_description,
+					colorId=event_colorId
+				)
+
+				if event_list_index+temp_date < len(sort_event_list):
+					logger.debug(f'bet_date:{bet_date}, schedule_events:{event_list_index}, date:{temp_date}')
+					sort_event_list[event_list_index + temp_date]["schedule_events"].append(event_all_day_dict)
 
 		else:
 			logger.warning("The time notation does not match your expectations. Or, the time zone is different.")
