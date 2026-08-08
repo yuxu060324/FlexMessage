@@ -272,10 +272,13 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 
 			# 開始と終了の日数を算出
 			bet_date = (event_end - event_start).days
+			logger.debug(f'bet_date:{bet_date}')
 
 			# 同じイベント予定を別日に追加
 			for i in range(bet_date):
-				if event_list_index+i < len(sort_event_list):
+				logger.debug(f'event_list-index:{sort_event_list[event_list_index+i]["date"].date()}')
+				logger.debug(f'event_end:{event_end.date()}')
+				if sort_event_list[event_list_index+i]["date"].date() <= event_end.date():
 					logger.debug(f'bet_date:{bet_date}, event_list_index:{event_list_index}, i:{i}')
 					sort_event_list[event_list_index+i]["all_day_events"].append(event_all_day_dict)
 
@@ -323,7 +326,7 @@ def _create_events_list(start_date: datetime.datetime, end_date: datetime.dateti
 					colorId=event_colorId
 				)
 
-				if event_list_index+temp_date < len(sort_event_list):
+				if sort_event_list[event_list_index+temp_date]["date"].date() <= event_end.date():
 					logger.debug(f'bet_date:{bet_date}, schedule_events:{event_list_index}, date:{temp_date}')
 					sort_event_list[event_list_index + temp_date]["schedule_events"].append(event_all_day_dict)
 
@@ -416,7 +419,7 @@ if __name__ == "__main__":
 	set_environ(build_env="")
 
 	start_date = datetime.datetime.now(JST).replace(hour=0, minute=0, second=0, microsecond=0)
-	end_date = start_date + datetime.timedelta(days=1, seconds=-1)
+	end_date = start_date + datetime.timedelta(days=9, seconds=-1)
 
 	events = get_calendar_event(start_date=start_date, end_date=end_date)
 
